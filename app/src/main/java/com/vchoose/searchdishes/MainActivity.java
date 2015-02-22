@@ -20,7 +20,9 @@ import com.vchoose.searchdishes.util.VcJsonReader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,7 +47,8 @@ public class MainActivity extends ActionBarActivity {
     ListView lv ;
 
     public String buildUrl(String location, String search_keyword, String rad) {
-        return url_prefix+loc+location+"&"+keyword+search_keyword+"&"+radius+rad;
+        String encoded_url = URLEncoder.encode(loc+location+"&"+keyword+search_keyword+"&"+radius+rad);
+        return url_prefix+encoded_url;
     }
 
     @Override
@@ -71,9 +74,11 @@ public class MainActivity extends ActionBarActivity {
         Log.v("MyActivity","inside doSearch. keyword: "+keyword);
         //this.me
 
+        String json_url = buildUrl("Highland Park, Pittsburgh",keyword,"3");
+
             //clear the data before downloading again
         jsonlist.clear();
-        new ProgressTask(MainActivity.this).execute();
+        new ProgressTask(MainActivity.this).execute(json_url);
     }
 
     @Override
@@ -136,10 +141,65 @@ public class MainActivity extends ActionBarActivity {
         protected Boolean doInBackground(final String... args) {
 
             VcJsonReader jParser = new VcJsonReader();
-            JSONArray json = jParser.getJSONFromUrl(url);
 
-            Log.v("MainActivity","read json:\n"+json.toString());
+            String download_url = args[0];
 
+            Log.v("MainActivity","Download URL:\n"+download_url);
+
+            //JSONArray json = jParser.getJSONFromUrl(url);
+            String response = jParser.getJSONFromUrl(download_url);
+
+            try {
+
+                JSONTokener tokener = new JSONTokener(response);
+                Log.v("MainActivity", "----- Tokens from JSON Parsing -------");
+                //while (tokener.more()) {
+                JSONObject responseObject = (JSONObject) tokener.nextValue();
+
+                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("table"));
+
+                JSONObject table = responseObject.getJSONObject("table");
+
+
+                /*
+                while (sub_tokener.more()) {
+                    JSONObject sub_response = (JSONObject) sub_tokener.nextValue();
+                    Log.v("MainActivity",sub_response.toString());
+                }*/
+
+                  //  Log.v("MainActivity",responseObject.toString());
+                //}
+
+                //response = (JSONObject) new JSONTokener(resp).nextValue();
+
+                JSONArray restaurants = table.getJSONObject("restaurants").getJSONArray("results");
+                Log.v("MainActivity","Downloaded Restaurants:\n"+restaurants);
+
+                JSONArray dishes = table.getJSONObject("dishes").getJSONArray("results");
+
+                Log.v("MainActivity","Downloaded Dishes:\n"+dishes);
+
+                for (int i = 0; i < dishes.length(); i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+
+                    JSONObject dish = dishes.getJSONObject(i);
+
+                    map.put(type, dish.getString("name"));
+                    map.put(color, dish.getJSONObject("restaurant").getString("name"));
+                    map.put(fuel, dish.getString("price_in_dollars"));
+
+
+                    jsonlist.add(map);
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //Log.v("MainActivity","read json:\n"+json.toString());
+
+            /*
             for (int i = 0; i < json.length(); i++) {
 
                 try {
@@ -162,6 +222,7 @@ public class MainActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
             }
+            */
             return null;
 
         }
