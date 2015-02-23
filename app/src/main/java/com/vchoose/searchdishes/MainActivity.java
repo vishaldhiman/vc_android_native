@@ -3,6 +3,7 @@ package com.vchoose.searchdishes;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,11 +11,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 import com.vchoose.searchdishes.util.VcJsonReader;
 
 import org.json.JSONArray;
@@ -22,16 +30,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainActivity extends ActionBarActivity {
-    private String url_prefix = "http://vchoose.us/api/v1/public/search.json?";
-    private String loc = "search_locations=";
-    private String keyword = "search_tags=";
-    private String radius = "search_radius=";
+public class MainActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private Context context;
     private static String url = "http://docs.blackberry.com/sampledata.json";
@@ -41,26 +44,60 @@ public class MainActivity extends ActionBarActivity {
     private static final String fuel = "fuel";
 
     EditText mEdit;
+    EditText locationEdit;
+    Location mLastLocation;
+    GoogleApiClient mGoogleApiClient;
 
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
     ListView lv ;
-
-    public String buildUrl(String location, String search_keyword, String rad) {
-        String encoded_url = URLEncoder.encode(loc+location+"&"+keyword+search_keyword+"&"+radius+rad);
-        return url_prefix+encoded_url;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_gridlayout);
         mEdit   = (EditText)findViewById(R.id.editText);
+        locationEdit = (EditText)findViewById(R.id.editTextLocation);
         Log.i("MyActivity","inside onCreate");
         //new ProgressTask(MainActivity.this).execute();
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.radius_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        buildGoogleApiClient();
     }
 
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
 
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.v("MainActivity","Inside onConnectionSuspended "+i);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.v("MainActivity","Inside onConnectionFailed "+result.toString());
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        /*
+        if (mLastLocation != null) {
+            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        }*/
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -74,11 +111,38 @@ public class MainActivity extends ActionBarActivity {
         Log.v("MyActivity","inside doSearch. keyword: "+keyword);
         //this.me
 
-        String json_url = buildUrl("Highland Park, Pittsburgh",keyword,"3");
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        try {
+            //String json_url = buildUrl("Highland Park, Pittsburgh", keyword, "3");
 
             //clear the data before downloading again
-        jsonlist.clear();
-        new ProgressTask(MainActivity.this).execute(json_url);
+            jsonlist.clear();
+
+            if (locationEdit.getText().toString() != null) {
+                if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
+                    double lat = mLastLocation.getLatitude();
+                    double lon = mLastLocation.getLongitude();
+                    new ProgressTask(MainActivity.this).execute(lat+","+lon, keyword, "3");
+                } else {
+                    new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, "3");
+                }
+            } else {
+                Log.i("MainActivity","Location is null, so will resort to default location");
+                new ProgressTask(MainActivity.this).execute("Shadyside Pittsburgh PA", keyword, "3");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -129,7 +193,7 @@ public class MainActivity extends ActionBarActivity {
             ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { type, color, fuel }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel });
             ListView myList=(ListView)findViewById(android.R.id.list);
 
-            //myList.setAdapter(null);
+            myList.setAdapter(null);
 
             myList.setAdapter(adapter);
 
@@ -142,12 +206,15 @@ public class MainActivity extends ActionBarActivity {
 
             VcJsonReader jParser = new VcJsonReader();
 
-            String download_url = args[0];
+            //String download_url = args[0];
+            String location = args[0];
+            String keyword = args[1];
+            String radius = args[2];
 
-            Log.v("MainActivity","Download URL:\n"+download_url);
+            //Log.v("MainActivity","Download URL:\n"+download_url);
 
             //JSONArray json = jParser.getJSONFromUrl(url);
-            String response = jParser.getJSONFromUrl(download_url);
+            String response = jParser.getJSONFromUrl(location,keyword,radius);
 
             try {
 
@@ -178,6 +245,7 @@ public class MainActivity extends ActionBarActivity {
                 JSONArray dishes = table.getJSONObject("dishes").getJSONArray("results");
 
                 Log.v("MainActivity","Downloaded Dishes:\n"+dishes);
+                jsonlist.clear();
 
                 for (int i = 0; i < dishes.length(); i++) {
                     HashMap<String, String> map = new HashMap<String, String>();
@@ -186,7 +254,13 @@ public class MainActivity extends ActionBarActivity {
 
                     map.put(type, dish.getString("name"));
                     map.put(color, dish.getJSONObject("restaurant").getString("name"));
-                    map.put(fuel, dish.getString("price_in_dollars"));
+
+                    String price =dish.getString("price_in_dollars");
+
+                    if ((price == null) || price.equals("null"))
+                        map.put(fuel, "");
+                    else
+                        map.put(fuel,price);
 
 
                     jsonlist.add(map);
