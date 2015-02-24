@@ -47,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     EditText locationEdit;
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
+    Spinner spinner;
 
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
@@ -61,7 +62,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         Log.i("MyActivity","inside onCreate");
         //new ProgressTask(MainActivity.this).execute();
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.radius_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -128,17 +129,21 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             //clear the data before downloading again
             jsonlist.clear();
 
+            String radiusString = spinner.getSelectedItem().toString();
+
+            String radius = radiusString.split(" ")[0];     //from '0.5 mi' extract 0.5
+
             if (locationEdit.getText().toString() != null) {
                 if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
                     double lat = mLastLocation.getLatitude();
                     double lon = mLastLocation.getLongitude();
-                    new ProgressTask(MainActivity.this).execute(lat+","+lon, keyword, "3");
+                    new ProgressTask(MainActivity.this).execute(lat+","+lon, keyword, radius);
                 } else {
-                    new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, "3");
+                    new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
                 }
             } else {
                 Log.i("MainActivity","Location is null, so will resort to default location");
-                new ProgressTask(MainActivity.this).execute("Shadyside Pittsburgh PA", keyword, "3");
+                new ProgressTask(MainActivity.this).execute("Shadyside Pittsburgh PA", keyword, radius);
             }
         } catch (Exception e) {
             e.printStackTrace();
