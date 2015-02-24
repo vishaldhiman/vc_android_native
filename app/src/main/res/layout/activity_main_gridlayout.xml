@@ -1,45 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:layout_column="3">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff1a7420"
+        android:columnCount="3">
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:selectAllOnFocus="true"
-        android:text="dish name or attribute"
-        android:layout_gravity="left" />
+        <LinearLayout
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/mydrawable"
+            android:layout_width="250dp"
+            android:layout_height="45dp"
+            android:layout_row="0"
+            android:layout_column="0"
+            >
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/button"
-        android:layout_row="0"
-        android:layout_column="1"
-        android:onClick="doSearch"
-        />
+                android:selectAllOnFocus="true"
+                android:text="dish name or attribute"
+                android:layout_gravity="left"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/mydrawable"
+            android:layout_width="250dp"
+            android:layout_height="45dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            >
+            <EditText
+                android:id="@+id/editTextLocation"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:selectAllOnFocus="true"
+                android:text="Near Me      "/>
+        </LinearLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/button"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:onClick="doSearch" />
 
-    <EditText
-        android:id="@+id/editTextLocation"
-        android:layout_row="1"
-        android:layout_column="0"
-        android:selectAllOnFocus="true"
-        android:text="Near Me                     "
-        android:layout_gravity="left" />
+        <Spinner
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:textStyle="bold"
+            android:layout_row="1"
+            android:layout_column="2" />
 
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner"
-        android:layout_row="1"
-        android:layout_column="1" />
-
-    <ListView
-        android:id="@android:id/list"
-        android:layout_columnSpan="3"
-        android:layout_row="2"
-        android:layout_column="0" />
-</GridLayout>
+        <ListView
+            android:id="@android:id/list"
+            android:background="#ff5cb85c"
+            android:layout_columnSpan="3"
+            android:layout_row="3"
+            android:layout_column="0" />
+    </GridLayout>
+</LinearLayout>
