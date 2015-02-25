@@ -23,9 +23,16 @@
                 android:layout_height="45dp"
 
                 android:selectAllOnFocus="true"
-                android:text="dish name or attribute"
+                android:text="dish name"
                 android:layout_gravity="left"
                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/textView" />
         </LinearLayout>
         <LinearLayout
             android:layout_marginLeft="5dp"
