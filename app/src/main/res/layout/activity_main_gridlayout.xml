@@ -23,7 +23,7 @@
                 android:layout_height="45dp"
 
                 android:selectAllOnFocus="true"
-                android:text="dish name"
+                android:text="Searh your favorite dish"
                 android:layout_gravity="left"
                 />
 
