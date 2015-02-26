@@ -8,11 +8,8 @@
     <string-array name="radius_array">
         <item>0.5 mi</item>
         <item>1 mi</item>
-        <item>1.5 mi</item>
-        <item>2 mi</item>
         <item>3 mi</item>
         <item>5 mi</item>
-        <item>7.5 mi</item>
         <item>10 mi</item>
         <item>15 mi</item>
         <item>20 mi</item>

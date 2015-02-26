@@ -8,15 +8,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.RatingBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,12 +45,17 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     private static final String type = "vehicleType";
     private static final String color = "vehicleColor";
     private static final String fuel = "fuel";
+    private static final String rating = "rating";
+    private static final String description = "description";
 
     EditText mEdit;
     EditText locationEdit;
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
+    RatingBar ratingBar;
+
+    RatingAdapter ratingAdapter;
 
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
@@ -59,6 +67,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         setContentView(R.layout.activity_main_gridlayout);
         mEdit   = (EditText)findViewById(R.id.editText);
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
+        ratingBar = (RatingBar)findViewById(R.id.ratingBar);
+
         Log.i("MyActivity","inside onCreate");
         //new ProgressTask(MainActivity.this).execute();
 
@@ -195,7 +205,11 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             }
 
 
-            ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { type, color, fuel }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel });
+            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { type, color, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+
+            RatingAdapter adapter = new RatingAdapter(jsonlist);
+            ratingAdapter = adapter;
+
             ListView myList=(ListView)findViewById(android.R.id.list);
 
             myList.setAdapter(null);
@@ -258,7 +272,21 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                     JSONObject dish = dishes.getJSONObject(i);
 
                     map.put(type, dish.getString("name"));
-                    map.put(color, dish.getJSONObject("restaurant").getString("name"));
+
+                    String restaurantName = dish.getJSONObject("restaurant").getString("name");
+
+                    String distance = dish.getString("distance_from_search");
+                    Log.v("MainActivity","distance_from_search: "+distance);
+                    if ((distance != null) && !distance.equals("")) {
+                        restaurantName += distance;
+                    }
+
+                    map.put(color, restaurantName);
+
+                    map.put(description,dish.getString("description"));
+
+                    double avg_rating = dish.getDouble("avg_rating");
+                    map.put(rating,""+avg_rating);
 
                     String price =dish.getString("price_in_dollars");
 
@@ -304,6 +332,85 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             */
             return null;
 
+        }
+    }
+
+    private RowModel getModel(int position) {
+        //return(((RatingAdapter)getAdapter()).getItem(position));
+        return (RowModel)ratingAdapter.getItem(position);
+    }
+
+    class RatingAdapter extends ArrayAdapter {
+        ArrayList<HashMap<String, String>> jsonlist;
+        RatingAdapter(ArrayList list) {
+            super(MainActivity.this, R.layout.list_activity, list);
+            jsonlist = list;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row=convertView;
+            //ViewWrapper wrapper;
+            DishViewWrapper wrapper;
+            RatingBar rate;
+
+            final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
+
+            if (row==null) {
+                LayoutInflater inflater=getLayoutInflater();
+                row=inflater.inflate(R.layout.list_activity, parent, false);
+                wrapper=new DishViewWrapper(row);
+                row.setTag(wrapper);
+                rate=wrapper.getRatingBar();
+                RatingBar.OnRatingBarChangeListener l=
+                        new RatingBar.OnRatingBarChangeListener() {
+                            public void onRatingChanged(RatingBar ratingBar,
+                                                        float rating, boolean fromTouch) {
+                                Integer myPosition=(Integer)ratingBar.getTag();
+                                //RowModel model=getModel(myPosition);
+                                //model.rating=rating;
+                                //model.dishName = cur_dish.get(type);
+                                //model.restaurant = cur_dish.get(color);
+                                LinearLayout parent=(LinearLayout)ratingBar.getParent();
+                                TextView vehicleType=(TextView)parent.findViewById(R.id.vehicleType);
+
+                                // Save the rating
+
+                                //vehicleType.setText(model.dishName);
+                            }
+                        };
+                rate.setOnRatingBarChangeListener(l);
+            }
+            else {
+                wrapper=(DishViewWrapper)row.getTag();
+                rate=wrapper.getRatingBar();
+            }
+
+            //RowModel model=getModel(position);
+
+            wrapper.getVehicleType().setText(cur_dish.get(type));
+            wrapper.getVehicleColor().setText(cur_dish.get(color));
+            rate.setTag(new Integer(position));
+            rate.setRating(Float.parseFloat(cur_dish.get(rating)));
+            wrapper.getDescription().setText(cur_dish.get(description));
+            return(row);
+        }
+    }
+
+    class RowModel {
+        //String label;
+        String dishName;
+        String restaurant;
+        float rating=2.0f;
+
+        RowModel(String dishName) {
+            this.dishName=dishName;
+        }
+
+        public String toString() {
+            if (rating>=3.0) {
+                return(dishName.toUpperCase());
+            }
+            return(dishName);
         }
     }
 }
