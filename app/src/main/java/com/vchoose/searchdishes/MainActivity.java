@@ -3,6 +3,7 @@ package com.vchoose.searchdishes;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -114,6 +115,21 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    public void checkDish(View view) {
+        Intent intent = new Intent(this, DishInfo.class);
+        TextView tv = (TextView)view.findViewById(R.id.vehicleType);
+        TextView tv2 = (TextView)view.findViewById(R.id.description);
+        //DishInfo.DIS=tv2.getText().toString();
+        //DishInfo.NAME=tv.getText().toString();
+        ArrayList<String> stringList = new ArrayList<String>();
+        stringList.add(tv.getText().toString());
+        stringList.add(tv2.getText().toString());
+        //intent.putExtra(DishInfo.DIS, tv2.getText());
+        intent.putExtra(DishInfo.NAME, tv.getText());
+        //intent.putStringArrayListExtra("ListString", stringList);
+        startActivity(intent);
     }
 
     public void doSearch(View view) {
