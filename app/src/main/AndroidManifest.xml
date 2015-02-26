@@ -18,6 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".DishInfo"
+            android:label="@string/title_activity_dish_info" >
+        </activity>
+        <activity
+            android:name=".Customization"
+            android:label="@string/title_activity_customization" >
+        </activity>
     </application>
 
 </manifest>
