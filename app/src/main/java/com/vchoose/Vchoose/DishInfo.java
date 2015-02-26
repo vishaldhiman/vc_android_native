@@ -1,4 +1,4 @@
-package com.vchoose.searchdishes;
+package com.vchoose.Vchoose;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -7,8 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 
 public class DishInfo extends ActionBarActivity {

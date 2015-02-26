@@ -1,4 +1,4 @@
-package com.vchoose.searchdishes;
+package com.vchoose.Vchoose;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -27,7 +27,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
-import com.vchoose.searchdishes.util.VcJsonReader;
+import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;

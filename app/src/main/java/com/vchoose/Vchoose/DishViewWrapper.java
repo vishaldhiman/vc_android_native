@@ -1,4 +1,4 @@
-package com.vchoose.searchdishes;
+package com.vchoose.Vchoose;
 
 import android.view.View;
 import android.widget.RatingBar;

@@ -1,4 +1,4 @@
-package com.vchoose.searchdishes;
+package com.vchoose.Vchoose;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

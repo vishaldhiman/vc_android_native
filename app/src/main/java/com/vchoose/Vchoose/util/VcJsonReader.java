@@ -1,4 +1,4 @@
-package com.vchoose.searchdishes.util;
+package com.vchoose.Vchoose.util;
 
 import android.net.Uri;
 import android.util.Log;
