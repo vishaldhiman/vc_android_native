@@ -103,6 +103,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     public void onConnected(Bundle connectionHint) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        Log.v("MainActivity","onConnected - Found LastLocation.\n"+mLastLocation);
         /*
         if (mLastLocation != null) {
             mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
@@ -132,6 +133,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+
+        Log.v("MainActivity","Found LastLocation.\n"+mLastLocation);
 
         try {
             //String json_url = buildUrl("Highland Park, Pittsburgh", keyword, "3");
