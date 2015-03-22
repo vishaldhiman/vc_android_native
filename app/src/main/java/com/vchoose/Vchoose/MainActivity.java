@@ -88,11 +88,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        mGoogleApiClient.connect();
-        if(mGoogleApiClient.isConnected())
-        {Log.v("APICLIENT","Connected");}
-        else
-        {Log.v("APICLIENT","UnConnected");}
     }
 
     @Override
@@ -109,7 +104,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     public void onConnected(Bundle connectionHint) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        Log.v("MainActivity","onConnected - Found LastLocation. onConnected\n"+mLastLocation);
+        Log.v("MainActivity","onConnected - Found LastLocation.\n"+mLastLocation);
         /*
         if (mLastLocation != null) {
             mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
@@ -308,7 +303,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                     map.put(color, restaurantName);
 
                     map.put(description,dish.getString("description"));
-                    //map.put("dish",dish);
 
                     double avg_rating = dish.getDouble("avg_rating");
                     map.put(rating,""+avg_rating);
@@ -417,7 +411,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             rate.setTag(new Integer(position));
             rate.setRating(Float.parseFloat(cur_dish.get(rating)));
             wrapper.getDescription().setText(cur_dish.get(description));
-
             return(row);
         }
     }
