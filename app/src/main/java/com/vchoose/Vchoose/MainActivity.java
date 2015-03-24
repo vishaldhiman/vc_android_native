@@ -147,6 +147,9 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                     .build();
         }
 
+        mGoogleApiClient.connect();
+        Log.v("GoogleApiClient",String.valueOf(mGoogleApiClient.isConnected()));
+
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
@@ -263,7 +266,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
                 //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("table"));
 
-                JSONObject table = responseObject.getJSONObject("table");
+                JSONObject table = responseObject.getJSONObject("dishes");
 
 
                 /*
@@ -277,10 +280,12 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
                 //response = (JSONObject) new JSONTokener(resp).nextValue();
 
+                //get the result of restaurants
+                /*
                 JSONArray restaurants = table.getJSONObject("restaurants").getJSONArray("results");
                 Log.v("MainActivity","Downloaded Restaurants:\n"+restaurants);
-
-                JSONArray dishes = table.getJSONObject("dishes").getJSONArray("results");
+                */
+                JSONArray dishes = table.getJSONArray("results");
 
                 Log.v("MainActivity","Downloaded Dishes:\n"+dishes);
                 jsonlist.clear();
@@ -294,8 +299,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
                     String restaurantName = dish.getJSONObject("restaurant").getString("name");
 
-                    String distance = dish.getString("distance_from_search");
-                    Log.v("MainActivity","distance_from_search: "+distance);
+                    String distance = dish.getJSONObject("restaurant").getJSONObject("distance").getString("string");
+                    Log.v("MainActivity","distance: "+distance);
                     if ((distance != null) && !distance.equals("")) {
                         restaurantName += distance;
                     }
@@ -304,10 +309,12 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
                     map.put(description,dish.getString("description"));
 
-                    double avg_rating = dish.getDouble("avg_rating");
+
+                    double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
 
-                    String price =dish.getString("price_in_dollars");
+                    ;
+                    String price =dish.getJSONObject("price").getString("dollars");
 
                     if ((price == null) || price.equals("null"))
                         map.put(fuel, "");
