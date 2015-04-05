@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 
 public class DishInfo extends ActionBarActivity {
 
@@ -18,7 +20,15 @@ public class DishInfo extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_info);
+        Bundle extras = getIntent().getExtras();
+        ArrayList<String> stringList = extras.getStringArrayList("DishInfo");
+        TextView textview = (TextView)findViewById(R.id.DishName);
+        TextView textview2=(TextView)findViewById(R.id.DishPhone);
+        TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
 
+        textview.setText(stringList.get(0));
+        textview2.setText(stringList.get(2));
+        textview3.setText(stringList.get(1));
     }
 
     public void customize(View view) {
@@ -30,17 +40,6 @@ public class DishInfo extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_dish_info, menu);
-        Intent intent = getIntent();
-        TextView textview = (TextView)findViewById(R.id.DishName);
-        TextView textview2=(TextView)findViewById(R.id.DishPhone);
-        TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
-        //ArrayList<String> stringList = (ArrayList<String>) getIntent().getStringArrayListExtra("ListString");
-        //textview.setText(intent.getStringExtra(stringList.get(0)));
-        //textview3.setText(intent.getStringExtra(stringList.get(1)));
-        textview.setText(intent.getStringExtra(DishInfo.NAME));
-        //textview3.setText(intent.getStringExtra(DishInfo.DIS));
-        textview2.setText("(412)548-5979");
-        textview3.setText("a custom one made to order. choose from any of our delicious crust styles, including handmade pan.");
         return true;
     }
 

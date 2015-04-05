@@ -8,13 +8,17 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -43,13 +47,13 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     private Context context;
     private static String url = "http://docs.blackberry.com/sampledata.json";
 
-    private static final String type = "vehicleType";
-    private static final String color = "vehicleColor";
+    private static final String dishname = "vehicleType";
+    private static final String location = "vehicleColor";
     private static final String fuel = "fuel";
     private static final String rating = "rating";
     private static final String description = "description";
 
-    EditText mEdit;
+    AutoCompleteTextView mEdit;
     EditText locationEdit;
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
@@ -60,13 +64,13 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
-    ListView lv ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_gridlayout);
-        mEdit   = (EditText)findViewById(R.id.editText);
+        mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
+        context = this;
+        mEdit.addTextChangedListener(new InputValidator());
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
         ratingBar = (RatingBar)findViewById(R.id.ratingBar);
 
@@ -80,6 +84,9 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         spinner.setAdapter(adapter);
 
         buildGoogleApiClient();
+        mGoogleApiClient.connect();
+        Log.v("GoogleApiClient",String.valueOf(mGoogleApiClient.isConnected()));
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -120,7 +127,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
     public void checkDish(View view) {
         Intent intent = new Intent(this, DishInfo.class);
-        TextView tv = (TextView)view.findViewById(R.id.vehicleType);
+        TextView tv = (TextView)view.findViewById(R.id.Dish_name);
         TextView tv2 = (TextView)view.findViewById(R.id.description);
         //DishInfo.DIS=tv2.getText().toString();
         //DishInfo.NAME=tv.getText().toString();
@@ -128,7 +135,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         stringList.add(tv.getText().toString());
         stringList.add(tv2.getText().toString());
         //intent.putExtra(DishInfo.DIS, tv2.getText());
-        intent.putExtra(DishInfo.NAME, tv.getText());
+        intent.putExtra("DishInfo", stringList);
         //intent.putStringArrayListExtra("ListString", stringList);
         startActivity(intent);
     }
@@ -194,6 +201,11 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             return true;
         }
 
+        if(id == R.id.login) {
+            Intent intent = new Intent(this,Login.class);
+            startActivity(intent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -225,22 +237,33 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-
-
-            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { type, color, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
 
             RatingAdapter adapter = new RatingAdapter(jsonlist);
             ratingAdapter = adapter;
 
             ListView myList=(ListView)findViewById(android.R.id.list);
 
-            myList.setAdapter(null);
-
             myList.setAdapter(adapter);
 
-            //setListAdapter(adapter);
-            //lv = getListView();
+            myList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.v("clicked","true");
+                    Intent intent = new Intent(context, DishInfo.class);
+                    HashMap<String, String> dishes = (HashMap<String, String>) jsonlist.get(position);
+                    String name_text = dishes.get(dishname);
+                    String description_text = dishes.get(description);
+                    String location_text = dishes.get(location);
+                    ArrayList<String> stringList = new ArrayList<String>();
+                    stringList.add(name_text);
+                    stringList.add(description_text);
+                    stringList.add(location_text);
+                    intent.putExtra("DishInfo", stringList);
+                    startActivity(intent);
+                }
 
+            });
         }
 
         protected Boolean doInBackground(final String... args) {
@@ -256,6 +279,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
             //JSONArray json = jParser.getJSONFromUrl(url);
             String response = jParser.getJSONFromUrl(location,keyword,radius);
+
 
             try {
 
@@ -295,19 +319,21 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
                     JSONObject dish = dishes.getJSONObject(i);
 
-                    map.put(type, dish.getString("name"));
+                    map.put(dishname, dish.getString("name"));
 
                     String restaurantName = dish.getJSONObject("restaurant").getString("name");
 
                     String distance = dish.getJSONObject("restaurant").getJSONObject("distance").getString("string");
-                    Log.v("MainActivity","distance: "+distance);
+                    //Log.v("MainActivity","distance: "+distance);
                     if ((distance != null) && !distance.equals("")) {
                         restaurantName += distance;
                     }
 
-                    map.put(color, restaurantName);
+                    map.put(MainActivity.location, restaurantName);
 
                     map.put(description,dish.getString("description"));
+
+                    map.put("ID", dish.getString("id"));
 
 
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
@@ -337,15 +363,15 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
                 try {
                     JSONObject c = json.getJSONObject(i);
-                    String vtype = c.getString(type);
+                    String vtype = c.getString(dishname);
 
-                    String vcolor = c.getString(color);
+                    String vcolor = c.getString(location);
                     String vfuel = c.getString(fuel);
 
                     HashMap<String, String> map = new HashMap<String, String>();
 
-                    map.put(type, vtype);
-                    map.put(color, vcolor);
+                    map.put(dishname, vtype);
+                    map.put(location, vcolor);
                     map.put(fuel, vfuel);
 
 
@@ -368,12 +394,13 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
     class RatingAdapter extends ArrayAdapter {
         ArrayList<HashMap<String, String>> jsonlist;
+
         RatingAdapter(ArrayList list) {
             super(MainActivity.this, R.layout.list_activity, list);
             jsonlist = list;
         }
 
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View row=convertView;
             //ViewWrapper wrapper;
             DishViewWrapper wrapper;
@@ -383,28 +410,22 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
             if (row==null) {
                 LayoutInflater inflater=getLayoutInflater();
-                row=inflater.inflate(R.layout.list_activity, parent, false);
+                row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
                 wrapper=new DishViewWrapper(row);
                 row.setTag(wrapper);
                 rate=wrapper.getRatingBar();
-                RatingBar.OnRatingBarChangeListener l=
-                        new RatingBar.OnRatingBarChangeListener() {
-                            public void onRatingChanged(RatingBar ratingBar,
-                                                        float rating, boolean fromTouch) {
-                                Integer myPosition=(Integer)ratingBar.getTag();
-                                //RowModel model=getModel(myPosition);
-                                //model.rating=rating;
-                                //model.dishName = cur_dish.get(type);
-                                //model.restaurant = cur_dish.get(color);
-                                LinearLayout parent=(LinearLayout)ratingBar.getParent();
-                                TextView vehicleType=(TextView)parent.findViewById(R.id.vehicleType);
-
-                                // Save the rating
-
-                                //vehicleType.setText(model.dishName);
-                            }
-                        };
-                rate.setOnRatingBarChangeListener(l);
+                rate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                          @Override
+                          public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                              if(fromUser) {
+                                  Log.v("Rating Bar changed", String.valueOf(rating));
+                                  Log.v("The dish of Rating bar", String.valueOf(position));
+                                  Log.v("ID", cur_dish.get("ID"));
+                                  //the Rating is stored here
+                              }
+                          }
+                      }
+                    );
             }
             else {
                 wrapper=(DishViewWrapper)row.getTag();
@@ -413,8 +434,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
             //RowModel model=getModel(position);
 
-            wrapper.getVehicleType().setText(cur_dish.get(type));
-            wrapper.getVehicleColor().setText(cur_dish.get(color));
+            wrapper.getVehicleType().setText(cur_dish.get(dishname));
+            wrapper.getVehicleColor().setText(cur_dish.get(location));
             rate.setTag(new Integer(position));
             rate.setRating(Float.parseFloat(cur_dish.get(rating)));
             wrapper.getDescription().setText(cur_dish.get(description));
@@ -437,6 +458,34 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                 return(dishName.toUpperCase());
             }
             return(dishName);
+        }
+    }
+    private class InputValidator implements TextWatcher {
+
+        public void afterTextChanged(Editable s) {
+            Log.v("The text is changed","changed");
+            String keyword_new = mEdit.getText().toString();
+            String[] tip = {"burger", "beef", "bbbbbbbbbbbbb"};
+
+            /* start an thread for auto complete */
+            new Thread(new Runnable() {
+                public void run() {
+                    VcJsonReader reader = new VcJsonReader();
+                    reader.getAutoComplete("bu");
+                }
+            }).start();
+
+            ArrayAdapter adapter = new ArrayAdapter
+                    (context,android.R.layout.simple_list_item_1,tip);
+            mEdit.setAdapter(adapter);
+        }
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                                      int after) {
+
+        }
+        public void onTextChanged(CharSequence s, int start, int before,
+                                  int count) {
+
         }
     }
 }

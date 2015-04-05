@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SearchDishes.iml" filepath="$PROJECT_DIR$/SearchDishes.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/vc_android_native.iml" filepath="$PROJECT_DIR$/vc_android_native.iml" />
     </modules>

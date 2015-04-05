@@ -28,7 +28,7 @@ public class DishViewWrapper {
 
     TextView getVehicleType() {
         if (vehicleType==null) {
-            vehicleType = (TextView)base.findViewById(R.id.vehicleType);
+            vehicleType = (TextView)base.findViewById(R.id.Dish_name);
         }
         return(vehicleType);
     }

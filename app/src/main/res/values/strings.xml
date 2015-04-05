@@ -18,5 +18,6 @@
 
     <string name="title_activity_dish_info">DishInfo</string>
     <string name="title_activity_customization">Customization</string>
+    <string name="title_activity_login">Login</string>
 
 </resources>

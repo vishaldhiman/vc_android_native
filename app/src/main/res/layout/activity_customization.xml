@@ -1,21 +1,14 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.vchoose.Vchoose.Customization"
+    tools:context=".MainActivity"
     android:background="#ff5cb85c">
-
-    <TableLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -26,24 +19,15 @@
                 android:layout_column="0"
                 android:textColor="#ff000000"
                 android:textStyle="bold" />
-        </TableRow>
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <EditText
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/NameBlank"
                 android:selectAllOnFocus="true"
-                android:layout_column="0"
-                android:text="                 Custom Dish Name                " />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+                android:gravity="center"
+                android:text="Custom Dish Name" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -54,24 +38,15 @@
                 android:layout_column="0"
                 android:textColor="#ff000000"
                 android:textStyle="bold" />
-        </TableRow>
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:selectAllOnFocus="true"
                 android:id="@+id/CustomPrice"
-                android:layout_column="0"
-                android:text="                 Name Your Price" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+                android:gravity="center"
+                android:text="Name Your Price" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -82,24 +57,15 @@
                 android:layout_column="0"
                 android:textColor="#ff000000"
                 android:textStyle="bold" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:selectAllOnFocus="true"
                 android:id="@+id/CostomComment"
-                android:layout_column="0"
-                android:text="                 Comment here" />
-        </TableRow>
+                android:gravity="center"
+                android:text=" Comment here" />
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -109,48 +75,20 @@
                 android:layout_column="0"
                 android:textColor="#ff000000"
                 android:textStyle="bold" />
-        </TableRow>
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <EditText
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/CustomDes"
-                android:layout_column="0" />
-        </TableRow>
+                android:layout_weight="1"
+                 />
 
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"></TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"></TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"></TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Create"
                 android:id="@+id/Create"
-                android:layout_column="0"
                 android:onClick="create"/>
-        </TableRow>
-    </TableLayout>
-</RelativeLayout>
+    </LinearLayout>
