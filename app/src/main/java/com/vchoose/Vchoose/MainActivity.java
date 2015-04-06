@@ -506,7 +506,6 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         if (resultCode == Activity.RESULT_OK) {
             this.AuthenticationToken = data.getStringExtra("AuthenticationToken");
             Log.v("AuthenticationToken",this.AuthenticationToken);
-            // TODO Update your TextView.
         }
     }
 }
