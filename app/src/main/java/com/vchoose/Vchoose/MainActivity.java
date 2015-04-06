@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -62,6 +63,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
     RatingAdapter ratingAdapter;
 
+    ArrayList<String> hint = new ArrayList<String>();
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
     @Override
@@ -464,21 +466,27 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
         public void afterTextChanged(Editable s) {
             Log.v("The text is changed","changed");
-            String keyword_new = mEdit.getText().toString();
-            String[] tip = {"burger", "beef", "bbbbbbbbbbbbb"};
+            final String keyword_new = mEdit.getText().toString();
 
             /* start an thread for auto complete */
-            new Thread(new Runnable() {
+            Thread t = new Thread(new Runnable() {
+                String keyword_new_inner = keyword_new;
                 public void run() {
                     VcJsonReader reader = new VcJsonReader();
-                    reader.getAutoComplete("bu");
-                }
-            }).start();
+                    hint = reader.getAutoComplete(keyword_new_inner);
+                    }
+            });
+
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e){}
 
             ArrayAdapter adapter = new ArrayAdapter
-                    (context,android.R.layout.simple_list_item_1,tip);
+                    (context,android.R.layout.simple_list_item_1, hint);
             mEdit.setAdapter(adapter);
         }
+
         public void beforeTextChanged(CharSequence s, int start, int count,
                                       int after) {
 

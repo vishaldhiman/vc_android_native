@@ -99,12 +99,13 @@ public class VcJsonReader {
         return resp;
     }
 
-    public String[] getAutoComplete(String hint){
+    public ArrayList<String> getAutoComplete(String hint){
+        ArrayList<String> result = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
 
         try{
-            String url = Uri.encode(url_autocomplete+term+"bu"+"&"+count+"5",ALLOWED_URI_CHARS);
+            String url = Uri.encode(url_autocomplete+term+hint+"&"+count+"5"+"&format=json",ALLOWED_URI_CHARS);
             HttpGet httpGet = new HttpGet(url);
             Log.v("URL",url);
 
@@ -129,19 +130,25 @@ public class VcJsonReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        JSONArray jsonArray = new JSONArray();
 
         String resp = builder.toString();
-        Log.v("Result", resp);
-/*
         try {
             JSONTokener tokener = new JSONTokener(resp);
-            Log.v("JSONObject",tokener.toString());
-            JSONObject responseObject = (JSONObject) tokener.nextValue();
-            Log.v("JSONObject",responseObject.toString());
+            jsonArray = new JSONArray(tokener);
+
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+                String object = jsonObject.getString("value");
+                Log.v("String"+i,object);
+                result.add(object);
+            }
+            //JSONObject responseObject = (JSONObject) tokener.nextValue();
         } catch (JSONException e) {}
-        */
-        String[] yep = {"yes"}; //this api is not working.
-        return yep;
+
+
+         //this api is not working.
+        return result;
     }
 
     public String getJSONFromUrl(String location, String search_keyword, String rad) {
