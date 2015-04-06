@@ -1,5 +1,6 @@
 package com.vchoose.Vchoose;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -53,6 +54,8 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     private static final String fuel = "fuel";
     private static final String rating = "rating";
     private static final String description = "description";
+
+    public static String AuthenticationToken;
 
     AutoCompleteTextView mEdit;
     EditText locationEdit;
@@ -205,7 +208,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
         if(id == R.id.login) {
             Intent intent = new Intent(this,Login.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
         }
 
         return super.onOptionsItemSelected(item);
@@ -494,6 +497,16 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
 
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            this.AuthenticationToken = data.getStringExtra("AuthenticationToken");
+            Log.v("AuthenticationToken",this.AuthenticationToken);
+            // TODO Update your TextView.
         }
     }
 }

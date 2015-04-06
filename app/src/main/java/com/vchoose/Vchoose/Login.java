@@ -1,5 +1,7 @@
 package com.vchoose.Vchoose;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,13 +62,23 @@ public class Login extends ActionBarActivity {
         password_text = password.getText().toString();
         //Log.v("email", email_text);
         //Log.v("password",password_text);
-        new Thread(new Runnable() {
+        Thread t = new Thread(new Runnable() {
             public void run() {
                 post(email_text,password_text);
             }
-        }).start();
+        });
 
 
+        t.start();
+
+        try {
+            t.join();
+        } catch (InterruptedException e){}
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("AuthenticationToken", auth_token);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
 
     public void post(String email, String password) {
