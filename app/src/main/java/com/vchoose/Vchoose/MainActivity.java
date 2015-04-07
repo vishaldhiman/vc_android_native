@@ -21,18 +21,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
+import com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls.SubmitRatings;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONArray;
@@ -406,6 +405,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
+
             View row=convertView;
             //ViewWrapper wrapper;
             DishViewWrapper wrapper;
@@ -426,6 +426,14 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                                   Log.v("Rating Bar changed", String.valueOf(rating));
                                   Log.v("The dish of Rating bar", String.valueOf(position));
                                   Log.v("ID", cur_dish.get("ID"));
+
+                                  //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
+
+                                  //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
+
+                                  //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
+                                  new SubmitRatings(MainActivity.this).execute(cur_dish.get("ID"),String.valueOf(rating));
+
                                   //the Rating is stored here
                               }
                           }
