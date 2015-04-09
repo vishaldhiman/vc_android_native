@@ -129,7 +129,7 @@ public class VcJsonReader {
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
             Log.v("statusCode",String.valueOf(statusCode));
-            if (statusCode == 200) {
+            if ((statusCode == 200)|| (statusCode == 201)) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
@@ -137,6 +137,7 @@ public class VcJsonReader {
                 while ((line = reader.readLine()) != null) {
                     builder.append(line);
                 }
+                result = true;
             } else {
                 Log.e("Error....", "Failed to download file");
             }
@@ -145,6 +146,8 @@ public class VcJsonReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        /*
         JSONArray jsonArray = new JSONArray();
 
         String resp = builder.toString();
@@ -162,7 +165,7 @@ public class VcJsonReader {
             //JSONObject responseObject = (JSONObject) tokener.nextValue();
         } catch (JSONException e) {}
 
-
+        */
         //this api is not working.
         return result;
     }
