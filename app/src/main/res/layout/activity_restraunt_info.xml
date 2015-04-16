@@ -1,0 +1,72 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.vchoose.Vchoose.RestrauntInfo"
+    android:background="#ff5cb85c">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="4"
+        android:rowCount="6"
+        android:id="@+id/ResInfo">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="3"
+            android:textSize="35dp"
+            android:textColor="#ff000000"
+            android:text="Address"
+            android:id="@+id/location"
+            android:layout_row="1"
+            android:layout_column="0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone"
+            android:id="@+id/DishPhone"
+            android:layout_row="3"
+            android:layout_column="0"
+            android:textSize="15dp"
+            android:textColor="#ff000000" />
+
+        <TextView
+            android:layout_width="296dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Restraunt Name"
+            android:id="@+id/restruant_id"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:textSize="25dp"
+            android:textColor="#ff000000"
+            android:layout_columnSpan="2" />
+
+        <FrameLayout
+            android:layout_width="145dp"
+            android:layout_height="436dp"
+            android:layout_row="4"
+            android:layout_column="0"></FrameLayout>
+
+        <FrameLayout
+            android:layout_width="192dp"
+            android:layout_height="427dp"
+            android:layout_row="4"
+            android:layout_column="1"></FrameLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customize"
+            android:id="@+id/customize"
+            android:layout_row="5"
+            android:layout_column="0"
+            android:onClick="customize"/>
+    </GridLayout>
+
+</RelativeLayout>
