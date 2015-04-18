@@ -333,6 +333,17 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                         restaurantName += distance;
                     }
 
+                    JSONArray tags = dish.getJSONArray("tags");
+                    //Log.v("mydish","mydish");
+                    //Log.v(dish.getString("name"), String.valueOf(tags.length()));
+                    String s[] = new String[3];
+
+                    for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
+                        s[j] = tags.getJSONObject(j).getString("name");
+                        Log.v("My Tags" + j, s[j]);
+                        map.put("Tag"+j,s[j]);
+                    }
+
                     map.put(MainActivity.location, restaurantName);
 
                     map.put(description,dish.getString("description"));
@@ -416,21 +427,37 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
 
             final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
 
-            if (row==null) {
+            /*if (row==null)*/ {
                 LayoutInflater inflater=getLayoutInflater();
                 row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
+
                 {
                     tag1 = (TextView)row.findViewById(R.id.tag1);
                     tag2 = (TextView)row.findViewById(R.id.tag2);
                     tag3 = (TextView)row.findViewById(R.id.tag3);
-                    /*
-                    ViewGroup.LayoutParams params = tag1.getLayoutParams();
-                    params.width = 0;
-                    params.height = 0;
+                    tag1.setText(null);
+                    tag2.setText(null);
+                    tag3.setText(null);
+                    String s[] = new String[3];
 
-                    tag1.setLayoutParams(params);
-                    */
-                    tag1.setVisibility(View.GONE);
+                    for(int i = 0; i < 3; i++) {
+                        s[i] = cur_dish.get("Tag" + i);
+                    }
+                    if(s[0] != null) {
+                        tag3.setText(s[0]);
+                    }
+                    else
+                        tag3.setVisibility(View.GONE);
+
+                    if(s[1] != null)
+                        tag2.setText(s[1]);
+                    else
+                        tag2.setVisibility(View.GONE);
+
+                    if(s[2] != null)
+                        tag1.setText(s[2]);
+                    else
+                        tag1.setVisibility(View.GONE);
                 }
                 wrapper=new DishViewWrapper(row);
                 row.setTag(wrapper);
@@ -455,11 +482,12 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                           }
                       }
                     );
-            }
+            }/*
             else {
                 wrapper=(DishViewWrapper)row.getTag();
                 rate=wrapper.getRatingBar();
             }
+            */
 
             //RowModel model=getModel(position);
 
