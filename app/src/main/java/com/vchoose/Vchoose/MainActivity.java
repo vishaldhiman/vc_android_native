@@ -410,12 +410,28 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
             //ViewWrapper wrapper;
             DishViewWrapper wrapper;
             RatingBar rate;
+            TextView tag1;
+            TextView tag2;
+            TextView tag3;
 
             final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
 
             if (row==null) {
                 LayoutInflater inflater=getLayoutInflater();
                 row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
+                {
+                    tag1 = (TextView)row.findViewById(R.id.tag1);
+                    tag2 = (TextView)row.findViewById(R.id.tag2);
+                    tag3 = (TextView)row.findViewById(R.id.tag3);
+                    /*
+                    ViewGroup.LayoutParams params = tag1.getLayoutParams();
+                    params.width = 0;
+                    params.height = 0;
+
+                    tag1.setLayoutParams(params);
+                    */
+                    tag1.setVisibility(View.GONE);
+                }
                 wrapper=new DishViewWrapper(row);
                 row.setTag(wrapper);
                 rate=wrapper.getRatingBar();
