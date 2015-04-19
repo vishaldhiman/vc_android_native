@@ -267,6 +267,13 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                     intent.putExtra("DishInfo", stringList);
                     intent.putExtra("Dish_id", dish_id);
                     intent.putExtra("Authentication", AuthenticationToken);
+
+                    ArrayList<String> tagList = new ArrayList<String>();
+                    for(int j = 0;  j < 3 ; j++) {
+                        String s = dishes.get("Tag"+j);
+                        tagList.add(s);
+                    }
+                    intent.putExtra("tagList", tagList);
                     startActivity(intent);
                 }
 
@@ -342,7 +349,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                     String s[] = new String[3];
 
                     for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
-                        s[j] = tags.getJSONObject(j).getString("name");
+                        s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
                         Log.v("My Tags" + j, s[j]);
                         map.put("Tag"+j,s[j]);
                     }

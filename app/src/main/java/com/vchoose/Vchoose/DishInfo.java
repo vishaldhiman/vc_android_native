@@ -1,12 +1,16 @@
 package com.vchoose.Vchoose;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.vchoose.Vchoose.util.VcJsonReader;
@@ -34,6 +38,12 @@ public class DishInfo extends ActionBarActivity {
     private String dish_id;
     private String url_tag = "http://vchoose.us/tag_assignments.json";
 
+    private TextView tag1;
+    private TextView tag2;
+    private TextView tag3;
+    private String m_Text = "";
+    private String tag[];
+
     //public static ArrayList<String> stringList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +52,45 @@ public class DishInfo extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         ArrayList<String> stringList = extras.getStringArrayList("DishInfo");
         Authentication = extras.getString("Authentication");
+        //Authentication = "hG4T5oT96uwzDYbxpnST";      //for test
         dish_id = extras.getString("Dish_id");
+        ArrayList<String> tagList = extras.getStringArrayList("tagList");
+
         TextView textview = (TextView)findViewById(R.id.DishName);
         TextView textview2=(TextView)findViewById(R.id.DishPhone);
         TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
+        tag1 = (TextView)findViewById(R.id.tag_info1);
+        tag2 = (TextView)findViewById(R.id.tag_info2);
+        tag3 = (TextView)findViewById(R.id.tag_info3);
 
         textview.setText(stringList.get(0));
         textview2.setText(stringList.get(2));
         textview3.setText(stringList.get(1));
+        textview3.setMovementMethod(new ScrollingMovementMethod());
+
+        tag = new String[3];
+        tag[0] = tagList.get(0);
+        tag[1] = tagList.get(1);
+        tag[2] = tagList.get(2);
+        tagDisplay(tag);
+    }
+
+    private void tagDisplay(String[] s) {
+        if(s[0] != null) {
+            tag3.setText(s[0]);
+        }
+        else
+            tag3.setVisibility(View.GONE);
+
+        if(s[1] != null)
+            tag2.setText(s[1]);
+        else
+            tag2.setVisibility(View.GONE);
+
+        if(s[2] != null)
+            tag1.setText(s[2]);
+        else
+            tag1.setVisibility(View.GONE);
     }
 
     public void customize(View view) {
@@ -59,16 +100,44 @@ public class DishInfo extends ActionBarActivity {
 
     public void addTag(View view) {
         if(Authentication != null) {
-            Thread t = new Thread(new Runnable() {
-                public void run() {
-                    post("dd", dish_id);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Enter Your tag");
+
+            // Set up the input
+            final EditText input = new EditText(this);
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            builder.setView(input);
+
+            // Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    m_Text = input.getText().toString();
+
+                    Thread t = new Thread(new Runnable() {
+                        public void run() {
+                            post(m_Text, dish_id);
+                        }
+                    });
+                    t.start();
+                    try {
+                        t.join();
+                    } catch (InterruptedException e) {
+                    }
+                    tag[2] = tag[1];
+                    tag[1] = tag[0];
+                    tag[0] = m_Text;
+                    tagDisplay(tag);
                 }
             });
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-            }
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
         }
     }
 
