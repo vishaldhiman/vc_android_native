@@ -259,11 +259,14 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                     String name_text = dishes.get(dishname);
                     String description_text = dishes.get(description);
                     String location_text = dishes.get(location);
+                    String dish_id = dishes.get("ID");
                     ArrayList<String> stringList = new ArrayList<String>();
                     stringList.add(name_text);
                     stringList.add(description_text);
                     stringList.add(location_text);
                     intent.putExtra("DishInfo", stringList);
+                    intent.putExtra("Dish_id", dish_id);
+                    intent.putExtra("Authentication", AuthenticationToken);
                     startActivity(intent);
                 }
 

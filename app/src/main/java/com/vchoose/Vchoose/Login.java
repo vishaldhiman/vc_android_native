@@ -67,14 +67,11 @@ public class Login extends ActionBarActivity {
                 post(email_text,password_text);
             }
         });
-
-
         t.start();
 
         try {
             t.join();
         } catch (InterruptedException e){}
-
         Intent resultIntent = new Intent();
         resultIntent.putExtra("AuthenticationToken", auth_token);
         setResult(Activity.RESULT_OK, resultIntent);

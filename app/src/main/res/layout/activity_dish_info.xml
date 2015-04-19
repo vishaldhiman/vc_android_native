@@ -47,4 +47,15 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="1dp"
             android:onClick="customize"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add A Tag"
+            android:id="@+id/addtag"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="1dp"
+            android:onClick="addTag"/>
+
 </RelativeLayout>
