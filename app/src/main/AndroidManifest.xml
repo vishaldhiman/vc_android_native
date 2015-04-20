@@ -32,6 +32,10 @@
             android:name=".Login"
             android:label="@string/title_activity_login" >
         </activity>
+        <activity
+            android:name=".PagerActivity"
+            android:label="@string/title_activity_pager" >
+        </activity>
     </application>
 
 </manifest>

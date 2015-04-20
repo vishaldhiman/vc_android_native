@@ -8,9 +8,12 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,9 +44,10 @@ import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.zip.Inflater;
 
 
-public class MainActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MainActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private Context context;
     private static String url = "http://docs.blackberry.com/sampledata.json";
@@ -180,7 +184,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
                 if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
                     double lat = mLastLocation.getLatitude();
                     double lon = mLastLocation.getLongitude();
-                    new ProgressTask(MainActivity.this).execute(lat+","+lon, keyword, radius);
+                    new ProgressTask(MainActivity.this).execute(lat + "," + lon, keyword, radius);
                 } else {
                     new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
                 }
@@ -216,7 +220,7 @@ public class MainActivity extends ActionBarActivity implements ConnectionCallbac
     private class ProgressTask extends AsyncTask<String, Void, Boolean> {
         private ProgressDialog dialog;
 
-        public ProgressTask(ActionBarActivity activity) {
+        public ProgressTask(Activity activity) {
             Log.i("1", "Calling");
             context = activity;
             dialog = new ProgressDialog(context);
