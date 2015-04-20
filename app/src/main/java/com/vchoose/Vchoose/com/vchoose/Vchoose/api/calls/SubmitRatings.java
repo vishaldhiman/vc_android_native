@@ -1,5 +1,6 @@
 package com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 
 import com.vchoose.Vchoose.MainActivity;
@@ -11,7 +12,7 @@ import com.vchoose.Vchoose.util.VcJsonReader;
 public class SubmitRatings extends AsyncTask<String, Void, Boolean> {
     VcJsonReader jsonReader = new VcJsonReader();
 
-    public SubmitRatings(MainActivity activity) {
+    public SubmitRatings(Activity activity) {
         //context = activity;
     }
 

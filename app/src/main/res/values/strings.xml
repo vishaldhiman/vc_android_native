@@ -21,4 +21,8 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_pager">PagerActivity</string>
 
+    <string name="title_section1">Dishes</string>
+    <string name="title_section2">Restaurant</string>
+    <string name="title_section3">Map</string>
+
 </resources>
