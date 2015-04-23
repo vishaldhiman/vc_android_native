@@ -1,23 +1,57 @@
 package com.vchoose.Vchoose;
+/*
+* This is the main container for all things
+* */
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.Spinner;
+import android.widget.TabHost;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.vchoose.Vchoose.util.VcJsonReader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 
-public class MainPagerActivity extends FragmentActivity implements android.app.ActionBar.TabListener {
+public class MainPagerActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -27,7 +61,24 @@ public class MainPagerActivity extends FragmentActivity implements android.app.A
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
+    private static final String dishname = "vehicleType";
+    private static final String location = "vehicleColor";
+    private static final String fuel = "fuel";
+    private static final String rating = "rating";
+    private static final String description = "description";
+
+
     SectionsPagerAdapter mSectionsPagerAdapter;
+
+    private Context context;
+    AutoCompleteTextView mEdit;
+    EditText locationEdit;
+    Location mLastLocation;
+    GoogleApiClient mGoogleApiClient;
+    Spinner spinner;
+    Button searchButton;
+    ArrayList<String> hint = new ArrayList<String>();
+    ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -37,45 +88,63 @@ public class MainPagerActivity extends FragmentActivity implements android.app.A
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-
         setContentView(R.layout.activity_pager);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+
+        mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
+        locationEdit = (EditText)findViewById(R.id.editTextLocation);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        searchButton = (Button)findViewById(R.id.searchButton);
+        context = this;
+
+        mEdit.addTextChangedListener(new InputValidator());
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
+                R.array.radius_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doSearch();
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),jsonlist);
+                mViewPager.setAdapter(mSectionsPagerAdapter);
+            }
+        });
+        buildGoogleApiClient();
+        mGoogleApiClient.connect();
 
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        final ActionBar actionBar = this.getActionBar();
 
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setNavigationMode(android.app.ActionBar.NAVIGATION_MODE_TABS);
 
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                // When swiping between different app sections, select the corresponding tab.
-                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
-                // Tab.
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
 
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by the adapter.
-            // Also specify this Activity object, which implements the TabListener interface, as the
-            // listener for when this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
     }
 
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.v("MainActivity","Inside onConnectionSuspended "+i);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.v("MainActivity","Inside onConnectionFailed "+result.toString());
+    }
+
+    public void onConnected(Bundle connectionHint) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        Log.v("MainActivity","onConnected - Found LastLocation.\n"+mLastLocation);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,19 +168,188 @@ public class MainPagerActivity extends FragmentActivity implements android.app.A
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onTabSelected(android.app.ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
-        mViewPager.setCurrentItem(tab.getPosition());
+    public void doSearch() {
+        String keyword = mEdit.getText().toString();
+        Log.i("MyActivity","inside doSearch");
+        Log.v("MyActivity","inside doSearch. keyword: "+keyword);
+        //this.me
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(context)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        mGoogleApiClient.connect();
+        Log.v("GoogleApiClient",String.valueOf(mGoogleApiClient.isConnected()));
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        Log.v("MainActivity","Found LastLocation.\n"+mLastLocation);
+
+        try {
+            //String json_url = buildUrl("Highland Park, Pittsburgh", keyword, "3");
+
+            //clear the data before downloading again
+            jsonlist.clear();
+
+            String radiusString = spinner.getSelectedItem().toString();
+
+            String radius = radiusString.split(" ")[0];     //from '0.5 mi' extract 0.5
+
+            if (locationEdit.getText().toString() != null) {
+                if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
+                    double lat = mLastLocation.getLatitude();
+                    double lon = mLastLocation.getLongitude();
+                    new ProgressTask(this).execute(lat + "," + lon, keyword, radius);
+                } else {
+                    new ProgressTask(this).execute(locationEdit.getText().toString(), keyword, radius);
+                }
+            } else {
+                Log.i("MainActivity","Location is null, so will resort to default location");
+                new ProgressTask(this).execute("Shadyside Pittsburgh PA", keyword, radius);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void onTabUnselected(android.app.ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
+    private class ProgressTask extends AsyncTask<String, Void, Boolean> {
+        private ProgressDialog dialog;
 
-    }
+        public ProgressTask(Activity activity) {
+            Log.i("1", "Calling");
+            context = activity;
+            dialog = new ProgressDialog(context);
+        }
 
-    @Override
-    public void onTabReselected(android.app.ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
+        public ProgressTask(ListActivity activity) {
 
+            Log.i("1", "Called");
+            context = activity;
+            dialog = new ProgressDialog(context);
+        }
+
+        private Context context;
+
+        protected void onPreExecute() {
+            this.dialog.setMessage("Progress start");
+            this.dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+        }
+
+        protected Boolean doInBackground(final String... args) {
+
+            VcJsonReader jParser = new VcJsonReader();
+
+            //String download_url = args[0];
+            String location = args[0];
+            String keyword = args[1];
+            String radius = args[2];
+
+            //Log.v("MainActivity","Download URL:\n"+download_url);
+
+            //JSONArray json = jParser.getJSONFromUrl(url);
+            String response = jParser.getJSONFromUrl(location,keyword,radius);
+
+
+            try {
+
+                JSONTokener tokener = new JSONTokener(response);
+                Log.v("MainActivity", "----- Tokens from JSON Parsing -------");
+                //while (tokener.more()) {
+                JSONObject responseObject = (JSONObject) tokener.nextValue();
+
+                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("table"));
+
+                JSONObject table = responseObject.getJSONObject("dishes");
+
+
+                /*
+                while (sub_tokener.more()) {
+                    JSONObject sub_response = (JSONObject) sub_tokener.nextValue();
+                    Log.v("MainActivity",sub_response.toString());
+                }*/
+
+                //  Log.v("MainActivity",responseObject.toString());
+                //}
+
+                //response = (JSONObject) new JSONTokener(resp).nextValue();
+
+                //get the result of restaurants
+                /*
+                JSONArray restaurants = table.getJSONObject("restaurants").getJSONArray("results");
+                Log.v("MainActivity","Downloaded Restaurants:\n"+restaurants);
+                */
+                JSONArray dishes = table.getJSONArray("results");
+
+                Log.v("MainActivity","Downloaded Dishes:\n"+dishes);
+                jsonlist.clear();
+
+                for (int i = 0; i < dishes.length(); i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+
+                    JSONObject dish = dishes.getJSONObject(i);
+
+                    map.put(dishname, dish.getString("name"));
+
+                    String restaurantName = dish.getJSONObject("restaurant").getString("name");
+
+                    String distance = dish.getJSONObject("restaurant").getJSONObject("distance").getString("string");
+                    //Log.v("MainActivity","distance: "+distance);
+                    if ((distance != null) && !distance.equals("")) {
+                        restaurantName += distance;
+                    }
+
+                    JSONArray tags = dish.getJSONArray("tags");
+                    //Log.v("mydish","mydish");
+                    //Log.v(dish.getString("name"), String.valueOf(tags.length()));
+                    String s[] = new String[3];
+
+                    for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
+                        s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
+                        Log.v("My Tags" + j, s[j]);
+                        map.put("Tag"+j,s[j]);
+                    }
+
+                    map.put(MainPagerActivity.location, restaurantName);
+
+                    map.put(description,dish.getString("description"));
+
+                    map.put("ID", dish.getString("id"));
+
+
+                    double avg_rating = dish.getJSONObject("rating").getDouble("avg");
+                    map.put(rating,""+avg_rating);
+
+                    ;
+                    String price =dish.getJSONObject("price").getString("dollars");
+
+                    if ((price == null) || price.equals("null"))
+                        map.put(fuel, "");
+                    else
+                        map.put(fuel,price);
+
+
+                    jsonlist.add(map);
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 
@@ -121,8 +359,11 @@ public class MainPagerActivity extends FragmentActivity implements android.app.A
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        ArrayList<HashMap<String, String>> adapterJsonlist;
+
+        public SectionsPagerAdapter(FragmentManager fm,ArrayList<HashMap<String, String>> jsonlist) {
             super(fm);
+            adapterJsonlist = jsonlist;
         }
 
         @Override
@@ -131,8 +372,9 @@ public class MainPagerActivity extends FragmentActivity implements android.app.A
             // Return a PlaceholderFragment (defined as a static inner class below).
             if(position == 0 || position ==1)
             {
-                MainFragment a = new MainFragment();        //choose what to display for which tag
-                return a;
+                TestFragment tf = new TestFragment();        //choose what to display for which tag
+                tf.setArrayList(adapterJsonlist);
+                return tf;
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }
@@ -189,6 +431,41 @@ public class MainPagerActivity extends FragmentActivity implements android.app.A
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.activity_pager, container, false);
             return rootView;
+        }
+    }
+
+    private class InputValidator implements TextWatcher {
+
+        public void afterTextChanged(Editable s) {
+            Log.v("The text is changed", "changed");
+            final String keyword_new = mEdit.getText().toString();
+
+            /* start an thread for auto complete */
+            Thread t = new Thread(new Runnable() {
+                String keyword_new_inner = keyword_new;
+                public void run() {
+                    VcJsonReader reader = new VcJsonReader();
+                    hint = reader.getAutoComplete(keyword_new_inner);
+                }
+            });
+
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e){}
+
+            ArrayAdapter adapter = new ArrayAdapter
+                    (context,android.R.layout.simple_list_item_1, hint);
+            mEdit.setAdapter(adapter);
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                                      int after) {
+
+        }
+        public void onTextChanged(CharSequence s, int start, int before,
+                                  int count) {
+
         }
     }
 
