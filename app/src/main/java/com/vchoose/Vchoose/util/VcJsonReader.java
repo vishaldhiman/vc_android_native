@@ -57,6 +57,7 @@ public class VcJsonReader {
     private String url_rating = URL_HOST+API_VER+"menu_items/";
     private String url_rating_rate = "/rate/";
     private String url_rating_format = "?format=json";
+    private String url_restaurant = URL_HOST+API_VER+"restaurants/";
 
     public String buildUrl(String location, String search_keyword, String rad) throws URISyntaxException {
         //String encoded_url = URLEncoder.encode(loc+location+"&"+keyword+search_keyword+"&"+radius+rad,"UTF-8");
@@ -170,13 +171,13 @@ public class VcJsonReader {
         return result;
     }
 
-    public ArrayList<String> getAutoComplete(String hint){
+    public ArrayList<String> getRestaurant(String rest_id){
         ArrayList<String> result = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
 
         try{
-            String url = Uri.encode(url_autocomplete+term+hint+"&"+count+"5"+"&format=json",ALLOWED_URI_CHARS);
+            String url = Uri.encode(url_restaurant+rest_id+"/details");
             HttpGet httpGet = new HttpGet(url);
             Log.v("URL",url);
 
@@ -272,4 +273,58 @@ public class VcJsonReader {
         return resp;
 
     }
+
+    public ArrayList<String> getAutoComplete(String hint){
+        ArrayList<String> result = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        HttpClient client = new DefaultHttpClient();
+
+        try{
+            String url = Uri.encode(url_autocomplete+term+hint+"&"+count+"5"+"&format=json",ALLOWED_URI_CHARS);
+            HttpGet httpGet = new HttpGet(url);
+            Log.v("URL",url);
+
+            HttpResponse response = client.execute(httpGet);
+
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            Log.v("statusCode",String.valueOf(statusCode));
+            if (statusCode == 200) {
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+            } else {
+                Log.e("Error....", "Failed to download file");
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONArray jsonArray = new JSONArray();
+
+        String resp = builder.toString();
+        try {
+            JSONTokener tokener;
+            tokener = new JSONTokener(resp);
+            jsonArray = new JSONArray(tokener);
+
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+                String object = jsonObject.getString("value");
+                Log.v("String"+i,object);
+                result.add(object);
+            }
+            //JSONObject responseObject = (JSONObject) tokener.nextValue();
+        } catch (JSONException e) {}
+
+
+        //this api is not working.
+        return result;
+    }
+
 }
