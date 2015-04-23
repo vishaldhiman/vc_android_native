@@ -63,6 +63,7 @@ public class TestFragment extends Fragment {
                 intent.putExtra("DishInfo", stringList);
                 intent.putExtra("Dish_id", dish_id);
                 intent.putExtra("Authentication", AuthenticationToken);
+                intent.putExtra("restaurant_id", dishes.get("restaurant_id"));
 
                 ArrayList<String> tagList = new ArrayList<String>();
                 for(int j = 0;  j < 3 ; j++) {

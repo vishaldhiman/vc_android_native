@@ -3,23 +3,17 @@ package com.vchoose.Vchoose;
 * This is the main container for all things
 * */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,16 +23,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.Spinner;
-import android.widget.TabHost;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,6 +38,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
 
 public class MainPagerActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -327,6 +320,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     map.put(description,dish.getString("description"));
 
                     map.put("ID", dish.getString("id"));
+                    map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
 
 
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
