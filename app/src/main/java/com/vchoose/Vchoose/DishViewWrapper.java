@@ -1,6 +1,7 @@
 package com.vchoose.Vchoose;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ public class DishViewWrapper {
     TextView vehicleColor=null;
     TextView fuel=null;
     TextView description = null;
+    ImageView dishImage = null;
 
     DishViewWrapper(View base) {
         this.base = base;
@@ -45,5 +47,12 @@ public class DishViewWrapper {
             description = (TextView)base.findViewById(R.id.description);
         }
         return(description);
+    }
+
+    ImageView getDishImage() {
+        if (dishImage==null) {
+            dishImage = (ImageView)base.findViewById(R.id.icon);
+        }
+        return(dishImage);
     }
 }

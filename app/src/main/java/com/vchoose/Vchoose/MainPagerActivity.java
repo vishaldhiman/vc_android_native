@@ -322,11 +322,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     map.put("ID", dish.getString("id"));
                     map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
 
+                    map.put("thumbnail",dish.getString("thumbnail"));
+
 
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
 
-                    ;
                     String price =dish.getJSONObject("price").getString("dollars");
 
                     if ((price == null) || price.equals("null"))

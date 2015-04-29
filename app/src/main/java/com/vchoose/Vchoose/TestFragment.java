@@ -1,21 +1,26 @@
 package com.vchoose.Vchoose;
 
-import android.support.v4.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls.SubmitRatings;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,6 +35,7 @@ public class TestFragment extends Fragment {
     private static final String fuel = "fuel";
     private static final String rating = "rating";
     private static final String description = "description";
+    private static final String thumbnail = "thumbnail";
 
     public static String AuthenticationToken;
 
@@ -167,7 +173,45 @@ public class TestFragment extends Fragment {
             rate.setTag(new Integer(position));
             rate.setRating(Float.parseFloat(cur_dish.get(rating)));
             wrapper.getDescription().setText(cur_dish.get(description));
+
+
+                String thumbnail_url = cur_dish.get(thumbnail);
+
+                if ((thumbnail_url != null) && (!thumbnail_url.equalsIgnoreCase("null"))) {
+                    //url = new URL("http://vchoose.us"+thumbnail_url);
+
+                    //Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    //wrapper.getDishImage().setImageBitmap(bmp);
+
+                    new DownloadImageTask(wrapper.getDishImage()).execute("http://vchoose.us"+thumbnail_url);
+                }
+
             return(row);
+        }
+    }
+
+    class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }
