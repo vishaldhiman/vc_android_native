@@ -27,7 +27,7 @@ import java.util.HashMap;
 /**
  * This fragment is to show the search result
  */
-public class TestFragment extends Fragment {
+public class DishesListFragment extends Fragment {
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
     ListView myList;
     private static final String dishname = "vehicleType";
@@ -213,5 +213,9 @@ public class TestFragment extends Fragment {
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    public void setAuthenticationToken(String authenticationToken) {
+        AuthenticationToken = authenticationToken;
     }
 }

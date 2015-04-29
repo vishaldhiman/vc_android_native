@@ -3,7 +3,6 @@ package com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls;
 import android.app.Activity;
 import android.os.AsyncTask;
 
-import com.vchoose.Vchoose.MainActivity;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 /**

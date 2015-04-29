@@ -19,7 +19,7 @@
     <string name="title_activity_dish_info">DishInfo</string>
     <string name="title_activity_customization">Customization</string>
     <string name="title_activity_login">Login</string>
-    <string name="title_activity_pager">PagerActivity</string>
+    <string name="title_activity_pager">VChoose</string>
 
     <string name="title_section1">Dishes</string>
     <string name="title_section2">Restaurant</string>

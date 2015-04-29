@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -60,6 +62,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     private static final String rating = "rating";
     private static final String description = "description";
 
+    public static String AuthenticationToken = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -96,12 +99,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 R.array.radius_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doSearch();
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),jsonlist);
-                mViewPager.setAdapter(mSectionsPagerAdapter);
             }
         });
         buildGoogleApiClient();
@@ -111,9 +113,6 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         // Set up the ViewPager with the sections adapter.
-
-
-
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -156,6 +155,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if(id == R.id.login) {
+            Intent intent = new Intent(this,Login.class);
+            startActivityForResult(intent, 1);
         }
 
         return super.onOptionsItemSelected(item);
@@ -238,6 +242,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
+
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),jsonlist);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+            mViewPager.setCurrentItem(1);
+
             //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
         }
 
@@ -365,14 +374,19 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if(position == 0 || position ==1)
+            if(position ==1)
             {
-                TestFragment tf = new TestFragment();        //choose what to display for which tag
+                DishesListFragment tf = new DishesListFragment();        //choose what to display for which tag
                 tf.setArrayList(adapterJsonlist);
+                tf.setAuthenticationToken(AuthenticationToken);
                 return tf;
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }
+        }
+
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -386,9 +400,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1);//.toUpperCase(l);
-                case 1:
                     return getString(R.string.title_section2);//.toUpperCase(l);
+                case 1:
+                    return getString(R.string.title_section1);//.toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3);//.toUpperCase(l);
             }
@@ -464,4 +478,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            this.AuthenticationToken = data.getStringExtra("AuthenticationToken");
+            Log.v("AuthenticationToken",this.AuthenticationToken);
+        }
+    }
 }

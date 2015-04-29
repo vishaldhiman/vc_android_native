@@ -8,19 +8,17 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -44,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MainActivity_Not_used extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private Context context;
     private static String url = "http://docs.blackberry.com/sampledata.json";
@@ -63,8 +61,6 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
     RatingBar ratingBar;
-    ListView myList;
-    Button searchButton;
 
     RatingAdapter ratingAdapter;
 
@@ -72,37 +68,32 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_main_gridlayout, container, false);
-        mEdit   = (AutoCompleteTextView)v.findViewById(R.id.editText);
-        locationEdit = (EditText)v.findViewById(R.id.editTextLocation);
-        ratingBar = (RatingBar)v.findViewById(R.id.ratingBar);
-        spinner = (Spinner) v.findViewById(R.id.spinner);
-        myList=(ListView)v.findViewById(android.R.id.list);
-        searchButton = (Button)v.findViewById(R.id.searchButton);
-        context = getActivity();
-
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_gridlayout);
+        mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
+        context = this;
         mEdit.addTextChangedListener(new InputValidator());
+        locationEdit = (EditText)findViewById(R.id.editTextLocation);
+        ratingBar = (RatingBar)findViewById(R.id.ratingBar);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
+        Log.i("MyActivity","inside onCreate");
+        //new ProgressTask(MainActivity.this).execute();
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.radius_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doSearch();
-            }
-        });
 
         buildGoogleApiClient();
         mGoogleApiClient.connect();
         Log.v("GoogleApiClient",String.valueOf(mGoogleApiClient.isConnected()));
-        return v;
+
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -130,15 +121,36 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
             mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
         }*/
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-    public void doSearch() {
+    public void checkDish(View view) {
+        Intent intent = new Intent(this, DishInfo.class);
+        TextView tv = (TextView)view.findViewById(R.id.Dish_name);
+        TextView tv2 = (TextView)view.findViewById(R.id.description);
+        //DishInfo.DIS=tv2.getText().toString();
+        //DishInfo.NAME=tv.getText().toString();
+        ArrayList<String> stringList = new ArrayList<String>();
+        stringList.add(tv.getText().toString());
+        stringList.add(tv2.getText().toString());
+        //intent.putExtra(DishInfo.DIS, tv2.getText());
+        intent.putExtra("DishInfo", stringList);
+        //intent.putStringArrayListExtra("ListString", stringList);
+        startActivity(intent);
+    }
+
+    public void doSearch(View view) {
         String keyword = mEdit.getText().toString();
         Log.i("MyActivity","inside doSearch");
         Log.v("MyActivity","inside doSearch. keyword: "+keyword);
         //this.me
 
         if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(context)
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
@@ -167,13 +179,13 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
                 if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
                     double lat = mLastLocation.getLatitude();
                     double lon = mLastLocation.getLongitude();
-                    new ProgressTask(getActivity()).execute(lat + "," + lon, keyword, radius);
+                    new ProgressTask(MainActivity_Not_used.this).execute(lat + "," + lon, keyword, radius);
                 } else {
-                    new ProgressTask(getActivity()).execute(locationEdit.getText().toString(), keyword, radius);
+                    new ProgressTask(MainActivity_Not_used.this).execute(locationEdit.getText().toString(), keyword, radius);
                 }
             } else {
                 Log.i("MainActivity","Location is null, so will resort to default location");
-                new ProgressTask(getActivity()).execute("Shadyside Pittsburgh PA", keyword, radius);
+                new ProgressTask(MainActivity_Not_used.this).execute("Shadyside Pittsburgh PA", keyword, radius);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,7 +205,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
         }
 
         if(id == R.id.login) {
-            Intent intent = new Intent(getActivity(),Login.class);
+            Intent intent = new Intent(this,Login.class);
             startActivityForResult(intent, 1);
         }
 
@@ -233,7 +245,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
             RatingAdapter adapter = new RatingAdapter(jsonlist);
             ratingAdapter = adapter;
 
-
+            ListView myList=(ListView)findViewById(android.R.id.list);
 
             myList.setAdapter(adapter);
 
@@ -341,11 +353,12 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
                         map.put("Tag"+j,s[j]);
                     }
 
-                    map.put(MainFragment.location, restaurantName);
+                    map.put(MainActivity_Not_used.location, restaurantName);
 
                     map.put(description,dish.getString("description"));
 
                     map.put("ID", dish.getString("id"));
+                    map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
 
 
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
@@ -408,7 +421,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
         ArrayList<HashMap<String, String>> jsonlist;
 
         RatingAdapter(ArrayList list) {
-            super(getActivity(), R.layout.list_activity, list);
+            super(MainActivity_Not_used.this, R.layout.list_activity, list);
             jsonlist = list;
         }
 
@@ -425,7 +438,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
             final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
 
             /*if (row==null)*/ {
-                LayoutInflater inflater=getActivity().getLayoutInflater();
+                LayoutInflater inflater=getLayoutInflater();
                 row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
 
                 {
@@ -472,7 +485,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
                                   //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
 
                                   //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
-                                  new SubmitRatings(getActivity()).execute(cur_dish.get("ID"),String.valueOf(rating));
+                                  new SubmitRatings(MainActivity_Not_used.this).execute(cur_dish.get("ID"),String.valueOf(rating));
 
                                   //the Rating is stored here
                               }
@@ -550,7 +563,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             this.AuthenticationToken = data.getStringExtra("AuthenticationToken");
