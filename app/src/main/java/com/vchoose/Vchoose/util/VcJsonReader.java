@@ -77,7 +77,7 @@ public class VcJsonReader {
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 /*hard coded for testing*/
-                nameValuePairs.add(new BasicNameValuePair("email", "867136922@qq.com"));
+                nameValuePairs.add(new BasicNameValuePair("email", "867136922@qq.com"));    //hard coded for testing
                 nameValuePairs.add(new BasicNameValuePair("password", "ty113113"));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
@@ -106,7 +106,7 @@ public class VcJsonReader {
         return resp;
     }
 
-    public boolean submitRatingForDish(int menu_item_id, int rating) {
+    public boolean submitRatingForDish(int menu_item_id, int rating, String authentication_token) {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         boolean result = false;
@@ -118,13 +118,14 @@ public class VcJsonReader {
             HttpGet httpGet = new HttpGet(url);
             Log.v("URL",url);
 
-            //httpPost.setHeader("authentication_token");
+            httpPost.setHeader("authentication_token", authentication_token);
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
 
             //HttpResponse response = client.execute(httpGet);
             HttpResponse response = client.execute(httpPost);
+            //Log.v("the rating request",httpPost.toString());
 
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();

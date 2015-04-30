@@ -4,9 +4,11 @@ package com.vchoose.Vchoose;
 * */
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -15,7 +17,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -62,7 +63,15 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     private static final String rating = "rating";
     private static final String description = "description";
 
-    public static String AuthenticationToken = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
+    private static final String restaurantName = "name";
+    private static final String restaurantLocation = "location";
+    private static final String restaurantDistance = "distance";
+    private static final String restaurantRating = "rating";
+    private static final String restaurantDescription = "description";
+    private static final String restaurantPhone = "phone";
+    private static final String getRestaurantRatingImageUrl = "ratingImage";
+
+    public static String AuthenticationToken;// = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -74,7 +83,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     Spinner spinner;
     Button searchButton;
     ArrayList<String> hint = new ArrayList<String>();
-    ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<HashMap<String, String>>();
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -191,7 +202,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             //String json_url = buildUrl("Highland Park, Pittsburgh", keyword, "3");
 
             //clear the data before downloading again
-            jsonlist.clear();
+            dishJsonlist.clear();
 
             String radiusString = spinner.getSelectedItem().toString();
 
@@ -243,11 +254,15 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 dialog.dismiss();
             }
 
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),jsonlist);
-            mViewPager.setAdapter(mSectionsPagerAdapter);
-            mViewPager.setCurrentItem(1);
+            if(mSectionsPagerAdapter == null) {
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist);
+                mViewPager.setAdapter(mSectionsPagerAdapter);
+                mViewPager.setCurrentItem(1);
+            } else {
+                mSectionsPagerAdapter.notifyDataSetChanged();
+            }
 
-            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+            //ListAdapter adapter = new SimpleAdapter(context, dishJsonlist, R.layout.dish_list_componet, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
         }
 
         protected Boolean doInBackground(final String... args) {
@@ -272,10 +287,10 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 //while (tokener.more()) {
                 JSONObject responseObject = (JSONObject) tokener.nextValue();
 
-                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("table"));
+                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("dishTable"));
 
-                JSONObject table = responseObject.getJSONObject("dishes");
-
+                JSONObject dishTable = responseObject.getJSONObject("dishes");
+                JSONObject restaurantTable = responseObject.getJSONObject("restaurants");
 
                 /*
                 while (sub_tokener.more()) {
@@ -290,13 +305,15 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                 //get the result of restaurants
                 /*
-                JSONArray restaurants = table.getJSONObject("restaurants").getJSONArray("results");
+                JSONArray restaurants = dishTable.getJSONObject("restaurants").getJSONArray("results");
                 Log.v("MainActivity","Downloaded Restaurants:\n"+restaurants);
                 */
-                JSONArray dishes = table.getJSONArray("results");
+                JSONArray dishes = dishTable.getJSONArray("results");
+                JSONArray restaurants = restaurantTable.getJSONArray("results");
 
                 Log.v("MainActivity","Downloaded Dishes:\n"+dishes);
-                jsonlist.clear();
+                dishJsonlist.clear();
+                restaurantJsonlist.clear();
 
                 for (int i = 0; i < dishes.length(); i++) {
                     HashMap<String, String> map = new HashMap<String, String>();
@@ -344,11 +361,40 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     else
                         map.put(fuel,price);
 
-
-                    jsonlist.add(map);
+                    dishJsonlist.add(map);
                 }
 
+                Log.v("restaurants.length()", String.valueOf(restaurants.length()));
 
+                for (int i = 0; i < restaurants.length(); i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+
+                    JSONObject restaurant = restaurants.getJSONObject(i);
+
+                    map.put(restaurantName, restaurant.getString("name"));
+                    map.put(restaurantPhone, restaurant.getString("phone"));
+                    map.put(restaurantLocation, restaurant.getJSONObject("location").getString("full_address"));
+
+                    String distance = restaurant.getJSONObject("distance").getString("string");
+                    map.put(restaurantDistance, distance);
+
+                    String avg_rating = restaurant.getJSONObject("rating").getJSONObject("yelp").getString("avg");
+                    map.put(restaurantRating,avg_rating);
+
+                    String url = restaurant.getJSONObject("rating").getJSONObject("yelp").getJSONObject("meta").getString("rating_img_url");
+                    map.put(getRestaurantRatingImageUrl,url);
+
+                    JSONArray tags = restaurant.getJSONArray("tags");
+                    String s[] = new String[3];
+
+                    for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
+                        s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
+                        Log.v("My Tags" + j, s[j]);
+                        map.put("Tag"+j,s[j]);
+                    }
+
+                    restaurantJsonlist.add(map);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -363,22 +409,27 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        ArrayList<HashMap<String, String>> adapterJsonlist;
+        ArrayList<HashMap<String, String>> adapterDishJsonlist;
+        ArrayList<HashMap<String, String>> adapterRestaurantJsonlist;
 
-        public SectionsPagerAdapter(FragmentManager fm,ArrayList<HashMap<String, String>> jsonlist) {
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<HashMap<String, String>> jsonlist2) {
             super(fm);
-            adapterJsonlist = jsonlist;
+            adapterDishJsonlist = jsonlist;
+            adapterRestaurantJsonlist = jsonlist2;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if(position ==1)
-            {
+            if(position == 1) {
                 DishesListFragment tf = new DishesListFragment();        //choose what to display for which tag
-                tf.setArrayList(adapterJsonlist);
+                tf.setArrayList(adapterDishJsonlist);
                 tf.setAuthenticationToken(AuthenticationToken);
+                return tf;
+            } else if(position == 0) {
+                RestaurantListFragment tf = new RestaurantListFragment();
+                tf.setArrayList(adapterRestaurantJsonlist);
                 return tf;
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
@@ -483,7 +534,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             this.AuthenticationToken = data.getStringExtra("AuthenticationToken");
-            Log.v("AuthenticationToken",this.AuthenticationToken);
+            Log.v("AuthenticationToken", this.AuthenticationToken);
         }
     }
 }

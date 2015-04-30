@@ -240,7 +240,7 @@ public class MainActivity_Not_used extends Activity implements ConnectionCallbac
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+            //ListAdapter adapter = new SimpleAdapter(context, dishJsonlist, R.layout.dish_list_componet, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
 
             RatingAdapter adapter = new RatingAdapter(jsonlist);
             ratingAdapter = adapter;
@@ -400,7 +400,7 @@ public class MainActivity_Not_used extends Activity implements ConnectionCallbac
                     map.put(fuel, vfuel);
 
 
-                    jsonlist.add(map);
+                    dishJsonlist.add(map);
                 } catch (JSONException e)
                 {
                     e.printStackTrace();
@@ -421,7 +421,7 @@ public class MainActivity_Not_used extends Activity implements ConnectionCallbac
         ArrayList<HashMap<String, String>> jsonlist;
 
         RatingAdapter(ArrayList list) {
-            super(MainActivity_Not_used.this, R.layout.list_activity, list);
+            super(MainActivity_Not_used.this, R.layout.dish_list_componet, list);
             jsonlist = list;
         }
 
@@ -439,7 +439,7 @@ public class MainActivity_Not_used extends Activity implements ConnectionCallbac
 
             /*if (row==null)*/ {
                 LayoutInflater inflater=getLayoutInflater();
-                row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
+                row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
 
                 {
                     tag1 = (TextView)row.findViewById(R.id.tag1);

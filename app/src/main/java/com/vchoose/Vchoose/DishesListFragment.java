@@ -1,5 +1,7 @@
 package com.vchoose.Vchoose;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,12 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls.SubmitRatings;
+import com.vchoose.Vchoose.util.VcJsonReader;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,7 +48,6 @@ public class DishesListFragment extends Fragment {
     private static final String thumbnail = "thumbnail";
 
     public static String AuthenticationToken;
-
 
     public void setArrayList(ArrayList<HashMap<String, String>> jsonlist ) {
         this.jsonlist = jsonlist;
@@ -88,7 +97,7 @@ public class DishesListFragment extends Fragment {
         ArrayList<HashMap<String, String>> jsonlist;
 
         RatingAdapter(ArrayList list) {
-            super(getActivity(), R.layout.list_activity, list);
+            super(getActivity(), R.layout.dish_list_componet, list);
             jsonlist = list;
         }
 
@@ -97,16 +106,27 @@ public class DishesListFragment extends Fragment {
             View row=convertView;
             //ViewWrapper wrapper;
             DishViewWrapper wrapper;
-            RatingBar rate;
+            final RatingBar rate;
             TextView tag1;
             TextView tag2;
             TextView tag3;
+            final Float ratingFloat;
 
             final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
 
             /*if (row==null)*/ {
                 LayoutInflater inflater=getActivity().getLayoutInflater();
-                row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
+                row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
+
+                wrapper=new DishViewWrapper(row);
+                row.setTag(wrapper);
+                rate=wrapper.getRatingBar();
+                ratingFloat = Float.parseFloat(cur_dish.get(rating));
+                wrapper.getVehicleType().setText(cur_dish.get(dishname));
+                wrapper.getVehicleColor().setText(cur_dish.get(location));
+                rate.setTag(new Integer(position));
+                rate.setRating(ratingFloat);
+                wrapper.getDescription().setText(cur_dish.get(description));
 
                 {
                     tag1 = (TextView)row.findViewById(R.id.tag1);
@@ -136,28 +156,30 @@ public class DishesListFragment extends Fragment {
                     else
                         tag1.setVisibility(View.GONE);
                 }
-                wrapper=new DishViewWrapper(row);
-                row.setTag(wrapper);
-                rate=wrapper.getRatingBar();
                 rate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                                                       @Override
                                                       public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                          if(fromUser) {
-                              Log.v("Rating Bar changed", String.valueOf(rating));
-                              Log.v("The dish of Rating bar", String.valueOf(position));
-                              Log.v("ID", cur_dish.get("ID"));
+                            if(fromUser) {
+                                Log.v("Rating Bar changed", String.valueOf(rating));
+                                Log.v("The dish of Rating bar", String.valueOf(position));
+                                Log.v("ID", cur_dish.get("ID"));
 
-                              //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
+                                //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
 
-                              //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
+                                //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
 
-                              //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
-                              new SubmitRatings(getActivity()).execute(cur_dish.get("ID"),String.valueOf(rating));
-
-                              //the Rating is stored here
-                          }
-                      }
-                  }
+                                //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
+                                if(AuthenticationToken == null) {
+                                    loginBlock();
+                                    rate.setRating(ratingFloat);
+                                } else {
+                                    ratingBlock(cur_dish, rating, AuthenticationToken);
+                                    //new SubmitRatings(getActivity()).execute(cur_dish.get("ID"), String.valueOf(rating), AuthenticationToken);
+                                }
+                                //the Rating is stored here
+                            }
+                        }
+                    }
                 );
             }/*
             else {
@@ -167,13 +189,6 @@ public class DishesListFragment extends Fragment {
             */
 
             //RowModel model=getModel(position);
-
-            wrapper.getVehicleType().setText(cur_dish.get(dishname));
-            wrapper.getVehicleColor().setText(cur_dish.get(location));
-            rate.setTag(new Integer(position));
-            rate.setRating(Float.parseFloat(cur_dish.get(rating)));
-            wrapper.getDescription().setText(cur_dish.get(description));
-
 
                 String thumbnail_url = cur_dish.get(thumbnail);
 
@@ -217,5 +232,92 @@ public class DishesListFragment extends Fragment {
 
     public void setAuthenticationToken(String authenticationToken) {
         AuthenticationToken = authenticationToken;
+    }
+
+    private void ratingBlock(HashMap<String, String> dish_data, float rate, String AuthenticationToken) {
+        final HashMap<String, String> dish = dish_data;
+        final String auth = AuthenticationToken;
+        final float rating = rate;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Rating a dish");
+        builder.setMessage("Rate dish " + dish.get(dishname) + " for " + rate + " points?");
+
+        // Set up the buttons
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new SubmitRatings(getActivity()).execute(dish.get("ID"), String.valueOf(rating), auth);
+                Toast toast = Toast.makeText(getActivity(), "Rating Submitted", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void loginBlock() {
+        final String POPUP_LOGIN_TITLE="Sign In";
+        final String POPUP_LOGIN_TEXT="Please fill in your credentials";
+        final String EMAIL_HINT="--Email--";
+        final String PASSWORD_HINT="--Password--";
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+        alert.setTitle(POPUP_LOGIN_TITLE);
+        alert.setMessage(POPUP_LOGIN_TEXT);
+
+        // Set an EditText view to get user input
+        final EditText email = new EditText(getActivity());
+        email.setHint(EMAIL_HINT);
+        final EditText password = new EditText(getActivity());
+        password.setHint(PASSWORD_HINT);
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(email);
+        layout.addView(password);
+        alert.setView(layout);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Thread t = new Thread(new Runnable() {
+                    public void run() {
+                    post(email.getText().toString(), password.getText().toString());
+                    }
+                });
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e){}
+                Toast toast = Toast.makeText(getActivity(), "Log in success", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
+
+    public void post(String email, String password) {
+        VcJsonReader jParser = new VcJsonReader();
+        String response = jParser.login(email,password);
+        JSONTokener tokener = new JSONTokener(response);
+        try {
+            JSONObject responseObject = (JSONObject) tokener.nextValue();
+            AuthenticationToken = responseObject.getString("auth_token");
+            Log.v("Login success", AuthenticationToken);
+            MainPagerActivity.AuthenticationToken = AuthenticationToken;
+        } catch(JSONException e) {}
     }
 }
