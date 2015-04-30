@@ -257,6 +257,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
             if(mSectionsPagerAdapter == null) {
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist, mapMarkers);
+                Log.v("restaurantJsonlist",String.valueOf(restaurantJsonlist.size()));
                 mViewPager.setAdapter(mSectionsPagerAdapter);
                 mViewPager.setCurrentItem(1);
             } else {
@@ -382,8 +383,13 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     String avg_rating = restaurant.getJSONObject("rating").getJSONObject("yelp").getString("avg");
                     map.put(restaurantRating,avg_rating);
 
-                    String url = restaurant.getJSONObject("rating").getJSONObject("yelp").getJSONObject("meta").getString("rating_img_url");
-                    map.put(getRestaurantRatingImageUrl,url);
+
+                    if(!restaurant.getJSONObject("rating").getJSONObject("yelp").get("meta").toString().equals("null")){
+                        Log.v("meta",restaurant.getJSONObject("rating").getJSONObject("yelp").get("meta").toString());
+                        JSONObject meta = restaurant.getJSONObject("rating").getJSONObject("yelp").getJSONObject("meta");
+                        String url = meta.getString("rating_img_url");
+                        map.put(getRestaurantRatingImageUrl, url);
+                    }
 
                     JSONArray tags = restaurant.getJSONArray("tags");
                     String s[] = new String[3];
