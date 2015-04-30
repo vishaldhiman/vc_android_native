@@ -42,6 +42,10 @@
             android:label="@string/title_activity_login" >
         </activity>
         <activity
+            android:name=".RestaurantInfo"
+            android:label="@string/title_activity_pager" >
+        </activity>
+        <activity
             android:name=".MainPagerActivity"
             android:label="@string/title_activity_pager"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar">

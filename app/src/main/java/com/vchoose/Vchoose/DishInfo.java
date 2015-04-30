@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -36,6 +37,7 @@ public class DishInfo extends ActionBarActivity {
     public static String DIS = "";
     private String Authentication;
     private String dish_id;
+    private String restaurant_id;
     private String url_tag = "http://vchoose.us/tag_assignments.json";
 
     private TextView tag1;
@@ -52,19 +54,22 @@ public class DishInfo extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         ArrayList<String> stringList = extras.getStringArrayList("DishInfo");
         Authentication = extras.getString("Authentication");
+        restaurant_id = extras.getString("restaurant_id");
         //Authentication = "hG4T5oT96uwzDYbxpnST";      //for test
         dish_id = extras.getString("Dish_id");
         ArrayList<String> tagList = extras.getStringArrayList("tagList");
 
         TextView textview = (TextView)findViewById(R.id.DishName);
-        TextView textview2=(TextView)findViewById(R.id.DishPhone);
+        //TextView textview2=(TextView)findViewById(R.id.DishPhone);
+        Button restaurantName = (Button)findViewById(R.id.go_to_restaurant);
         TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
         tag1 = (TextView)findViewById(R.id.tag_info1);
         tag2 = (TextView)findViewById(R.id.tag_info2);
         tag3 = (TextView)findViewById(R.id.tag_info3);
 
         textview.setText(stringList.get(0));
-        textview2.setText(stringList.get(2));
+        //textview2.setText(stringList.get(2));
+        restaurantName.setText(stringList.get(2));
         textview3.setText(stringList.get(1));
         textview3.setMovementMethod(new ScrollingMovementMethod());
 
@@ -73,6 +78,16 @@ public class DishInfo extends ActionBarActivity {
         tag[1] = tagList.get(1);
         tag[2] = tagList.get(2);
         tagDisplay(tag);
+
+        restaurantName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //finish();
+                Intent intent = new Intent(getApplicationContext(),RestaurantInfo.class);
+                intent.putExtra("restaurant_id",restaurant_id);
+                startActivity(intent);
+            }
+        });
     }
 
     private void tagDisplay(String[] s) {

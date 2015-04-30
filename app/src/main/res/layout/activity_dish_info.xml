@@ -16,25 +16,36 @@
             android:text="Name"
             android:id="@+id/DishName"
             android:layout_alignParentTop="true"/>
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
             android:layout_height="wrap_content"
-            android:text="Phone"
-            android:maxWidth="200dp"
-            android:id="@+id/DishPhone"
-            android:textSize="15dp"
-            android:textColor="#ff000000"
+            android:layout_width="wrap_content"
+            android:id="@+id/restruant_holder"
             android:layout_below="@+id/DishName"
-            android:layout_alignParentStart="true" />
-
+            android:layout_alignParentStart="true"
+            android:orientation="vertical">
+            <!--TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone"
+                android:maxWidth="200dp"
+                android:id="@+id/DishPhone"
+                android:textSize="24dp"
+                android:textColor="#ff000000"
+                 /-->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/go_to_restaurant"
+                android:textSize="20dp"
+                android:text="GO IN"/>
+        </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Medium  sfdsasdfsdddddddddddddddddddddddddddd"
             android:id="@+id/DishDiscribe"
-            android:layout_below="@id/DishPhone"
+            android:layout_below="@id/restruant_holder"
             android:layout_above="@+id/LinearTag"
             android:textSize="25dp"
             android:maxLines = "20"
