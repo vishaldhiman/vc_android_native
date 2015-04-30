@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.util.Pair;
 
@@ -81,7 +82,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
-    Button searchButton;
+    ImageButton searchButton;
     ArrayList<String> hint = new ArrayList<String>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<HashMap<String, String>>();
     ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<HashMap<String, String>>();
@@ -102,7 +103,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
-        searchButton = (Button)findViewById(R.id.searchButton);
+        searchButton = (ImageButton)findViewById(R.id.searchButton);
         context = this;
 
         mEdit.addTextChangedListener(new InputValidator());
@@ -349,6 +350,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                     map.put("ID", dish.getString("id"));
                     map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
+                    map.put("restaurant_name", dish.getJSONObject("restaurant").getString("name"));
+                    map.put("restaurant_phone", dish.getJSONObject("restaurant").getString("phone"));
+                    map.put("restaurant_location", dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
 
                     map.put("thumbnail",dish.getString("thumbnail"));
 
