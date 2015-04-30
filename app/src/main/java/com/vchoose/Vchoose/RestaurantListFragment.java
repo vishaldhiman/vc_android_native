@@ -124,6 +124,11 @@ public class RestaurantListFragment extends Fragment {
                         startActivity(browserIntent);
                     }
                 });
+            } else {
+                    //clear out the Yelp Logo since we do not have Yelp information for this restaurant
+                ImageView yelp_logo = (ImageView) row.findViewById(R.id.sign);
+                yelp_logo.invalidate();
+                yelp_logo.setImageBitmap(null);
             }
             return(row);
         }
