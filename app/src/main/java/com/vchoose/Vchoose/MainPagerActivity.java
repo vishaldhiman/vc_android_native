@@ -388,7 +388,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                         Log.v("meta",restaurant.getJSONObject("rating").getJSONObject("yelp").get("meta").toString());
                         JSONObject meta = restaurant.getJSONObject("rating").getJSONObject("yelp").getJSONObject("meta");
                         String url = meta.getString("rating_img_url");
+                        String yelp_mobile_url = meta.getString("mobile_url");
                         map.put(getRestaurantRatingImageUrl, url);
+                        map.put("yelp_mobile_url",yelp_mobile_url);
                     }
 
                     JSONArray tags = restaurant.getJSONArray("tags");
@@ -484,11 +486,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section2);//.toUpperCase(l);
+                    return "Restaurants("+adapterRestaurantJsonlist.size()+")";//.toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section1);//.toUpperCase(l);
+                    return "Dishes("+adapterDishJsonlist.size()+")";//.toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section3);//.toUpperCase(l);
+                    return "Map("+mapMarkers.size()+")";//.toUpperCase(l);
             }
             return null;
         }

@@ -46,6 +46,7 @@ public class DishesListFragment extends Fragment {
     private static final String rating = "rating";
     private static final String description = "description";
     private static final String thumbnail = "thumbnail";
+    private static View v;
 
     public static String AuthenticationToken;
 
@@ -55,7 +56,14 @@ public class DishesListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.mylist_fragment, container, false);
+        v = inflater.inflate(R.layout.mylist_fragment, container, false);
+
+        if (v != null) {
+            ViewGroup parent = (ViewGroup) v.getParent();
+            if (parent != null)
+                parent.removeView(v);
+        }
+
         myList=(ListView)v.findViewById(android.R.id.list);
         RatingAdapter adapter = new RatingAdapter(jsonlist);
 
