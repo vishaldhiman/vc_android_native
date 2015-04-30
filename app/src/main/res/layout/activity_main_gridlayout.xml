@@ -43,13 +43,17 @@
                     android:text="Near Me      "/>
             </LinearLayout>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+
+            <ImageButton
+                android:src="@drawable/search"
+                android:layout_width="69dp"
+                android:layout_height="68dp"
                 android:text="Search"
                 android:id="@+id/searchButton"
                 android:layout_row="0"
-                android:layout_column="2" />
+                android:layout_column="2"
+                android:scaleType="fitXY"
+                />
 
             <Spinner
                 android:layout_width="80dp"
@@ -66,4 +70,5 @@
                 android:layout_row="3"
                 android:layout_column="0" />
         </GridLayout>
+
     </LinearLayout>
