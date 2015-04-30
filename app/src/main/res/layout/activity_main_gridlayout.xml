@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
         android:layout_width="match_parent" android:layout_height="match_parent">
 
         <GridLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:background="#ff1a7420"
+            android:layout_weight="0.9"
             android:columnCount="3">
 
             <LinearLayout
@@ -70,5 +72,14 @@
                 android:layout_row="3"
                 android:layout_column="0" />
         </GridLayout>
-
+    <TextView
+        android:id="@+id/txtLink"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="Privacy Policy"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="#00ff00"
+        android:layout_weight="0.1"
+        android:autoLink="all" />
     </LinearLayout>
