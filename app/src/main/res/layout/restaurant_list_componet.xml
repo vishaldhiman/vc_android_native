@@ -38,6 +38,15 @@
             android:text="Description: ">
         </TextView>
 
+        <TextView
+            android:id="@+id/phoneNumber"
+            android:textColor="#ff000000"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="2dip"
+            android:text="Ph: ">
+        </TextView>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

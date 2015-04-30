@@ -421,6 +421,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                         LatLng latLng = new LatLng(jsonMapMarker.getDouble("lat"),jsonMapMarker.getDouble("lng"));
                         String restaurantName = jsonMapMarker.getString("infowindow");
 
+                        if (restaurantName != null) {
+                            restaurantName = restaurantName.replaceAll("<h3>", "");
+                            restaurantName = restaurantName.replaceAll("</h3>", "");
+                            restaurantName = restaurantName.trim();
+                        }
+
                         pair = new Pair<>(restaurantName,latLng);
                     } catch (Exception e) {
                         e.printStackTrace();

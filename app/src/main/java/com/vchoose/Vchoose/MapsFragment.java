@@ -87,7 +87,7 @@ public class MapsFragment extends Fragment {
                 //map.moveCamera(CameraUpdateFactory.newLatLngZoom(HAMBURG, 15));
 
                 // Zoom in, animating the camera.
-                map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+                map.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
 
         } catch (InflateException ie) {
             // map is already there
