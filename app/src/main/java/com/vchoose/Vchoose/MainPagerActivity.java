@@ -4,11 +4,9 @@ package com.vchoose.Vchoose;
 * */
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -31,10 +29,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.util.Pair;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONArray;
@@ -85,6 +85,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     ArrayList<String> hint = new ArrayList<String>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<HashMap<String, String>>();
     ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<Pair<String, LatLng>> mapMarkers = new ArrayList<Pair<String, LatLng>>();
 
 
     /**
@@ -255,7 +256,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             }
 
             if(mSectionsPagerAdapter == null) {
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist);
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist, mapMarkers);
                 mViewPager.setAdapter(mSectionsPagerAdapter);
                 mViewPager.setCurrentItem(1);
             } else {
@@ -395,6 +396,26 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                     restaurantJsonlist.add(map);
                 }
+
+                if (mapMarkers != null)
+                    mapMarkers.clear();
+
+                JSONArray jsonMapMarkers = responseObject.getJSONArray("map_markers");
+                for (int i = 0; i < jsonMapMarkers.length(); i++) {
+                    JSONObject jsonMapMarker = jsonMapMarkers.getJSONObject(i);
+
+                    Pair<String, LatLng> pair = null;
+                    try {
+                        LatLng latLng = new LatLng(jsonMapMarker.getDouble("lat"),jsonMapMarker.getDouble("lng"));
+                        String restaurantName = jsonMapMarker.getString("infowindow");
+
+                        pair = new Pair<>(restaurantName,latLng);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    mapMarkers.add(pair);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -411,11 +432,13 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
         ArrayList<HashMap<String, String>> adapterDishJsonlist;
         ArrayList<HashMap<String, String>> adapterRestaurantJsonlist;
+        ArrayList<Pair<String, LatLng>> mapMarkers;
 
-        public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<HashMap<String, String>> jsonlist2) {
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<HashMap<String, String>> jsonlist2, ArrayList<Pair<String, LatLng>> mMarkers) {
             super(fm);
             adapterDishJsonlist = jsonlist;
             adapterRestaurantJsonlist = jsonlist2;
+            mapMarkers = mMarkers;
         }
 
         @Override
@@ -431,6 +454,10 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 RestaurantListFragment tf = new RestaurantListFragment();
                 tf.setArrayList(adapterRestaurantJsonlist);
                 return tf;
+            } else if (position == 2) {
+                MapsFragment mapsFragment = new MapsFragment();
+                mapsFragment.setMapMarkers(mapMarkers);
+                return mapsFragment;
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }

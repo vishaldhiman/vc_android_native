@@ -177,7 +177,7 @@ public class VcJsonReader {
         HttpClient client = new DefaultHttpClient();
 
         try{
-            String url = Uri.encode(url_autocomplete+term+hint+"&"+count+"5"+"&format=json",ALLOWED_URI_CHARS);
+            String url = Uri.encode(url_autocomplete+term+hint+"&"+count+"7"+"&format=json",ALLOWED_URI_CHARS);
             HttpGet httpGet = new HttpGet(url);
             Log.v("URL",url);
 
