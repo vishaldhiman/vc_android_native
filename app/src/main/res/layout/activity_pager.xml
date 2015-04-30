@@ -4,11 +4,11 @@
     android:layout_width="fill_parent" android:layout_height="fill_parent"
     android:orientation="vertical">
 
-        <GridLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#ff1a7420"
-            android:columnCount="3">
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff1a7420"
+        android:columnCount="3">
 
         <LinearLayout
             android:layout_marginLeft="5dp"
@@ -44,16 +44,13 @@
                 android:text="Near Me      "/>
         </LinearLayout>
 
-        <ImageButton
-            android:src="@drawable/search"
-            android:layout_width="69dp"
-            android:layout_height="68dp"
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Search"
             android:id="@+id/searchButton"
             android:layout_row="0"
-            android:layout_column="2"
-            android:scaleType="fitXY"
-            />
+            android:layout_column="2" />
 
         <Spinner
             android:layout_width="80dp"
@@ -62,9 +59,9 @@
             android:textStyle="bold"
             android:layout_row="1"
             android:layout_column="2" />
-        </GridLayout>
+    </GridLayout>
 
-        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/pager"
         android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -79,5 +76,5 @@
             android:paddingBottom="4dp"
             android:paddingTop="4dp"
             android:textColor="#fff" />
-        </android.support.v4.view.ViewPager>
+    </android.support.v4.view.ViewPager>
 </LinearLayout>

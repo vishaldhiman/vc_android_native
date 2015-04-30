@@ -1,7 +1,9 @@
 package com.vchoose.Vchoose;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.io.InputStream;
@@ -115,6 +116,19 @@ public class RestaurantListFragment extends Fragment {
                 if(rating == null)
                     Log.v("Rating", "is null");
                 new DownloadImageTask(rating).execute(thumbnail_url);
+                rating.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent browserIntent = new Intent("android.intent.action.VIEW",
+                                Uri.parse(cur_dish.get("yelp_mobile_url")));
+                        startActivity(browserIntent);
+                    }
+                });
+            } else {
+                    //clear out the Yelp Logo since we do not have Yelp information for this restaurant
+                ImageView yelp_logo = (ImageView) row.findViewById(R.id.sign);
+                yelp_logo.invalidate();
+                yelp_logo.setImageBitmap(null);
             }
             return(row);
         }

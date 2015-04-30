@@ -58,6 +58,9 @@ public class VcJsonReader {
     private String url_rating_rate = "/rate/";
     private String url_rating_format = "?format=json";
 
+    private String url_restaurant_info = "restaurants/";
+    private String url_details = "/details";
+
     public String buildUrl(String location, String search_keyword, String rad) throws URISyntaxException {
         //String encoded_url = URLEncoder.encode(loc+location+"&"+keyword+search_keyword+"&"+radius+rad,"UTF-8");
         //String encoded_url = URIUtils.
@@ -222,6 +225,53 @@ public class VcJsonReader {
 
          //this api is not working.
         return result;
+    }
+
+    public String getRestaurantInfo(String ID) {
+        StringBuilder builder = new StringBuilder();
+        HttpClient client = new DefaultHttpClient();
+        try {
+
+            String url = Uri.encode(URL_HOST+API_VER + url_rating_rate + url_restaurant_info + ID + url_details, ALLOWED_URI_CHARS);
+
+            Log.v("VcJsonReader","JSON Encoded URL:\n"+url);
+
+            HttpGet httpGet = new HttpGet(url);
+
+            HttpResponse response = client.execute(httpGet);
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            if (statusCode == 200) {
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+            } else {
+                Log.e("Error....", "Failed to download file");
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String resp = null;
+        try {
+
+            resp = builder.toString();
+            Log.v("VcJsonReader","JSON Response:\n"+resp);
+
+            //response = (JSONObject) new JSONTokener(resp).nextValue();
+            //jarray = new JSONArray( builder.toString());
+        } catch (Exception e) {
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+        }
+
+        return resp;
+
     }
 
     public String getJSONFromUrl(String location, String search_keyword, String rad) {

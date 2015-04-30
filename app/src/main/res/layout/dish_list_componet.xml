@@ -24,7 +24,7 @@
                 android:layout_marginRight="1dip"
                 android:layout_marginLeft="1dip"
                 android:contentDescription="TODO"
-                android:src="@drawable/qdoba_tacos" />
+                android:src="@drawable/upload" />
         </LinearLayout>
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"

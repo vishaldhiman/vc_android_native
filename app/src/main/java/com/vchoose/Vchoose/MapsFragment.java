@@ -45,7 +45,6 @@ public class MapsFragment extends Fragment {
         try {
             v = inflater.inflate(R.layout.activity_mapsfragment, container, false);
 
-            if (map == null) {
 
                 //FragmentManager fManager = getActivity().getSupportFragmentManager();
                 FragmentManager fManager = getChildFragmentManager();
@@ -89,7 +88,7 @@ public class MapsFragment extends Fragment {
 
                 // Zoom in, animating the camera.
                 map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
-            }
+
         } catch (InflateException ie) {
             // map is already there
         }
