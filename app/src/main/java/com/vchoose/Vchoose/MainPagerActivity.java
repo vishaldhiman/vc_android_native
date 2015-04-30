@@ -82,7 +82,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
-    ImageButton searchButton;
+    Button searchButton;
     ArrayList<String> hint = new ArrayList<String>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<HashMap<String, String>>();
     ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<HashMap<String, String>>();
@@ -103,7 +103,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
-        searchButton = (ImageButton)findViewById(R.id.searchButton);
+        searchButton = (Button)findViewById(R.id.searchButton);
         context = this;
 
         mEdit.addTextChangedListener(new InputValidator());
