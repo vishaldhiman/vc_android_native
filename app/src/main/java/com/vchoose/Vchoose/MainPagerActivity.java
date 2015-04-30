@@ -397,6 +397,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                     map.put("ID", dish.getString("id"));
                     map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
+                    map.put("restaurant_name", dish.getJSONObject("restaurant").getString("name"));
+                    map.put("restaurant_phone", dish.getJSONObject("restaurant").getString("phone"));
+                    map.put("restaurant_location", dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
 
                     map.put("thumbnail",dish.getString("thumbnail"));
 
@@ -464,6 +467,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     try {
                         LatLng latLng = new LatLng(jsonMapMarker.getDouble("lat"),jsonMapMarker.getDouble("lng"));
                         String restaurantName = jsonMapMarker.getString("infowindow");
+
+                        if (restaurantName != null) {
+                            restaurantName = restaurantName.replaceAll("<h3>", "");
+                            restaurantName = restaurantName.replaceAll("</h3>", "");
+                            restaurantName = restaurantName.trim();
+                        }
 
                         pair = new Pair<>(restaurantName,latLng);
                     } catch (Exception e) {

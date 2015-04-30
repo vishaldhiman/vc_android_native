@@ -38,6 +38,9 @@ public class DishInfo extends ActionBarActivity {
     private String Authentication;
     private String dish_id;
     private String restaurant_id;
+    private String restaurant_name;
+    private String restaurant_phone;
+    private String restaurant_location;
     private String url_tag = "http://vchoose.us/tag_assignments.json";
 
     private TextView tag1;
@@ -55,12 +58,17 @@ public class DishInfo extends ActionBarActivity {
         ArrayList<String> stringList = extras.getStringArrayList("DishInfo");
         Authentication = extras.getString("Authentication");
         restaurant_id = extras.getString("restaurant_id");
+        restaurant_name = extras.getString("restaurant_name");
+        restaurant_phone = extras.getString("restaurant_phone");
+        restaurant_location = extras.getString("restaurant_location");
+
         //Authentication = "hG4T5oT96uwzDYbxpnST";      //for test
+
         dish_id = extras.getString("Dish_id");
         ArrayList<String> tagList = extras.getStringArrayList("tagList");
 
         TextView textview = (TextView)findViewById(R.id.DishName);
-        //TextView textview2=(TextView)findViewById(R.id.DishPhone);
+        TextView textview2=(TextView)findViewById(R.id.DishPhone);
         Button restaurantName = (Button)findViewById(R.id.go_to_restaurant);
         TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
         tag1 = (TextView)findViewById(R.id.tag_info1);
@@ -85,6 +93,9 @@ public class DishInfo extends ActionBarActivity {
                 //finish();
                 Intent intent = new Intent(getApplicationContext(),RestaurantInfo.class);
                 intent.putExtra("restaurant_id",restaurant_id);
+                intent.putExtra("restaurant_name",restaurant_name);
+                intent.putExtra("restaurant_phone",restaurant_phone);
+                intent.putExtra("restaurant_location",restaurant_location);
                 startActivity(intent);
             }
         });

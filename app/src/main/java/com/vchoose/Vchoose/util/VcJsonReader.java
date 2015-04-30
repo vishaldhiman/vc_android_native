@@ -232,7 +232,7 @@ public class VcJsonReader {
         HttpClient client = new DefaultHttpClient();
         try {
 
-            String url = Uri.encode(URL_HOST+API_VER + url_rating_rate + url_restaurant_info + ID + url_details, ALLOWED_URI_CHARS);
+            String url = Uri.encode(URL_HOST + API_VER + url_restaurant_info + ID + url_details, ALLOWED_URI_CHARS);
 
             Log.v("VcJsonReader","JSON Encoded URL:\n"+url);
 
@@ -260,10 +260,8 @@ public class VcJsonReader {
 
         String resp = null;
         try {
-
             resp = builder.toString();
-            Log.v("VcJsonReader","JSON Response:\n"+resp);
-
+            //Log.v("VcJsonReader","JSON Response:\n"+resp);
             //response = (JSONObject) new JSONTokener(resp).nextValue();
             //jarray = new JSONArray( builder.toString());
         } catch (Exception e) {

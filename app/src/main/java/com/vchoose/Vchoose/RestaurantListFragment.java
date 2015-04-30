@@ -65,7 +65,7 @@ public class RestaurantListFragment extends Fragment {
             TextView tag1;
             TextView tag2;
             TextView tag3;
-            TextView name, location, distence;
+            TextView name, location, distence, phoneText;
             ImageView rating;
 
             final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
@@ -77,6 +77,7 @@ public class RestaurantListFragment extends Fragment {
             location = (TextView) row.findViewById(R.id.vehicleColor);
             distence = (TextView) row.findViewById(R.id.description);
             rating = (ImageView) row.findViewById(R.id.ratingPic);
+            phoneText = (TextView) row.findViewById(R.id.phoneNumber);
 
             {
                 tag1 = (TextView)row.findViewById(R.id.tag1);
@@ -110,6 +111,7 @@ public class RestaurantListFragment extends Fragment {
             name.setText(cur_dish.get(restaurantName));
             location.setText(cur_dish.get(restaurantLocation));
             distence.setText(cur_dish.get(restaurantDistance));
+            phoneText.setText(cur_dish.get("phone"));
 
             String thumbnail_url = cur_dish.get(getRestaurantRatingImageUrl);
             if ((thumbnail_url != null) && (!thumbnail_url.equalsIgnoreCase("null"))) {

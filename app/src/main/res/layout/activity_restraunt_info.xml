@@ -55,17 +55,15 @@
             android:layout_column="0"
             android:layout_columnSpan="2"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="fill_parent"
             android:orientation="horizontal">
             <ListView
                 android:id="@+id/list1"
-                android:background="#ff5cb85c"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_weight="0.5"/>
             <ListView
                 android:id="@+id/list2"
-                android:background="#ff5cb85c"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_weight="0.5"/>

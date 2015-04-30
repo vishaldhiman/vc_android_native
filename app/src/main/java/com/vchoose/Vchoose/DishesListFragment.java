@@ -87,6 +87,9 @@ public class DishesListFragment extends Fragment {
                 intent.putExtra("Dish_id", dish_id);
                 intent.putExtra("Authentication", AuthenticationToken);
                 intent.putExtra("restaurant_id", dishes.get("restaurant_id"));
+                intent.putExtra("restaurant_name", dishes.get("restaurant_name"));
+                intent.putExtra("restaurant_phone", dishes.get("restaurant_phone"));
+                intent.putExtra("restaurant_location", dishes.get("restaurant_location"));
 
                 ArrayList<String> tagList = new ArrayList<String>();
                 for(int j = 0;  j < 3 ; j++) {
