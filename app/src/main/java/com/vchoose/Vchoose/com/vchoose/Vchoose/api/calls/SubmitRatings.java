@@ -3,7 +3,6 @@ package com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls;
 import android.app.Activity;
 import android.os.AsyncTask;
 
-import com.vchoose.Vchoose.MainActivity;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 /**
@@ -20,7 +19,8 @@ public class SubmitRatings extends AsyncTask<String, Void, Boolean> {
     protected Boolean doInBackground(final String... params) {
         int menu_item_id = Integer.parseInt(params[0]);
         int rating = (new Float(params[1])).intValue();
+        String authentication_token = params[2];
 
-        return jsonReader.submitRatingForDish(menu_item_id,rating);
+        return jsonReader.submitRatingForDish(menu_item_id, rating, authentication_token);
     }
 }

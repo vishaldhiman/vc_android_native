@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,10 +29,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.util.Pair;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONArray;
@@ -60,6 +63,15 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     private static final String rating = "rating";
     private static final String description = "description";
 
+    private static final String restaurantName = "name";
+    private static final String restaurantLocation = "location";
+    private static final String restaurantDistance = "distance";
+    private static final String restaurantRating = "rating";
+    private static final String restaurantDescription = "description";
+    private static final String restaurantPhone = "phone";
+    private static final String getRestaurantRatingImageUrl = "ratingImage";
+
+    public static String AuthenticationToken;// = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -71,7 +83,10 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     Spinner spinner;
     Button searchButton;
     ArrayList<String> hint = new ArrayList<String>();
-    ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<Pair<String, LatLng>> mapMarkers = new ArrayList<Pair<String, LatLng>>();
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -96,12 +111,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 R.array.radius_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doSearch();
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),jsonlist);
-                mViewPager.setAdapter(mSectionsPagerAdapter);
             }
         });
         buildGoogleApiClient();
@@ -111,9 +125,6 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         // Set up the ViewPager with the sections adapter.
-
-
-
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -158,6 +169,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             return true;
         }
 
+        if(id == R.id.login) {
+            Intent intent = new Intent(this,Login.class);
+            startActivityForResult(intent, 1);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -187,7 +203,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             //String json_url = buildUrl("Highland Park, Pittsburgh", keyword, "3");
 
             //clear the data before downloading again
-            jsonlist.clear();
+            dishJsonlist.clear();
 
             String radiusString = spinner.getSelectedItem().toString();
 
@@ -238,7 +254,16 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+
+            if(mSectionsPagerAdapter == null) {
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist, mapMarkers);
+                mViewPager.setAdapter(mSectionsPagerAdapter);
+                mViewPager.setCurrentItem(1);
+            } else {
+                mSectionsPagerAdapter.notifyDataSetChanged();
+            }
+
+            //ListAdapter adapter = new SimpleAdapter(context, dishJsonlist, R.layout.dish_list_componet, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
         }
 
         protected Boolean doInBackground(final String... args) {
@@ -263,10 +288,10 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 //while (tokener.more()) {
                 JSONObject responseObject = (JSONObject) tokener.nextValue();
 
-                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("table"));
+                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("dishTable"));
 
-                JSONObject table = responseObject.getJSONObject("dishes");
-
+                JSONObject dishTable = responseObject.getJSONObject("dishes");
+                JSONObject restaurantTable = responseObject.getJSONObject("restaurants");
 
                 /*
                 while (sub_tokener.more()) {
@@ -281,13 +306,15 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                 //get the result of restaurants
                 /*
-                JSONArray restaurants = table.getJSONObject("restaurants").getJSONArray("results");
+                JSONArray restaurants = dishTable.getJSONObject("restaurants").getJSONArray("results");
                 Log.v("MainActivity","Downloaded Restaurants:\n"+restaurants);
                 */
-                JSONArray dishes = table.getJSONArray("results");
+                JSONArray dishes = dishTable.getJSONArray("results");
+                JSONArray restaurants = restaurantTable.getJSONArray("results");
 
                 Log.v("MainActivity","Downloaded Dishes:\n"+dishes);
-                jsonlist.clear();
+                dishJsonlist.clear();
+                restaurantJsonlist.clear();
 
                 for (int i = 0; i < dishes.length(); i++) {
                     HashMap<String, String> map = new HashMap<String, String>();
@@ -322,11 +349,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     map.put("ID", dish.getString("id"));
                     map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
 
+                    map.put("thumbnail",dish.getString("thumbnail"));
+
 
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
 
-                    ;
                     String price =dish.getJSONObject("price").getString("dollars");
 
                     if ((price == null) || price.equals("null"))
@@ -334,11 +362,60 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     else
                         map.put(fuel,price);
 
-
-                    jsonlist.add(map);
+                    dishJsonlist.add(map);
                 }
 
+                Log.v("restaurants.length()", String.valueOf(restaurants.length()));
 
+                for (int i = 0; i < restaurants.length(); i++) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+
+                    JSONObject restaurant = restaurants.getJSONObject(i);
+
+                    map.put(restaurantName, restaurant.getString("name"));
+                    map.put(restaurantPhone, restaurant.getString("phone"));
+                    map.put(restaurantLocation, restaurant.getJSONObject("location").getString("full_address"));
+
+                    String distance = restaurant.getJSONObject("distance").getString("string");
+                    map.put(restaurantDistance, distance);
+
+                    String avg_rating = restaurant.getJSONObject("rating").getJSONObject("yelp").getString("avg");
+                    map.put(restaurantRating,avg_rating);
+
+                    String url = restaurant.getJSONObject("rating").getJSONObject("yelp").getJSONObject("meta").getString("rating_img_url");
+                    map.put(getRestaurantRatingImageUrl,url);
+
+                    JSONArray tags = restaurant.getJSONArray("tags");
+                    String s[] = new String[3];
+
+                    for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
+                        s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
+                        Log.v("My Tags" + j, s[j]);
+                        map.put("Tag"+j,s[j]);
+                    }
+
+                    restaurantJsonlist.add(map);
+                }
+
+                if (mapMarkers != null)
+                    mapMarkers.clear();
+
+                JSONArray jsonMapMarkers = responseObject.getJSONArray("map_markers");
+                for (int i = 0; i < jsonMapMarkers.length(); i++) {
+                    JSONObject jsonMapMarker = jsonMapMarkers.getJSONObject(i);
+
+                    Pair<String, LatLng> pair = null;
+                    try {
+                        LatLng latLng = new LatLng(jsonMapMarker.getDouble("lat"),jsonMapMarker.getDouble("lng"));
+                        String restaurantName = jsonMapMarker.getString("infowindow");
+
+                        pair = new Pair<>(restaurantName,latLng);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    mapMarkers.add(pair);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -353,25 +430,41 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        ArrayList<HashMap<String, String>> adapterJsonlist;
+        ArrayList<HashMap<String, String>> adapterDishJsonlist;
+        ArrayList<HashMap<String, String>> adapterRestaurantJsonlist;
+        ArrayList<Pair<String, LatLng>> mapMarkers;
 
-        public SectionsPagerAdapter(FragmentManager fm,ArrayList<HashMap<String, String>> jsonlist) {
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<HashMap<String, String>> jsonlist2, ArrayList<Pair<String, LatLng>> mMarkers) {
             super(fm);
-            adapterJsonlist = jsonlist;
+            adapterDishJsonlist = jsonlist;
+            adapterRestaurantJsonlist = jsonlist2;
+            mapMarkers = mMarkers;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if(position == 0 || position ==1)
-            {
-                TestFragment tf = new TestFragment();        //choose what to display for which tag
-                tf.setArrayList(adapterJsonlist);
+            if(position == 1) {
+                DishesListFragment tf = new DishesListFragment();        //choose what to display for which tag
+                tf.setArrayList(adapterDishJsonlist);
+                tf.setAuthenticationToken(AuthenticationToken);
                 return tf;
+            } else if(position == 0) {
+                RestaurantListFragment tf = new RestaurantListFragment();
+                tf.setArrayList(adapterRestaurantJsonlist);
+                return tf;
+            } else if (position == 2) {
+                MapsFragment mapsFragment = new MapsFragment();
+                mapsFragment.setMapMarkers(mapMarkers);
+                return mapsFragment;
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }
+        }
+
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -385,9 +478,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1);//.toUpperCase(l);
-                case 1:
                     return getString(R.string.title_section2);//.toUpperCase(l);
+                case 1:
+                    return getString(R.string.title_section1);//.toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3);//.toUpperCase(l);
             }
@@ -463,4 +556,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            this.AuthenticationToken = data.getStringExtra("AuthenticationToken");
+            Log.v("AuthenticationToken", this.AuthenticationToken);
+        }
+    }
 }

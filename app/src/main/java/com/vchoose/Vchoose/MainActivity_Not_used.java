@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MainActivity_Not_used extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private Context context;
     private static String url = "http://docs.blackberry.com/sampledata.json";
@@ -179,13 +179,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
                 if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
                     double lat = mLastLocation.getLatitude();
                     double lon = mLastLocation.getLongitude();
-                    new ProgressTask(MainActivity.this).execute(lat + "," + lon, keyword, radius);
+                    new ProgressTask(MainActivity_Not_used.this).execute(lat + "," + lon, keyword, radius);
                 } else {
-                    new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
+                    new ProgressTask(MainActivity_Not_used.this).execute(locationEdit.getText().toString(), keyword, radius);
                 }
             } else {
                 Log.i("MainActivity","Location is null, so will resort to default location");
-                new ProgressTask(MainActivity.this).execute("Shadyside Pittsburgh PA", keyword, radius);
+                new ProgressTask(MainActivity_Not_used.this).execute("Shadyside Pittsburgh PA", keyword, radius);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,7 +240,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+            //ListAdapter adapter = new SimpleAdapter(context, dishJsonlist, R.layout.dish_list_componet, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
 
             RatingAdapter adapter = new RatingAdapter(jsonlist);
             ratingAdapter = adapter;
@@ -353,7 +353,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
                         map.put("Tag"+j,s[j]);
                     }
 
-                    map.put(MainActivity.location, restaurantName);
+                    map.put(MainActivity_Not_used.location, restaurantName);
 
                     map.put(description,dish.getString("description"));
 
@@ -400,7 +400,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
                     map.put(fuel, vfuel);
 
 
-                    jsonlist.add(map);
+                    dishJsonlist.add(map);
                 } catch (JSONException e)
                 {
                     e.printStackTrace();
@@ -421,7 +421,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
         ArrayList<HashMap<String, String>> jsonlist;
 
         RatingAdapter(ArrayList list) {
-            super(MainActivity.this, R.layout.list_activity, list);
+            super(MainActivity_Not_used.this, R.layout.dish_list_componet, list);
             jsonlist = list;
         }
 
@@ -439,7 +439,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
 
             /*if (row==null)*/ {
                 LayoutInflater inflater=getLayoutInflater();
-                row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
+                row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
 
                 {
                     tag1 = (TextView)row.findViewById(R.id.tag1);
@@ -485,7 +485,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks, OnCon
                                   //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
 
                                   //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
-                                  new SubmitRatings(MainActivity.this).execute(cur_dish.get("ID"),String.valueOf(rating));
+                                  new SubmitRatings(MainActivity_Not_used.this).execute(cur_dish.get("ID"),String.valueOf(rating));
 
                                   //the Rating is stored here
                               }

@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MainFragment_Not_used extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private Context context;
     private static String url = "http://docs.blackberry.com/sampledata.json";
@@ -228,7 +228,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
-            //ListAdapter adapter = new SimpleAdapter(context, jsonlist, R.layout.list_activity, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
+            //ListAdapter adapter = new SimpleAdapter(context, dishJsonlist, R.layout.dish_list_componet, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
 
             RatingAdapter adapter = new RatingAdapter(jsonlist);
             ratingAdapter = adapter;
@@ -341,7 +341,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
                         map.put("Tag"+j,s[j]);
                     }
 
-                    map.put(MainFragment.location, restaurantName);
+                    map.put(MainFragment_Not_used.location, restaurantName);
 
                     map.put(description,dish.getString("description"));
 
@@ -387,7 +387,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
                     map.put(fuel, vfuel);
 
 
-                    jsonlist.add(map);
+                    dishJsonlist.add(map);
                 } catch (JSONException e)
                 {
                     e.printStackTrace();
@@ -408,7 +408,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
         ArrayList<HashMap<String, String>> jsonlist;
 
         RatingAdapter(ArrayList list) {
-            super(getActivity(), R.layout.list_activity, list);
+            super(getActivity(), R.layout.dish_list_componet, list);
             jsonlist = list;
         }
 
@@ -426,7 +426,7 @@ public class MainFragment extends Fragment implements ConnectionCallbacks, OnCon
 
             /*if (row==null)*/ {
                 LayoutInflater inflater=getActivity().getLayoutInflater();
-                row=inflater.inflate(R.layout.list_activity, parent, false);//set the list view
+                row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
 
                 {
                     tag1 = (TextView)row.findViewById(R.id.tag1);

@@ -19,10 +19,13 @@
     <string name="title_activity_dish_info">DishInfo</string>
     <string name="title_activity_customization">Customization</string>
     <string name="title_activity_login">Login</string>
-    <string name="title_activity_pager">PagerActivity</string>
+    <string name="title_activity_pager">VChoose</string>
 
     <string name="title_section1">Dishes</string>
-    <string name="title_section2">Restaurant</string>
+    <string name="title_section2">Restaurants</string>
     <string name="title_section3">Map</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

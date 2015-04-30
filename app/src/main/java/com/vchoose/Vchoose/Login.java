@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.vchoose.Vchoose.R;
 import com.vchoose.Vchoose.util.VcJsonReader;
@@ -75,6 +76,9 @@ public class Login extends ActionBarActivity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("AuthenticationToken", auth_token);
         setResult(Activity.RESULT_OK, resultIntent);
+
+        Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
+        toast.show();
         finish();
     }
 
