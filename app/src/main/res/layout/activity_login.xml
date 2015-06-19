@@ -30,9 +30,21 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Login"
         android:id="@+id/button2"
         android:layout_below="@+id/password"
         android:layout_centerHorizontal="true"
         android:onClick="getLogin"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Facebook Login"
+        android:id="@+id/facebook_login"
+        android:layout_below="@+id/button2"
+        android:layout_centerHorizontal="true"
+        android:onClick="getLogin"/>
+
 </RelativeLayout>

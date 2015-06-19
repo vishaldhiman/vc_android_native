@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:text="Search"
             android:id="@+id/searchButton"
-            android:layout_row="0"
+            android:layout_row="1"
             android:layout_column="2" />
 
         <Spinner
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/spinner"
             android:textStyle="bold"
-            android:layout_row="1"
+            android:layout_row="0"
             android:layout_column="2" />
     </GridLayout>
 

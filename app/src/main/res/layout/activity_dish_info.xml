@@ -59,7 +59,7 @@
             android:id="@+id/LinearTag"
             android:gravity="right"
             android:paddingRight="5dp"
-            android:layout_above="@+id/customize"
+            android:layout_above="@+id/buttons"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/tag_info1"
@@ -93,23 +93,38 @@
             </TextView>
         </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Customize"
-            android:id="@+id/customize"
+            android:weightSum="0.9"
+            android:orientation="horizontal"
+            android:id="@+id/buttons"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="1dp"
-            android:onClick="customize"/>
+            android:layout_marginBottom="1dp">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35"
+                android:layout_marginRight="6dp"
+                android:text="Customize"
+                android:id="@+id/customize"
+                android:onClick="customize"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add A Tag"
-            android:id="@+id/addtag"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="1dp"
-            android:onClick="addTag"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/facebook_like"
+                android:id="@+id/like"/>
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:layout_marginLeft="6dp"
+                android:text="Add A Tag"
+                android:id="@+id/addtag"
+                android:onClick="addTag"/>
+            </LinearLayout>
 </RelativeLayout>
