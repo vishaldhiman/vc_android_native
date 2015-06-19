@@ -72,14 +72,4 @@
                 android:layout_row="3"
                 android:layout_column="0" />
         </GridLayout>
-    <TextView
-        android:id="@+id/txtLink"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="Privacy Policy"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:background="#00ff00"
-        android:layout_weight="0.1"
-        android:autoLink="all" />
     </LinearLayout>

@@ -25,7 +25,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity_Not_used"
+            android:name=".unUsed.MainActivity_Not_used"
             android:label="@string/app_name" >
 
         </activity>
@@ -60,7 +60,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCS53qzHV63QCnS5Xcj378t3MBTTiCuKz4"/>
+            android:value="AIzaSyAClDeV8xnWPxHTbSk6YNlaSVpYWfomUSY"/>
     </application>
 
 </manifest>

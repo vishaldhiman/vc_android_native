@@ -28,6 +28,7 @@ public class MapsFragment extends Fragment {
     private GoogleMap map;
     private static View v;
     ArrayList<Pair<String, LatLng>> mapMarkers;
+    SupportMapFragment mapFrag;
 
     public void setMapMarkers(ArrayList<Pair<String, LatLng>> mMarkers) {
         mapMarkers = mMarkers;
@@ -41,6 +42,7 @@ public class MapsFragment extends Fragment {
             if (parent != null)
                 parent.removeView(v);
         }
+        Log.v("MapsFragment", "onCreateView");
 
         try {
             v = inflater.inflate(R.layout.activity_mapsfragment, container, false);
@@ -53,7 +55,7 @@ public class MapsFragment extends Fragment {
                     Log.v("MapsFragment", "fManager is null");
                 }
 
-                SupportMapFragment mapFrag = (SupportMapFragment) fManager.findFragmentById(R.id.map);
+            mapFrag = (SupportMapFragment) fManager.findFragmentById(R.id.map);
 
                 if (mapFrag == null) {
                     Log.v("MapsFragment", "mapFrag is null");
@@ -90,7 +92,24 @@ public class MapsFragment extends Fragment {
                 map.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
 
         } catch (InflateException ie) {
+            map.clear();
+
+            map = mapFrag.getMap();
+
+            map.setMyLocationEnabled(true);
+
+            if ((mapMarkers != null) && (mapMarkers.size() > 0)) {
+                Log.v("MapsFragment","# of mapMarkers: "+mapMarkers.size());
+                for (int i = 0; i < mapMarkers.size(); i++) {
+                    Pair<String, LatLng> pair = mapMarkers.get(i);
+
+                    Marker marker = map.addMarker(new MarkerOptions().position(pair.second).title(pair.first));
+                }
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapMarkers.get(0).second, 15));
+            }
+            map.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
             // map is already there
+            Log.v("MapsFragment", "map is already there");
         }
 
         return v;

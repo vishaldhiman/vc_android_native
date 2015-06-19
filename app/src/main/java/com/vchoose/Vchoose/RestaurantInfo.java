@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.vchoose.Vchoose.R;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONArray;
