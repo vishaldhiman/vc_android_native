@@ -37,14 +37,14 @@
         android:layout_centerHorizontal="true"
         android:onClick="getLogin"/>
 
-    <Button
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/facebook_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Facebook Login"
-        android:id="@+id/facebook_login"
         android:layout_below="@+id/button2"
+        android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:onClick="getLogin"/>
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
 </RelativeLayout>
