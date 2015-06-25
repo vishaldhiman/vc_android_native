@@ -18,11 +18,13 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -30,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.util.Pair;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,6 +47,8 @@ import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainPagerActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -56,9 +61,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private static final String dishname = "vehicleType";
-    private static final String location = "vehicleColor";
-    private static final String fuel = "fuel";
+
+    private static final String TAG = "SamT_";
+
+    private static final String dishname = "dishName";
+    private static final String location = "location";
+    private static final String price = "price";
     private static final String rating = "rating";
     private static final String description = "description";
 
@@ -66,41 +74,39 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     private static final String restaurantLocation = "location";
     private static final String restaurantDistance = "distance";
     private static final String restaurantRating = "rating";
-    private static final String restaurantDescription = "description";
+    //private static final String restaurantDescription = "description";
     private static final String restaurantPhone = "phone";
     private static final String getRestaurantRatingImageUrl = "ratingImage";
 
     public static String AuthenticationToken;// = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
 
     SectionsPagerAdapter mSectionsPagerAdapter;
-
     private Context context;
+
     AutoCompleteTextView mEdit;
     EditText locationEdit;
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
     Button searchButton;
+    ViewPager mViewPager;
+
     ArrayList<String> hint = new ArrayList<>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<>();
     ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<>();
     ArrayList<Pair<String, LatLng>> mapMarkers = new ArrayList<>();
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
-        mViewPager = (ViewPager) findViewById(R.id.pager);
 
+        mViewPager = (ViewPager) findViewById(R.id.pager);
         mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
         searchButton = (Button)findViewById(R.id.searchButton);
+
         context = this;
 
         /* auto complete */
@@ -120,36 +126,45 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             }
         });
 
+        /* keyboard search button */
+        mEdit.setOnEditorActionListener(new AutoCompleteTextView.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.v(TAG + "actionID", String.valueOf(actionId));
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    doSearch();
+                    return true;
+                }
+                return false;
+            }
+        } );
+        locationEdit.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.v(TAG + "actionID", String.valueOf(actionId));
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    doSearch();
+                    return true;
+                }
+                return false;
+            }
+        } );
+
         /* Google location api */
         buildGoogleApiClient();
         mGoogleApiClient.connect();
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         // Set up the ViewPager with the sections adapter.
-    }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.v("MainActivityTest","Inside onConnectionSuspended "+i);
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        Log.v("MainActivityTest","Inside onConnectionFailed "+result.toString());
-    }
-
-    public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        Log.v("MainActivityTest","onConnected - Found LastLocation.\n"+mLastLocation);
+        mEdit.setText("pizza");
+        //doSearch();//for test
     }
 
     @Override
@@ -182,8 +197,8 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
     public void doSearch() {
         String keyword = mEdit.getText().toString();
-        Log.i("MainActivityTest","inside doSearch");
-        Log.v("MainActivityTest","inside doSearch. keyword: "+keyword);
+        Log.i(TAG + "MainPagerActivity","inside doSearch");
+        Log.v(TAG + "MainPagerActivity","inside doSearch. keyword: " + keyword);
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)
@@ -194,12 +209,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
 
         mGoogleApiClient.connect();
-        Log.v("MainActivityTest",String.valueOf(mGoogleApiClient.isConnected()));
+        Log.v(TAG + "MainPagerActivity","mGoogleApiClient:" + String.valueOf(mGoogleApiClient.isConnected()));
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        Log.v("MainActivityTest","Found LastLocation.\n"+mLastLocation);
+        Log.v(TAG + "MainPagerActivity","Found LastLocation.\n"+mLastLocation);
 
         /* hide the keyboard */
         InputMethodManager imm = (InputMethodManager)getSystemService(
@@ -225,7 +240,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     new ProgressTask(this).execute(locationEdit.getText().toString(), keyword, radius);
                 }
             } else {
-                Log.i("MainActivityTest","Location is null, so will resort to default location");
+                Log.i(TAG + "MainPagerActivity","Location is null, so will resort to default location");
                 new ProgressTask(this).execute("Shadyside Pittsburgh PA", keyword, radius);
             }
         } catch (Exception e) {
@@ -237,7 +252,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         private ProgressDialog dialog;
 
         public ProgressTask(Activity activity) {
-            Log.i("MainActivityTest", "Calling");
+            Log.i(TAG + "MainPagerActivity", "ProgressTask Calling");
             context = activity;
             dialog = new ProgressDialog(context);
         }
@@ -257,14 +272,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
             if(mSectionsPagerAdapter == null) {
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist, mapMarkers);
-                Log.v("MainActivityTest","restaurantJsonlist"+String.valueOf(restaurantJsonlist.size()));
+                Log.v(TAG + "MainPagerActivity","restaurantJsonlist"+String.valueOf(restaurantJsonlist.size()));
                 mViewPager.setAdapter(mSectionsPagerAdapter);
                 mViewPager.setCurrentItem(1);
             } else {
                 mSectionsPagerAdapter.notifyDataSetChanged();
             }
-
-            //ListAdapter adapter = new SimpleAdapter(context, dishJsonlist, R.layout.dish_list_componet, new String[] { dishname, location, fuel, rating }, new int[] { R.id.vehicleType, R.id.vehicleColor, R.id.fuel, R.id.ratingBar });
         }
 
         protected Boolean doInBackground(final String... args) {
@@ -281,11 +294,10 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             //JSONArray json = jParser.getJSONFromUrl(url);
             String response = jParser.getJSONFromUrl(location,keyword,radius);
 
-
             try {
 
                 JSONTokener tokener = new JSONTokener(response);
-                Log.v("MainActivityTest", "----- Tokens from JSON Parsing -------");
+                Log.v(TAG + "MainPagerActivity", "----- Tokens from JSON Parsing -------");
                 //while (tokener.more()) {
                 JSONObject responseObject = (JSONObject) tokener.nextValue();
 
@@ -293,27 +305,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                 JSONObject dishTable = responseObject.getJSONObject("dishes");
                 JSONObject restaurantTable = responseObject.getJSONObject("restaurants");
-
-                /*
-                while (sub_tokener.more()) {
-                    JSONObject sub_response = (JSONObject) sub_tokener.nextValue();
-                    Log.v("MainActivity",sub_response.toString());
-                }*/
-
-                //  Log.v("MainActivity",responseObject.toString());
-                //}
-
-                //response = (JSONObject) new JSONTokener(resp).nextValue();
-
-                //get the result of restaurants
-                /*
-                JSONArray restaurants = dishTable.getJSONObject("restaurants").getJSONArray("results");
-                Log.v("MainActivity","Downloaded Restaurants:\n"+restaurants);
-                */
                 JSONArray dishes = dishTable.getJSONArray("results");
                 JSONArray restaurants = restaurantTable.getJSONArray("results");
 
                 Log.v("MainActivityTest","Downloaded Dishes:\n"+dishes);
+
                 dishJsonlist.clear();
                 restaurantJsonlist.clear();
 
@@ -355,16 +351,15 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                     map.put("thumbnail",dish.getString("thumbnail"));
 
-
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
 
                     String price =dish.getJSONObject("price").getString("dollars");
 
                     if ((price == null) || price.equals("null"))
-                        map.put(fuel, "");
+                        map.put(MainPagerActivity.price, "");
                     else
-                        map.put(fuel,price);
+                        map.put(MainPagerActivity.price,price);
 
                     dishJsonlist.add(map);
                 }
@@ -440,6 +435,38 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            AuthenticationToken = data.getStringExtra("AuthenticationToken");
+            Log.v("AuthenticationToken", AuthenticationToken);
+        }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.v("MainActivityTest","Inside onConnectionSuspended "+i);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.v("MainActivityTest","Inside onConnectionFailed "+result.toString());
+    }
+
+    public void onConnected(Bundle connectionHint) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        Log.v("MainActivityTest","onConnected - Found LastLocation.\n"+mLastLocation);
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -537,28 +564,37 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     }
 
     private class InputValidator implements TextWatcher {
+        private String keyword_new;
+        private Timer timer=new Timer();
+        private final long DELAY = 500; // in ms
+        VcJsonReader reader = new VcJsonReader();
 
         public void afterTextChanged(Editable s) {
             Log.v("The text is changed", "changed");
-            final String keyword_new = mEdit.getText().toString();
+            keyword_new = mEdit.getText().toString();
 
-            /* start an thread for auto complete */
-            Thread t = new Thread(new Runnable() {
-                String keyword_new_inner = keyword_new;
+            timer.cancel();
+            timer = new Timer();
+
+            timer.schedule(new TimerTask() {
+                @Override
                 public void run() {
-                    VcJsonReader reader = new VcJsonReader();
-                    hint = reader.getAutoComplete(keyword_new_inner);
+                    Log.v(TAG + "keyword_new", keyword_new);
+                    hint = reader.getAutoComplete(keyword_new);
+                    runOnUiThread(new Thread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ArrayAdapter adapter = new ArrayAdapter
+                                            (context,android.R.layout.simple_list_item_1, hint);
+                                    mEdit.setAdapter(adapter);
+                                    Log.v(TAG + "Runnable", "set the autocomplete");
+                                }
+                            }
+                    ));
                 }
-            });
 
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException ignored){}
-
-            ArrayAdapter adapter = new ArrayAdapter
-                    (context,android.R.layout.simple_list_item_1, hint);
-            mEdit.setAdapter(adapter);
+            }, DELAY);
         }
 
         public void beforeTextChanged(CharSequence s, int start, int count,
@@ -570,14 +606,4 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            AuthenticationToken = data.getStringExtra("AuthenticationToken");
-            Log.v("AuthenticationToken", AuthenticationToken);
-        }
-    }
-
 }

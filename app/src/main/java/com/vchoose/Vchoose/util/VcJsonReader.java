@@ -31,6 +31,9 @@ import java.util.List;
  * Created by vishaldhiman on 2/20/15.
  */
 public class VcJsonReader {
+
+    private static final String TAG = "SamTest_";
+
     static InputStream is = null;
     static JSONArray jarray = null;
 
@@ -279,7 +282,7 @@ public class VcJsonReader {
 
             String url = buildUrl(location,search_keyword,rad);
 
-            Log.v("VcJsonReader","JSON Encoded URL:\n"+url);
+            Log.v(TAG+"VcJsonReader","JSON Encoded URL:\n"+url);
 
             HttpGet httpGet = new HttpGet(url);
 

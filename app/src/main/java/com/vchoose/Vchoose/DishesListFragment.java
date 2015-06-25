@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -40,9 +41,9 @@ import java.util.HashMap;
 public class DishesListFragment extends Fragment {
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
     ListView myList;
-    private static final String dishname = "vehicleType";
-    private static final String location = "vehicleColor";
-    private static final String fuel = "fuel";
+    private static final String dishname = "dishName";
+    private static final String location = "location";
+    private static final String price = "price";
     private static final String rating = "rating";
     private static final String description = "description";
     private static final String thumbnail = "thumbnail";
@@ -128,6 +129,16 @@ public class DishesListFragment extends Fragment {
             /*if (row==null)*/ {
                 LayoutInflater inflater=getActivity().getLayoutInflater();
                 row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
+                if(position == 0) {
+                    row.setBackgroundColor(Color.argb(9, 71, 0, 255));
+                    LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.tagRow);
+                    ImageView imageView = new ImageView(getActivity());
+                    android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+                    layoutParams.width = 80;
+                    layoutParams.height = 80;
+                    imageView.setLayoutParams(layoutParams);
+                    linearLayout.addView(imageView,0);
+                }
 
                 wrapper=new DishViewWrapper(row);
                 row.setTag(wrapper);
