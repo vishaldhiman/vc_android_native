@@ -3,6 +3,7 @@ package com.vchoose.Vchoose;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -12,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vchoose.Vchoose.util.VcJsonReader;
@@ -40,6 +43,8 @@ public class DishInfo extends ActionBarActivity {
     private String restaurant_id;
     private String restaurant_name;
     private String restaurant_phone;
+    private String provider;
+    private String provider_name;
     private String restaurant_location;
     private String url_tag = "http://vchoose.us/tag_assignments.json";
 
@@ -61,6 +66,7 @@ public class DishInfo extends ActionBarActivity {
         restaurant_name = extras.getString("restaurant_name");
         restaurant_phone = extras.getString("restaurant_phone");
         restaurant_location = extras.getString("restaurant_location");
+        provider = extras.getString("provider");
 
         //Authentication = "hG4T5oT96uwzDYbxpnST";      //for test
 
@@ -71,14 +77,22 @@ public class DishInfo extends ActionBarActivity {
         TextView textview2=(TextView)findViewById(R.id.DishPhone);
         Button restaurantName = (Button)findViewById(R.id.go_to_restaurant);
         TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
+        TextView customizedTag = (TextView)findViewById(R.id.customizeTag);
         tag1 = (TextView)findViewById(R.id.tag_info1);
         tag2 = (TextView)findViewById(R.id.tag_info2);
         tag3 = (TextView)findViewById(R.id.tag_info3);
 
+        if (provider.equals("user_added")){
+            String provider_name = extras.getString("provider_name");
+            customizedTag.setText("Customized dish by " + provider_name);
+            RelativeLayout background = (RelativeLayout)findViewById(R.id.dishInfo_background);
+            background.setBackgroundColor(Color.rgb(149, 223, 191));
+        }
+
         textview.setText(stringList.get(0));
         //textview2.setText(stringList.get(2));
         restaurantName.setText(stringList.get(2));
-        textview3.setText(stringList.get(1));
+        textview3.setText(unescape(stringList.get(1)));
         textview3.setMovementMethod(new ScrollingMovementMethod());
 
         tag = new String[3];
@@ -99,6 +113,10 @@ public class DishInfo extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private String unescape(String description) {
+        return description.replaceAll("\\\\n", "\\\n");
     }
 
     private void tagDisplay(String[] s) {

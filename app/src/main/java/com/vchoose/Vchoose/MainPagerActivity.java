@@ -163,7 +163,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         // primary sections of the activity.
         // Set up the ViewPager with the sections adapter.
 
-        mEdit.setText("pizza");
+        //mEdit.setText("pizza");
         //doSearch();//for test
     }
 
@@ -332,34 +332,36 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     //Log.v("mydish","mydish");
                     //Log.v(dish.getString("name"), String.valueOf(tags.length()));
                     String s[] = new String[3];
-
                     for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
                         s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
                         Log.v("My Tags" + j, s[j]);
                         map.put("Tag"+j,s[j]);
                     }
 
-                    map.put(MainPagerActivity.location, restaurantName);
-
                     map.put(description,dish.getString("description"));
 
+                    String provider = dish.getString("provider");
+                    map.put("provider",provider);
+                    if(provider.equals("user_added")){
+                        map.put("provider_name",dish.getJSONObject("creator").getString("username"));
+                    }
+
+
+                    map.put(MainPagerActivity.location, restaurantName);
                     map.put("ID", dish.getString("id"));
-                    map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
-                    map.put("restaurant_name", dish.getJSONObject("restaurant").getString("name"));
-                    map.put("restaurant_phone", dish.getJSONObject("restaurant").getString("phone"));
-                    map.put("restaurant_location", dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
-
-                    map.put("thumbnail",dish.getString("thumbnail"));
-
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
-
                     String price =dish.getJSONObject("price").getString("dollars");
-
                     if ((price == null) || price.equals("null"))
                         map.put(MainPagerActivity.price, "");
                     else
                         map.put(MainPagerActivity.price,price);
+
+                    map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
+                    map.put("restaurant_name", dish.getJSONObject("restaurant").getString("name"));
+                    map.put("restaurant_phone", dish.getJSONObject("restaurant").getString("phone"));
+                    map.put("restaurant_location", dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
+                    map.put("thumbnail",dish.getString("thumbnail"));
 
                     dishJsonlist.add(map);
                 }

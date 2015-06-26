@@ -78,12 +78,19 @@ public class DishesListFragment extends Fragment {
                 HashMap<String, String> dishes = (HashMap<String, String>) jsonlist.get(position);
                 String name_text = dishes.get(dishname);
                 String description_text = dishes.get(description);
+                String provider = dishes.get("provider");
+
                 String location_text = dishes.get(location);
                 String dish_id = dishes.get("ID");
                 ArrayList<String> stringList = new ArrayList<String>();
                 stringList.add(name_text);
                 stringList.add(description_text);
                 stringList.add(location_text);
+
+                intent.putExtra("provider", provider);
+                if(provider.equals("user_added")) {
+                    intent.putExtra("provider_name", dishes.get("provider_name"));
+                }
                 intent.putExtra("DishInfo", stringList);
                 intent.putExtra("Dish_id", dish_id);
                 intent.putExtra("Authentication", AuthenticationToken);
@@ -129,15 +136,19 @@ public class DishesListFragment extends Fragment {
             /*if (row==null)*/ {
                 LayoutInflater inflater=getActivity().getLayoutInflater();
                 row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
-                if(position == 0) {
-                    row.setBackgroundColor(Color.argb(9, 71, 0, 255));
-                    LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.tagRow);
+
+
+                String provider = cur_dish.get("provider");
+                if(provider.equals("user_added")) {
+                    row.setBackgroundColor(Color.rgb(149,223,191));//128, 186, 167));
+                    LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.customizeRow);
                     ImageView imageView = new ImageView(getActivity());
-                    android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-                    layoutParams.width = 80;
-                    layoutParams.height = 80;
-                    imageView.setLayoutParams(layoutParams);
+                    imageView.setImageResource(R.drawable.customized);
                     linearLayout.addView(imageView,0);
+                    imageView.getLayoutParams().height = 50;
+                    imageView.getLayoutParams().width = 200;
+                    TextView textView = (TextView)row.findViewById(R.id.creatorName);
+                    textView.setText("by " + cur_dish.get("provider_name"));
                 }
 
                 wrapper=new DishViewWrapper(row);
@@ -148,7 +159,7 @@ public class DishesListFragment extends Fragment {
                 wrapper.getVehicleColor().setText(cur_dish.get(location));
                 rate.setTag(new Integer(position));
                 rate.setRating(ratingFloat);
-                wrapper.getDescription().setText(cur_dish.get(description));
+                wrapper.getDescription().setText(unescape(cur_dish.get(description)));
 
                 {
                     tag1 = (TextView)row.findViewById(R.id.tag1);
@@ -225,6 +236,10 @@ public class DishesListFragment extends Fragment {
 
             return(row);
         }
+    }
+
+    private String unescape(String description) {
+        return description.replaceAll("\\\\n", "\\\n");
     }
 
     class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {

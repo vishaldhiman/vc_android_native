@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,8 +43,6 @@ public class RestaurantInfo extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restraunt_info);
-
-
 
         Bundle extras = getIntent().getExtras();
         //ArrayList<String> stringList = extras.getStringArrayList("RestrauntInfo");
@@ -108,8 +107,9 @@ public class RestaurantInfo extends Activity {
                 String name = (String)restaurantInfoJsonlist.get(i).get("menu_sections").get("menu_type_name");
                 list.add(name);
             }
-            final StableArrayAdapter adapter1 = new StableArrayAdapter(RestaurantInfo.this,
+            final ArrayAdapter adapter1 = new ArrayAdapter(RestaurantInfo.this,
                     android.R.layout.simple_list_item_1, list);
+
             list1.setAdapter(adapter1);
             list1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
