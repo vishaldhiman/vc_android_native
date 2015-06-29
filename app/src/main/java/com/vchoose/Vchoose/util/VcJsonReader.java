@@ -34,9 +34,6 @@ public class VcJsonReader {
 
     private static final String TAG = "SamTest_";
 
-    static InputStream is = null;
-    static JSONArray jarray = null;
-
     private String URL_HOST = "http://vchoose.us/";
     private String API_VER = "api/v1/public/";
 

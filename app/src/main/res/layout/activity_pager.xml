@@ -27,8 +27,8 @@
                 android:singleLine="true"
                 android:imeOptions="actionSearch"
                 android:selectAllOnFocus="true"
-                android:id="@+id/editText"
-                android:nextFocusUp="@id/editText" android:nextFocusLeft="@id/editText"
+                android:id="@+id/keyword"
+                android:nextFocusUp="@id/keyword" android:nextFocusLeft="@id/keyword"
                 />
         </LinearLayout>
 

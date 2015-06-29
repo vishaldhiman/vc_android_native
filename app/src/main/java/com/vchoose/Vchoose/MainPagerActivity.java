@@ -83,7 +83,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     SectionsPagerAdapter mSectionsPagerAdapter;
     private Context context;
 
-    AutoCompleteTextView mEdit;
+    AutoCompleteTextView keyWord;
     EditText locationEdit;
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
@@ -102,7 +102,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         setContentView(R.layout.activity_pager);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mEdit   = (AutoCompleteTextView)findViewById(R.id.editText);
+        keyWord = (AutoCompleteTextView)findViewById(R.id.keyword);
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
         searchButton = (Button)findViewById(R.id.searchButton);
@@ -110,7 +110,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         context = this;
 
         /* auto complete */
-        mEdit.addTextChangedListener(new InputValidator());
+        keyWord.addTextChangedListener(new InputValidator());
 
         /* distance spinner */
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
@@ -127,7 +127,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         });
 
         /* keyboard search button */
-        mEdit.setOnEditorActionListener(new AutoCompleteTextView.OnEditorActionListener(){
+        keyWord.setOnEditorActionListener(new AutoCompleteTextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 Log.v(TAG + "actionID", String.valueOf(actionId));
@@ -140,7 +140,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 }
                 return false;
             }
-        } );
+        });
         locationEdit.setOnEditorActionListener(new TextView.OnEditorActionListener(){
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -159,12 +159,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         /* Google location api */
         buildGoogleApiClient();
         mGoogleApiClient.connect();
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        // Set up the ViewPager with the sections adapter.
 
-        //mEdit.setText("pizza");
-        //doSearch();//for test
+        //keyWord.setText("pizza");
+        //doSearch();//for testing
     }
 
     @Override
@@ -196,9 +193,8 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     }
 
     public void doSearch() {
-        String keyword = mEdit.getText().toString();
-        Log.i(TAG + "MainPagerActivity","inside doSearch");
-        Log.v(TAG + "MainPagerActivity","inside doSearch. keyword: " + keyword);
+        String keyword = keyWord.getText().toString();
+        Log.v(TAG + "MainPagerActivity", "inside doSearch. keyword: " + keyword);
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)
@@ -209,7 +205,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
 
         mGoogleApiClient.connect();
-        Log.v(TAG + "MainPagerActivity","mGoogleApiClient:" + String.valueOf(mGoogleApiClient.isConnected()));
+        Log.v(TAG + "MainPagerActivity", "mGoogleApiClient:" + String.valueOf(mGoogleApiClient.isConnected()));
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
@@ -219,11 +215,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         /* hide the keyboard */
         InputMethodManager imm = (InputMethodManager)getSystemService(
                 Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mEdit.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(keyWord.getWindowToken(), 0);
 
         try {
-            //String json_url = buildUrl("Highland Park, Pittsburgh", keyword, "3");
-
             //clear the data before downloading again
             dishJsonlist.clear();
 
@@ -284,7 +278,6 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
             VcJsonReader jParser = new VcJsonReader();
 
-            //String download_url = args[0];
             String location = args[0];
             String keyword = args[1];
             String radius = args[2];
@@ -298,10 +291,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                 JSONTokener tokener = new JSONTokener(response);
                 Log.v(TAG + "MainPagerActivity", "----- Tokens from JSON Parsing -------");
-                //while (tokener.more()) {
                 JSONObject responseObject = (JSONObject) tokener.nextValue();
-
-                //JSONTokener sub_tokener = new JSONTokener(responseObject.getJSONObject("dishTable"));
 
                 JSONObject dishTable = responseObject.getJSONObject("dishes");
                 JSONObject restaurantTable = responseObject.getJSONObject("restaurants");
@@ -318,19 +308,20 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                     JSONObject dish = dishes.getJSONObject(i);
 
+                    //dish name
                     map.put(dishname, dish.getString("name"));
-
+                    //restaurant name
                     String restaurantName = dish.getJSONObject("restaurant").getString("name");
-
+                    //distance
                     String distance = dish.getJSONObject("restaurant").getJSONObject("distance").getString("string");
                     //Log.v("MainActivity","distance: "+distance);
                     if ((distance != null) && !distance.equals("")) {
-                        restaurantName += distance;
+                        restaurantName += distance;//combine the restaurant name and distance
                     }
-
+                    //dish location
+                    map.put(MainPagerActivity.location, restaurantName);
+                    //tags
                     JSONArray tags = dish.getJSONArray("tags");
-                    //Log.v("mydish","mydish");
-                    //Log.v(dish.getString("name"), String.valueOf(tags.length()));
                     String s[] = new String[3];
                     for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
                         s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
@@ -338,25 +329,28 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                         map.put("Tag"+j,s[j]);
                     }
 
+                    //description
                     map.put(description,dish.getString("description"));
 
+                    //customized?
                     String provider = dish.getString("provider");
                     map.put("provider",provider);
                     if(provider.equals("user_added")){
                         map.put("provider_name",dish.getJSONObject("creator").getString("username"));
                     }
-
-
-                    map.put(MainPagerActivity.location, restaurantName);
+                    //dish ID
                     map.put("ID", dish.getString("id"));
+                    //rating
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
+                    //price
                     String price =dish.getJSONObject("price").getString("dollars");
                     if ((price == null) || price.equals("null"))
                         map.put(MainPagerActivity.price, "");
                     else
                         map.put(MainPagerActivity.price,price);
 
+                    //restaurant info
                     map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
                     map.put("restaurant_name", dish.getJSONObject("restaurant").getString("name"));
                     map.put("restaurant_phone", dish.getJSONObject("restaurant").getString("phone"));
@@ -366,8 +360,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     dishJsonlist.add(map);
                 }
 
-                Log.v("restaurants.length()", String.valueOf(restaurants.length()));
+                Log.v(TAG + "restaurants.length", String.valueOf(restaurants.length()));
 
+                /* restaurant list */
                 for (int i = 0; i < restaurants.length(); i++) {
                     HashMap<String, String> map = new HashMap<>();
 
@@ -405,6 +400,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     restaurantJsonlist.add(map);
                 }
 
+                /* map list */
                 //if (mapMarkers != null)
                 mapMarkers.clear();
 
@@ -437,6 +433,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
     }
 
+    // result for login
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -470,6 +467,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         Log.v("MainActivityTest","onConnected - Found LastLocation.\n"+mLastLocation);
     }
 
+    /* Pager adapter */
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -565,6 +563,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
     }
 
+    /* For auto completion */
     private class InputValidator implements TextWatcher {
         private String keyword_new;
         private Timer timer=new Timer();
@@ -573,7 +572,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
         public void afterTextChanged(Editable s) {
             Log.v("The text is changed", "changed");
-            keyword_new = mEdit.getText().toString();
+            keyword_new = keyWord.getText().toString();
 
             timer.cancel();
             timer = new Timer();
@@ -589,7 +588,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                                 public void run() {
                                     ArrayAdapter adapter = new ArrayAdapter
                                             (context,android.R.layout.simple_list_item_1, hint);
-                                    mEdit.setAdapter(adapter);
+                                    keyWord.setAdapter(adapter);
                                     Log.v(TAG + "Runnable", "set the autocomplete");
                                 }
                             }

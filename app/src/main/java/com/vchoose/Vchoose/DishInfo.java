@@ -36,8 +36,6 @@ import java.util.List;
 
 public class DishInfo extends ActionBarActivity {
 
-    public static String NAME = "";
-    public static String DIS = "";
     private String Authentication;
     private String dish_id;
     private String restaurant_id;

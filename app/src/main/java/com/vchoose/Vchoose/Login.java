@@ -159,10 +159,6 @@ public class Login extends ActionBarActivity {
         } catch(JSONException e) {}
     }
 
-    public void facebookLogin() {
-        setContentView(R.layout.activity_main);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

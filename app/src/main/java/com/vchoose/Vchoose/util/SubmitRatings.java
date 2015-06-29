@@ -1,4 +1,4 @@
-package com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls;
+package com.vchoose.Vchoose.util;
 
 import android.app.Activity;
 import android.os.AsyncTask;

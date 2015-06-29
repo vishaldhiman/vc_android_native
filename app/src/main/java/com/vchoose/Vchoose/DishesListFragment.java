@@ -24,7 +24,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.vchoose.Vchoose.com.vchoose.Vchoose.api.calls.SubmitRatings;
+import com.vchoose.Vchoose.util.SubmitRatings;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONException;
@@ -39,7 +39,7 @@ import java.util.HashMap;
  * This fragment is to show the search result
  */
 public class DishesListFragment extends Fragment {
-    ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> jsonlist = new ArrayList<>();
     ListView myList;
     private static final String dishname = "dishName";
     private static final String location = "location";
@@ -47,13 +47,14 @@ public class DishesListFragment extends Fragment {
     private static final String rating = "rating";
     private static final String description = "description";
     private static final String thumbnail = "thumbnail";
-    private static View v;
+    protected static View v;
 
     public static String AuthenticationToken;
 
     public void setArrayList(ArrayList<HashMap<String, String>> jsonlist ) {
         this.jsonlist = jsonlist;
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,175 +66,172 @@ public class DishesListFragment extends Fragment {
                 parent.removeView(v);
         }
 
+        //set adapter
         myList=(ListView)v.findViewById(android.R.id.list);
-        RatingAdapter adapter = new RatingAdapter(jsonlist);
-
+        myArrayAdapter adapter = new myArrayAdapter(jsonlist);
         myList.setAdapter(adapter);
 
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.v("clicked", "true");
-                Intent intent = new Intent(getActivity(), DishInfo.class);
-                HashMap<String, String> dishes = (HashMap<String, String>) jsonlist.get(position);
-                String name_text = dishes.get(dishname);
-                String description_text = dishes.get(description);
-                String provider = dishes.get("provider");
+            Log.v("clicked", "true");
+            Intent intent = new Intent(getActivity(), DishInfo.class);
 
-                String location_text = dishes.get(location);
-                String dish_id = dishes.get("ID");
-                ArrayList<String> stringList = new ArrayList<String>();
-                stringList.add(name_text);
-                stringList.add(description_text);
-                stringList.add(location_text);
+            HashMap<String, String> dishes = jsonlist.get(position);
 
-                intent.putExtra("provider", provider);
-                if(provider.equals("user_added")) {
-                    intent.putExtra("provider_name", dishes.get("provider_name"));
-                }
-                intent.putExtra("DishInfo", stringList);
-                intent.putExtra("Dish_id", dish_id);
-                intent.putExtra("Authentication", AuthenticationToken);
-                intent.putExtra("restaurant_id", dishes.get("restaurant_id"));
-                intent.putExtra("restaurant_name", dishes.get("restaurant_name"));
-                intent.putExtra("restaurant_phone", dishes.get("restaurant_phone"));
-                intent.putExtra("restaurant_location", dishes.get("restaurant_location"));
+            String name_text = dishes.get(dishname);
+            String description_text = dishes.get(description);
+            String provider = dishes.get("provider");
+            String location_text = dishes.get(location);
+            String dish_id = dishes.get("ID");
 
-                ArrayList<String> tagList = new ArrayList<String>();
-                for(int j = 0;  j < 3 ; j++) {
-                    String s = dishes.get("Tag"+j);
-                    tagList.add(s);
-                }
-                intent.putExtra("tagList", tagList);
-                startActivity(intent);
+            /* values passed */
+            ArrayList<String> stringList = new ArrayList<>();
+            stringList.add(name_text);
+            stringList.add(description_text);
+            stringList.add(location_text);
+            intent.putExtra("provider", provider);
+            if(provider.equals("user_added")) {
+                intent.putExtra("provider_name", dishes.get("provider_name"));
+            }
+            intent.putExtra("DishInfo", stringList);
+            intent.putExtra("Dish_id", dish_id);
+            intent.putExtra("Authentication", AuthenticationToken);
+            intent.putExtra("restaurant_id", dishes.get("restaurant_id"));
+            intent.putExtra("restaurant_name", dishes.get("restaurant_name"));
+            intent.putExtra("restaurant_phone", dishes.get("restaurant_phone"));
+            intent.putExtra("restaurant_location", dishes.get("restaurant_location"));
+            ArrayList<String> tagList = new ArrayList<>();
+            for(int j = 0;  j < 3 ; j++) {
+                String s = dishes.get("Tag"+j);
+                tagList.add(s);
+            }
+            intent.putExtra("tagList", tagList);
+
+            /* start DishInfo */
+            startActivity(intent);
             }
 
         });
         return v;
     }
 
-    class RatingAdapter extends ArrayAdapter {
+    class myArrayAdapter extends ArrayAdapter {
         ArrayList<HashMap<String, String>> jsonlist;
 
-        RatingAdapter(ArrayList list) {
+        myArrayAdapter(ArrayList list) {
             super(getActivity(), R.layout.dish_list_componet, list);
             jsonlist = list;
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
+            View row;
 
-            View row=convertView;
-            //ViewWrapper wrapper;
-            DishViewWrapper wrapper;
-            final RatingBar rate;
+            TextView dishName;
+            TextView dishLocation;
+            TextView descriptionText;
+            ImageView dishImage;
+
             TextView tag1;
             TextView tag2;
             TextView tag3;
             final Float ratingFloat;
+            final RatingBar rate;
 
-            final HashMap<String, String> cur_dish = (HashMap<String, String>) jsonlist.get(position);
+            final HashMap<String, String> cur_dish = jsonlist.get(position);
 
-            /*if (row==null)*/ {
-                LayoutInflater inflater=getActivity().getLayoutInflater();
-                row=inflater.inflate(R.layout.dish_list_componet, parent, false);//set the list view
+            //set the list view
+            LayoutInflater inflater=getActivity().getLayoutInflater();
+            row=inflater.inflate(R.layout.dish_list_componet, parent, false);
+
+            String provider = cur_dish.get("provider");
+            if(provider.equals("user_added")) {
+                row.setBackgroundColor(Color.rgb(149,223,191));//128, 186, 167));
+                LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.customizeRow);
+                ImageView imageView = new ImageView(getActivity());
+                imageView.setImageResource(R.drawable.customized);
+                linearLayout.addView(imageView,0);
+                imageView.getLayoutParams().height = 50;
+                imageView.getLayoutParams().width = 200;
+                TextView textView = (TextView)row.findViewById(R.id.creatorName);
+                textView.setText("by " + cur_dish.get("provider_name"));
+            }
+
+            rate=(RatingBar)row.findViewById(R.id.ratingBar);
+            dishName = (TextView)row.findViewById(R.id.Dish_name);
+            dishLocation = (TextView)row.findViewById(R.id.location);
+            descriptionText = (TextView)row.findViewById(R.id.description);
+            dishImage = (ImageView)row.findViewById(R.id.icon);
 
 
-                String provider = cur_dish.get("provider");
-                if(provider.equals("user_added")) {
-                    row.setBackgroundColor(Color.rgb(149,223,191));//128, 186, 167));
-                    LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.customizeRow);
-                    ImageView imageView = new ImageView(getActivity());
-                    imageView.setImageResource(R.drawable.customized);
-                    linearLayout.addView(imageView,0);
-                    imageView.getLayoutParams().height = 50;
-                    imageView.getLayoutParams().width = 200;
-                    TextView textView = (TextView)row.findViewById(R.id.creatorName);
-                    textView.setText("by " + cur_dish.get("provider_name"));
+            ratingFloat = Float.parseFloat(cur_dish.get(rating));
+            dishName.setText(cur_dish.get(dishname));
+            dishLocation.setText(cur_dish.get(location));
+            rate.setRating(ratingFloat);
+            descriptionText.setText(unescape(cur_dish.get(description)));
+
+            //tag setter
+            {
+                tag1 = (TextView)row.findViewById(R.id.tag1);
+                tag2 = (TextView)row.findViewById(R.id.tag2);
+                tag3 = (TextView)row.findViewById(R.id.tag3);
+                tag1.setText(null);
+                tag2.setText(null);
+                tag3.setText(null);
+                String s[] = new String[3];
+
+                for(int i = 0; i < 3; i++) {
+                    s[i] = cur_dish.get("Tag" + i);
                 }
-
-                wrapper=new DishViewWrapper(row);
-                row.setTag(wrapper);
-                rate=wrapper.getRatingBar();
-                ratingFloat = Float.parseFloat(cur_dish.get(rating));
-                wrapper.getVehicleType().setText(cur_dish.get(dishname));
-                wrapper.getVehicleColor().setText(cur_dish.get(location));
-                rate.setTag(new Integer(position));
-                rate.setRating(ratingFloat);
-                wrapper.getDescription().setText(unescape(cur_dish.get(description)));
-
-                {
-                    tag1 = (TextView)row.findViewById(R.id.tag1);
-                    tag2 = (TextView)row.findViewById(R.id.tag2);
-                    tag3 = (TextView)row.findViewById(R.id.tag3);
-                    tag1.setText(null);
-                    tag2.setText(null);
-                    tag3.setText(null);
-                    String s[] = new String[3];
-
-                    for(int i = 0; i < 3; i++) {
-                        s[i] = cur_dish.get("Tag" + i);
-                    }
-                    if(s[0] != null) {
-                        tag3.setText(s[0]);
-                    }
-                    else
-                        tag3.setVisibility(View.GONE);
-
-                    if(s[1] != null)
-                        tag2.setText(s[1]);
-                    else
-                        tag2.setVisibility(View.GONE);
-
-                    if(s[2] != null)
-                        tag1.setText(s[2]);
-                    else
-                        tag1.setVisibility(View.GONE);
+                if(s[0] != null) {
+                    tag3.setText(s[0]);
                 }
-                rate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                                                      @Override
-                                                      public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                            if(fromUser) {
-                                Log.v("Rating Bar changed", String.valueOf(rating));
-                                Log.v("The dish of Rating bar", String.valueOf(position));
-                                Log.v("ID", cur_dish.get("ID"));
+                else
+                    tag3.setVisibility(View.GONE);
 
-                                //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
+                if(s[1] != null)
+                    tag2.setText(s[1]);
+                else
+                    tag2.setVisibility(View.GONE);
 
-                                //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
+                if(s[2] != null)
+                    tag1.setText(s[2]);
+                else
+                    tag1.setVisibility(View.GONE);
+            }
 
-                                //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
-                                if(AuthenticationToken == null) {
-                                    loginBlock();
-                                    rate.setRating(ratingFloat);
-                                } else {
-                                    ratingBlock(cur_dish, rating, AuthenticationToken);
-                                    //new SubmitRatings(getActivity()).execute(cur_dish.get("ID"), String.valueOf(rating), AuthenticationToken);
-                                }
-                                //the Rating is stored here
+            //rating adapter
+            rate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                                                  @Override
+                                                  public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        if(fromUser) {
+                            Log.v("Rating Bar changed", String.valueOf(rating));
+                            Log.v("The dish of Rating bar", String.valueOf(position));
+                            Log.v("ID", cur_dish.get("ID"));
+
+                            //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
+
+                            //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
+
+                            //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
+                            if(AuthenticationToken == null) {
+                                loginBlock();
+                                rate.setRating(ratingFloat);
+                            } else {
+                                ratingBlock(cur_dish, rating, AuthenticationToken);
+                                //new SubmitRatings(getActivity()).execute(cur_dish.get("ID"), String.valueOf(rating), AuthenticationToken);
                             }
+                            //the Rating is stored here
                         }
                     }
-                );
-            }/*
-            else {
-                wrapper=(DishViewWrapper)row.getTag();
-                rate=wrapper.getRatingBar();
-            }
-            */
-
-            //RowModel model=getModel(position);
-
-                String thumbnail_url = cur_dish.get(thumbnail);
-
-                if ((thumbnail_url != null) && (!thumbnail_url.equalsIgnoreCase("null"))) {
-                    //url = new URL("http://vchoose.us"+thumbnail_url);
-
-                    //Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    //wrapper.getDishImage().setImageBitmap(bmp);
-
-                    new DownloadImageTask(wrapper.getDishImage()).execute("http://vchoose.us"+thumbnail_url);
                 }
+            );
 
+            //image downloader
+            String thumbnail_url = cur_dish.get(thumbnail);
+            if ((thumbnail_url != null) && (!thumbnail_url.equalsIgnoreCase("null"))) {
+                new DownloadImageTask(dishImage).execute("http://vchoose.us"+thumbnail_url);
+            }
             return(row);
         }
     }
@@ -331,7 +329,9 @@ public class DishesListFragment extends Fragment {
                 t.start();
                 try {
                     t.join();
-                } catch (InterruptedException e){}
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                }
                 Toast toast = Toast.makeText(getActivity(), "Log in success", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -355,6 +355,8 @@ public class DishesListFragment extends Fragment {
             AuthenticationToken = responseObject.getString("auth_token");
             Log.v("Login success", AuthenticationToken);
             MainPagerActivity.AuthenticationToken = AuthenticationToken;
-        } catch(JSONException e) {}
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
