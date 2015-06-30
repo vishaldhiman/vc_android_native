@@ -234,7 +234,7 @@ public class VcJsonReader {
 
             String url = Uri.encode(URL_HOST + API_VER + url_restaurant_info + ID + url_details, ALLOWED_URI_CHARS);
 
-            Log.v("VcJsonReader","JSON Encoded URL:\n"+url);
+            Log.v(TAG + "VcJsonReader","JSON Encoded URL:\n"+url);
 
             HttpGet httpGet = new HttpGet(url);
 

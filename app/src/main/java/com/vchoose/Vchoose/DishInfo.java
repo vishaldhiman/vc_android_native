@@ -7,17 +7,13 @@ import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -26,9 +22,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +29,47 @@ import java.util.List;
 
 public class DishInfo extends ActionBarActivity {
 
+    /* keywords for dish */
+    private static final String dishname = "dishName";
+    private static final String dishID = "ID";
+    private static final String location = "location";
+    private static final String price = "price";
+    private static final String rating = "rating";
+    private static final String description = "description";
+    private static final String dishTag = "Tag";
+    private static final String provider = "provider";
+    private static final String provider_name = "provider_name";
+    private static final String thumbnail = "thumbnail";
+    //new value to pass to DishInfo
+    private static final String dishInfo = "DishInfo";
+    private static final String dishTagList = "tagList";
+
+    /* keywords for restaurant information from dish & also keywords for restaurant info */
+    private static final String dishRestID = "restaurant_id";
+    private static final String dishRestName = "restaurant_name";
+    private static final String dishRestPhone = "restaurant_phone";
+    private static final String dishRestLocation = "restaurant_location";
+
+    /* keywords for adding a tag */
+    private static final String tag_name = "tag_name";
+    private static final String taggableType = "taggable_type";
+    private static final String taggableId =  "taggable_id";
+
+
     private String Authentication;
     private String dish_id;
     private String restaurant_id;
     private String restaurant_name;
     private String restaurant_phone;
-    private String provider;
-    private String provider_name;
+    private String dishProvider;
+    private String dishProvider_name;
     private String restaurant_location;
     private String url_tag = "http://vchoose.us/tag_assignments.json";
 
     private TextView tag1;
     private TextView tag2;
     private TextView tag3;
-    private String m_Text = "";
+    private String m_Text;
     private String tag[];
 
     //public static ArrayList<String> stringList;
@@ -58,18 +78,18 @@ public class DishInfo extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_info);
         Bundle extras = getIntent().getExtras();
-        ArrayList<String> stringList = extras.getStringArrayList("DishInfo");
+        ArrayList<String> stringList = extras.getStringArrayList(dishInfo);
         Authentication = extras.getString("Authentication");
-        restaurant_id = extras.getString("restaurant_id");
-        restaurant_name = extras.getString("restaurant_name");
-        restaurant_phone = extras.getString("restaurant_phone");
-        restaurant_location = extras.getString("restaurant_location");
-        provider = extras.getString("provider");
+        restaurant_id = extras.getString(dishRestID);
+        restaurant_name = extras.getString(dishRestName);
+        restaurant_phone = extras.getString(dishRestPhone);
+        restaurant_location = extras.getString(dishRestLocation);
+        dishProvider = extras.getString(provider);
 
         //Authentication = "hG4T5oT96uwzDYbxpnST";      //for test
 
-        dish_id = extras.getString("Dish_id");
-        ArrayList<String> tagList = extras.getStringArrayList("tagList");
+        dish_id = extras.getString(dishID);
+        ArrayList<String> tagList = extras.getStringArrayList(dishTagList);
 
         TextView textview = (TextView)findViewById(R.id.DishName);
         TextView textview2=(TextView)findViewById(R.id.DishPhone);
@@ -80,8 +100,8 @@ public class DishInfo extends ActionBarActivity {
         tag2 = (TextView)findViewById(R.id.tag_info2);
         tag3 = (TextView)findViewById(R.id.tag_info3);
 
-        if (provider.equals("user_added")){
-            String provider_name = extras.getString("provider_name");
+        if (dishProvider.equals("user_added")){
+            String provider_name = extras.getString(DishInfo.provider_name);
             customizedTag.setText("Customized dish by " + provider_name);
             RelativeLayout background = (RelativeLayout)findViewById(R.id.dishInfo_background);
             background.setBackgroundColor(Color.rgb(149, 223, 191));
@@ -104,10 +124,10 @@ public class DishInfo extends ActionBarActivity {
             public void onClick(View v) {
                 //finish();
                 Intent intent = new Intent(getApplicationContext(),RestaurantInfo.class);
-                intent.putExtra("restaurant_id",restaurant_id);
-                intent.putExtra("restaurant_name",restaurant_name);
-                intent.putExtra("restaurant_phone",restaurant_phone);
-                intent.putExtra("restaurant_location",restaurant_location);
+                intent.putExtra(dishRestID,restaurant_id);
+                intent.putExtra(dishRestName,restaurant_name);
+                intent.putExtra(dishRestPhone,restaurant_phone);
+                intent.putExtra(dishRestLocation,restaurant_location);
                 startActivity(intent);
             }
         });
@@ -211,9 +231,9 @@ public class DishInfo extends ActionBarActivity {
             HttpPost httpPost = new HttpPost(url_tag);
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
                 /*hard coded for testing*/
-            nameValuePairs.add(new BasicNameValuePair("tag_name", tag));
-            nameValuePairs.add(new BasicNameValuePair("taggable_type", "MenuItem"));
-            nameValuePairs.add(new BasicNameValuePair("taggable_id", id));
+            nameValuePairs.add(new BasicNameValuePair(tag_name, tag));
+            nameValuePairs.add(new BasicNameValuePair(taggableType, "MenuItem"));
+            nameValuePairs.add(new BasicNameValuePair(taggableId, id));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             httpPost.addHeader("authentication_token",Authentication);

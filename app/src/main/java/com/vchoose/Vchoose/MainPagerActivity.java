@@ -64,19 +64,35 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
     private static final String TAG = "SamT_";
 
+    /* keywords for dish */
     private static final String dishname = "dishName";
+    private static final String dishID = "ID";
     private static final String location = "location";
     private static final String price = "price";
     private static final String rating = "rating";
     private static final String description = "description";
+    private static final String dishTag = "Tag";
+    private static final String provider = "provider";
+    private static final String provider_name = "provider_name";
+    private static final String thumbnail = "thumbnail";
 
+    /* keywords for restaurant information from dish */
+    private static final String dishRestID = "restaurant_id";
+    private static final String dishRestName = "restaurant_name";
+    private static final String dishRestPhone = "restaurant_phone";
+    private static final String dishRestLocation = "restaurant_location";
+
+    /* keywords for restaurant info */
+    private static final String restaurantID = "id";
     private static final String restaurantName = "name";
     private static final String restaurantLocation = "location";
     private static final String restaurantDistance = "distance";
     private static final String restaurantRating = "rating";
     //private static final String restaurantDescription = "description";
     private static final String restaurantPhone = "phone";
+    private static final String restaurantTag = "Tag";
     private static final String getRestaurantRatingImageUrl = "ratingImage";
+    private static final String yelpLink = "yelp_mobile_url";
 
     public static String AuthenticationToken;// = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
 
@@ -326,20 +342,20 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
                         s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
                         Log.v("My Tags" + j, s[j]);
-                        map.put("Tag"+j,s[j]);
+                        map.put(dishTag + j, s[j]);
                     }
 
                     //description
-                    map.put(description,dish.getString("description"));
+                    map.put(description, dish.getString("description"));
 
                     //customized?
                     String provider = dish.getString("provider");
-                    map.put("provider",provider);
+                    map.put(MainPagerActivity.provider, provider);
                     if(provider.equals("user_added")){
-                        map.put("provider_name",dish.getJSONObject("creator").getString("username"));
+                        map.put(MainPagerActivity.provider_name, dish.getJSONObject("creator").getString("username"));
                     }
                     //dish ID
-                    map.put("ID", dish.getString("id"));
+                    map.put(dishID, dish.getString("id"));
                     //rating
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
@@ -350,12 +366,13 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     else
                         map.put(MainPagerActivity.price,price);
 
+                    map.put(thumbnail,dish.getString("thumbnail"));
+
                     //restaurant info
-                    map.put("restaurant_id", dish.getJSONObject("restaurant").getString("id"));
-                    map.put("restaurant_name", dish.getJSONObject("restaurant").getString("name"));
-                    map.put("restaurant_phone", dish.getJSONObject("restaurant").getString("phone"));
-                    map.put("restaurant_location", dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
-                    map.put("thumbnail",dish.getString("thumbnail"));
+                    map.put(dishRestID, dish.getJSONObject("restaurant").getString("id"));
+                    map.put(dishRestName, dish.getJSONObject("restaurant").getString("name"));
+                    map.put(dishRestPhone, dish.getJSONObject("restaurant").getString("phone"));
+                    map.put(dishRestLocation, dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
 
                     dishJsonlist.add(map);
                 }
@@ -368,6 +385,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
                     JSONObject restaurant = restaurants.getJSONObject(i);
 
+                    map.put(restaurantID, restaurant.getString("id"));
                     map.put(restaurantName, restaurant.getString("name"));
                     map.put(restaurantPhone, restaurant.getString("phone"));
                     map.put(restaurantLocation, restaurant.getJSONObject("location").getString("full_address"));
@@ -385,7 +403,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                         String url = meta.getString("rating_img_url");
                         String yelp_mobile_url = meta.getString("mobile_url");
                         map.put(getRestaurantRatingImageUrl, url);
-                        map.put("yelp_mobile_url",yelp_mobile_url);
+                        map.put(MainPagerActivity.yelpLink, yelp_mobile_url);
                     }
 
                     JSONArray tags = restaurant.getJSONArray("tags");
@@ -394,7 +412,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     for(int j = 0; ( j < tags.length() )&&( j < 3 ); j++) {
                         s[j] = tags.getJSONObject(tags.length()-j-1).getString("name");
                         Log.v("My Tags" + j, s[j]);
-                        map.put("Tag"+j,s[j]);
+                        map.put(MainPagerActivity.restaurantTag + j,s[j]);
                     }
 
                     restaurantJsonlist.add(map);

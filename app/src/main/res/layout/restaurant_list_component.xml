@@ -10,7 +10,7 @@
         android:paddingLeft="10dp"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/Dish_name"
+            android:id="@+id/restaurantName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textColor="#ff000000"
@@ -21,7 +21,7 @@
             android:text="Mobile: " />
 
         <TextView
-            android:id="@+id/vehicleColor"
+            android:id="@+id/restaurantLocation"
             android:textColor="#ff000000"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/restaurantDescription"
             android:textColor="#ff000000"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/phoneNumber"
+            android:id="@+id/restaurantPhoneNumber"
             android:textColor="#ff000000"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

@@ -41,12 +41,28 @@ import java.util.HashMap;
 public class DishesListFragment extends Fragment {
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<>();
     ListView myList;
+
+    /* keywords for dish */
     private static final String dishname = "dishName";
+    private static final String dishID = "ID";
     private static final String location = "location";
     private static final String price = "price";
     private static final String rating = "rating";
     private static final String description = "description";
+    private static final String dishTag = "Tag";
+    private static final String provider = "provider";
+    private static final String provider_name = "provider_name";
     private static final String thumbnail = "thumbnail";
+    //new value to pass to DishInfo
+    private static final String dishInfo = "DishInfo";
+    private static final String dishTagList = "tagList";
+
+    /* keywords for restaurant information from dish */
+    private static final String dishRestID = "restaurant_id";
+    private static final String dishRestName = "restaurant_name";
+    private static final String dishRestPhone = "restaurant_phone";
+    private static final String dishRestLocation = "restaurant_location";
+
     protected static View v;
 
     public static String AuthenticationToken;
@@ -81,32 +97,32 @@ public class DishesListFragment extends Fragment {
 
             String name_text = dishes.get(dishname);
             String description_text = dishes.get(description);
-            String provider = dishes.get("provider");
+            String provider = dishes.get(DishesListFragment.provider);
             String location_text = dishes.get(location);
-            String dish_id = dishes.get("ID");
+            String dish_id = dishes.get(dishID);
 
             /* values passed */
             ArrayList<String> stringList = new ArrayList<>();
             stringList.add(name_text);
             stringList.add(description_text);
             stringList.add(location_text);
-            intent.putExtra("provider", provider);
+            intent.putExtra(DishesListFragment.provider, provider);
             if(provider.equals("user_added")) {
-                intent.putExtra("provider_name", dishes.get("provider_name"));
+                intent.putExtra(DishesListFragment.provider_name, dishes.get(DishesListFragment.provider_name));
             }
-            intent.putExtra("DishInfo", stringList);
-            intent.putExtra("Dish_id", dish_id);
+            intent.putExtra(dishInfo, stringList);
+            intent.putExtra(dishID, dish_id);
             intent.putExtra("Authentication", AuthenticationToken);
-            intent.putExtra("restaurant_id", dishes.get("restaurant_id"));
-            intent.putExtra("restaurant_name", dishes.get("restaurant_name"));
-            intent.putExtra("restaurant_phone", dishes.get("restaurant_phone"));
-            intent.putExtra("restaurant_location", dishes.get("restaurant_location"));
+            intent.putExtra(dishRestID, dishes.get(dishRestID));
+            intent.putExtra(dishRestName, dishes.get(dishRestName));
+            intent.putExtra(dishRestPhone, dishes.get(dishRestPhone));
+            intent.putExtra(dishRestLocation, dishes.get(dishRestLocation));
             ArrayList<String> tagList = new ArrayList<>();
             for(int j = 0;  j < 3 ; j++) {
-                String s = dishes.get("Tag"+j);
+                String s = dishes.get(dishTag + j);
                 tagList.add(s);
             }
-            intent.putExtra("tagList", tagList);
+            intent.putExtra(dishTagList, tagList);
 
             /* start DishInfo */
             startActivity(intent);
@@ -144,7 +160,7 @@ public class DishesListFragment extends Fragment {
             LayoutInflater inflater=getActivity().getLayoutInflater();
             row=inflater.inflate(R.layout.dish_list_componet, parent, false);
 
-            String provider = cur_dish.get("provider");
+            String provider = cur_dish.get(DishesListFragment.provider);
             if(provider.equals("user_added")) {
                 row.setBackgroundColor(Color.rgb(149,223,191));//128, 186, 167));
                 LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.customizeRow);
@@ -154,13 +170,13 @@ public class DishesListFragment extends Fragment {
                 imageView.getLayoutParams().height = 50;
                 imageView.getLayoutParams().width = 200;
                 TextView textView = (TextView)row.findViewById(R.id.creatorName);
-                textView.setText("by " + cur_dish.get("provider_name"));
+                textView.setText("by " + cur_dish.get(DishesListFragment.provider_name));
             }
 
             rate=(RatingBar)row.findViewById(R.id.ratingBar);
-            dishName = (TextView)row.findViewById(R.id.Dish_name);
+            dishName = (TextView)row.findViewById(R.id.restaurantName);
             dishLocation = (TextView)row.findViewById(R.id.location);
-            descriptionText = (TextView)row.findViewById(R.id.description);
+            descriptionText = (TextView)row.findViewById(R.id.restaurantDescription);
             dishImage = (ImageView)row.findViewById(R.id.icon);
 
 
@@ -181,7 +197,7 @@ public class DishesListFragment extends Fragment {
                 String s[] = new String[3];
 
                 for(int i = 0; i < 3; i++) {
-                    s[i] = cur_dish.get("Tag" + i);
+                    s[i] = cur_dish.get(dishTag + i);
                 }
                 if(s[0] != null) {
                     tag3.setText(s[0]);
@@ -207,7 +223,7 @@ public class DishesListFragment extends Fragment {
                         if(fromUser) {
                             Log.v("Rating Bar changed", String.valueOf(rating));
                             Log.v("The dish of Rating bar", String.valueOf(position));
-                            Log.v("ID", cur_dish.get("ID"));
+                            Log.v("ID", cur_dish.get(dishID));
 
                             //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
 

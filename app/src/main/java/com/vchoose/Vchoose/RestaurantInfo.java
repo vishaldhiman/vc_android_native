@@ -33,6 +33,11 @@ import java.util.List;
  * Created by Archie on 04/06/2015.
  */
 public class RestaurantInfo extends Activity {
+    /* keywords for restaurant information from last page */
+    private static final String dishRestID = "restaurant_id";
+    private static final String dishRestName = "restaurant_name";
+    private static final String dishRestPhone = "restaurant_phone";
+    private static final String dishRestLocation = "restaurant_location";
 
     ArrayList<HashMap<String, HashMap>> restaurantInfoJsonlist = new ArrayList<HashMap<String, HashMap>>();
     String restaurantID;
@@ -51,11 +56,13 @@ public class RestaurantInfo extends Activity {
         TextView textview3=(TextView)findViewById(R.id.DishPhone);
         list1 = (ListView)findViewById(R.id.list1);
         list2 = (ListView)findViewById(R.id.list2);
-        restaurantID = extras.getString("restaurant_id");
+        restaurantID = extras.getString(dishRestID);
+
         textview.setText(restaurantID);
-        textview.setText(extras.getString("restaurant_name"));
-        textview2.setText(extras.getString("restaurant_phone"));
-        textview3.setText(extras.getString("restaurant_location"));
+        textview.setText(extras.getString(dishRestName));
+        textview2.setText(extras.getString(dishRestPhone));
+        textview3.setText(extras.getString(dishRestLocation));
+
         new ProgressTask(this).execute(restaurantID);
     }
 
@@ -108,7 +115,7 @@ public class RestaurantInfo extends Activity {
                 list.add(name);
             }
             final ArrayAdapter adapter1 = new ArrayAdapter(RestaurantInfo.this,
-                    android.R.layout.simple_list_item_1, list);
+                    R.layout.restaurant_dish_list_component, list);
 
             list1.setAdapter(adapter1);
             list1.setOnItemClickListener(new AdapterView.OnItemClickListener() {

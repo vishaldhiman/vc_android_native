@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,6 +26,7 @@ import java.util.HashMap;
  * Created by Sam on 4/29/2015.
  */
 public class RestaurantListFragment extends Fragment {
+    private static final String restaurantID = "id";
     private static final String restaurantName = "name";
     private static final String restaurantLocation = "location";
     private static final String restaurantDistance = "distance";
@@ -32,6 +34,12 @@ public class RestaurantListFragment extends Fragment {
     private static final String restaurantDescription = "description";
     private static final String restaurantPhone = "phone";
     private static final String getRestaurantRatingImageUrl = "ratingImage";
+
+    /* keywords for restaurant information */
+    private static final String dishRestID = "restaurant_id";
+    private static final String dishRestName = "restaurant_name";
+    private static final String dishRestPhone = "restaurant_phone";
+    private static final String dishRestLocation = "restaurant_location";
 
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<HashMap<String, String>>();
 
@@ -48,6 +56,17 @@ public class RestaurantListFragment extends Fragment {
         RatingAdapter adapter = new RatingAdapter(jsonlist);
 
         myList.setAdapter(adapter);
+        myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), RestaurantInfo.class);
+                intent.putExtra(dishRestID, jsonlist.get(position).get(restaurantID));
+                intent.putExtra(dishRestName, jsonlist.get(position).get(restaurantName));
+                intent.putExtra(dishRestPhone, jsonlist.get(position).get(restaurantPhone));
+                intent.putExtra(dishRestLocation, jsonlist.get(position).get(restaurantLocation));
+                startActivity(intent);
+            }
+        });
         return v;
     }
 
@@ -72,12 +91,12 @@ public class RestaurantListFragment extends Fragment {
 
 
             LayoutInflater inflater=getActivity().getLayoutInflater();
-            row=inflater.inflate(R.layout.restaurant_list_componet, parent, false);//set the list view
-            name = (TextView) row.findViewById(R.id.Dish_name);
-            location = (TextView) row.findViewById(R.id.vehicleColor);
-            distence = (TextView) row.findViewById(R.id.description);
+            row=inflater.inflate(R.layout.restaurant_list_component, parent, false);//set the list view
+            name = (TextView) row.findViewById(R.id.restaurantName);
+            location = (TextView) row.findViewById(R.id.restaurantLocation);
+            distence = (TextView) row.findViewById(R.id.restaurantDescription);
             rating = (ImageView) row.findViewById(R.id.ratingPic);
-            phoneText = (TextView) row.findViewById(R.id.phoneNumber);
+            phoneText = (TextView) row.findViewById(R.id.restaurantPhoneNumber);
 
             {
                 tag1 = (TextView)row.findViewById(R.id.tag1);
