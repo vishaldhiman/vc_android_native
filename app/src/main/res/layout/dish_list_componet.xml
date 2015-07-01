@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -31,16 +32,36 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/restaurantName"
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                android:id="@+id/dishName"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/dishPrice"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#ff000000"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:paddingTop="6dip"
                 android:paddingBottom="2dip"
-                android:text="Mobile: " />
+                android:text="dishName"/>
+
+                <TextView
+                    android:id="@+id/dishPrice"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ff000000"
+                    android:paddingTop="6dip"
+                    android:paddingBottom="2dip"
+                    android:text="$8.5"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/location"
@@ -48,7 +69,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="2dip"
-                android:text="Mobile: ">
+                android:text="location">
             </TextView>
 
             <TextView
@@ -57,14 +78,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="2dip"
-                android:text="Description: ">
+                android:text="restaurantDescription">
             </TextView>
 
             <RatingBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
                 android:id="@+id/ratingBar"
+                style="@style/foodRatingBar"
                 android:stepSize="1.0"/>
         </LinearLayout>
     </LinearLayout>
@@ -84,7 +105,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:background="@drawable/tag"
-            android:text="Description: ">
+            android:text="Tag">
         </TextView>
         <TextView
             android:id="@+id/tag2"
@@ -93,7 +114,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:background="@drawable/tag"
-            android:text="Description: ">
+            android:text="Tag">
         </TextView>
         <TextView
             android:id="@+id/tag3"
@@ -102,7 +123,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:background="@drawable/tag"
-            android:text="Description: ">
+            android:text="Tag">
         </TextView>
     </LinearLayout>
     <LinearLayout
@@ -119,6 +140,4 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"/>
     </LinearLayout>
-
-
 </LinearLayout>

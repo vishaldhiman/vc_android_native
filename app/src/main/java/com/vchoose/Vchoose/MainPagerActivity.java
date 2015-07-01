@@ -176,7 +176,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         buildGoogleApiClient();
         mGoogleApiClient.connect();
 
-        //keyWord.setText("pizza");
+        keyWord.setText("pizza");
         //doSearch();//for testing
     }
 

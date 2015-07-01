@@ -92,7 +92,7 @@ public class RestaurantListFragment extends Fragment {
 
             LayoutInflater inflater=getActivity().getLayoutInflater();
             row=inflater.inflate(R.layout.restaurant_list_component, parent, false);//set the list view
-            name = (TextView) row.findViewById(R.id.restaurantName);
+            name = (TextView) row.findViewById(R.id.dishName);
             location = (TextView) row.findViewById(R.id.restaurantLocation);
             distence = (TextView) row.findViewById(R.id.restaurantDescription);
             rating = (ImageView) row.findViewById(R.id.ratingPic);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_margin="3dp"
+        android:gravity="center"
+
+        android:background="@drawable/nice_button"
+
+        android:text="Test"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:shadowRadius="1"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowColor="@android:color/black"
+        ></Button>
+</LinearLayout>

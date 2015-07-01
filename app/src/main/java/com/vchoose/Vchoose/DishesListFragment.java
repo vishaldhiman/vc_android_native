@@ -174,7 +174,7 @@ public class DishesListFragment extends Fragment {
             }
 
             rate=(RatingBar)row.findViewById(R.id.ratingBar);
-            dishName = (TextView)row.findViewById(R.id.restaurantName);
+            dishName = (TextView)row.findViewById(R.id.dishName);
             dishLocation = (TextView)row.findViewById(R.id.location);
             descriptionText = (TextView)row.findViewById(R.id.restaurantDescription);
             dishImage = (ImageView)row.findViewById(R.id.icon);
