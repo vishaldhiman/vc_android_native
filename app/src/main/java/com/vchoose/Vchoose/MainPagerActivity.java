@@ -75,6 +75,10 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     private static final String provider = "provider";
     private static final String provider_name = "provider_name";
     private static final String thumbnail = "thumbnail";
+    private static final String review = "review";
+    private static final String reviewer = "reviewer";
+    private static final String reviewerImage = "image";
+    private static final String reviewRating = "rating";
 
     /* keywords for restaurant information from dish */
     private static final String dishRestID = "restaurant_id";
@@ -109,6 +113,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
     ArrayList<String> hint = new ArrayList<>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<>();
+    ArrayList<ArrayList<HashMap<String, String>>> dishReviewJsonlist = new ArrayList<>();
     ArrayList<HashMap<String, String>> restaurantJsonlist = new ArrayList<>();
     ArrayList<Pair<String, LatLng>> mapMarkers = new ArrayList<>();
 
@@ -281,7 +286,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             }
 
             if(mSectionsPagerAdapter == null) {
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, restaurantJsonlist, mapMarkers);
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, dishReviewJsonlist, restaurantJsonlist, mapMarkers);
                 Log.v(TAG + "MainPagerActivity","restaurantJsonlist"+String.valueOf(restaurantJsonlist.size()));
                 mViewPager.setAdapter(mSectionsPagerAdapter);
                 mViewPager.setCurrentItem(1);
@@ -298,13 +303,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             String keyword = args[1];
             String radius = args[2];
 
-            //Log.v("MainActivity","Download URL:\n"+download_url);
-
-            //JSONArray json = jParser.getJSONFromUrl(url);
             String response = jParser.getJSONFromUrl(location,keyword,radius);
 
             try {
-
                 JSONTokener tokener = new JSONTokener(response);
                 Log.v(TAG + "MainPagerActivity", "----- Tokens from JSON Parsing -------");
                 JSONObject responseObject = (JSONObject) tokener.nextValue();
@@ -317,10 +318,12 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 Log.v("MainActivityTest","Downloaded Dishes:\n"+dishes);
 
                 dishJsonlist.clear();
+                dishReviewJsonlist.clear();
                 restaurantJsonlist.clear();
 
                 for (int i = 0; i < dishes.length(); i++) {
                     HashMap<String, String> map = new HashMap<>();
+
 
                     JSONObject dish = dishes.getJSONObject(i);
 
@@ -367,7 +370,22 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                         map.put(MainPagerActivity.price,price);
 
                     map.put(thumbnail,dish.getString("thumbnail"));
-
+                    //reviews
+                    ArrayList<HashMap<String,String>> reviewTemp = new ArrayList<>();
+                    for(int j = 0; j < dish.getJSONArray("reviews").length(); j++) {
+                        HashMap<String, String> mapReview = new HashMap<>();
+                        String review = dish.getJSONArray("reviews").getJSONObject(j).getString("review");
+                        String rating = dish.getJSONArray("reviews").getJSONObject(j).getString("rating");
+                        String reviewer = dish.getJSONArray("reviews").getJSONObject(j).getJSONObject("reviewer").getString("username");
+                        String reviewerImage = dish.getJSONArray("reviews").getJSONObject(j).getJSONObject("reviewer").getString("image");
+                        mapReview.put(MainPagerActivity.review,review);
+                        mapReview.put(MainPagerActivity.reviewRating,rating);
+                        mapReview.put(MainPagerActivity.reviewer,reviewer);
+                        mapReview.put(MainPagerActivity.reviewerImage,reviewerImage);
+                        Log.v(TAG + "Reviewer", reviewer);
+                        reviewTemp.add(mapReview);
+                    }
+                    dishReviewJsonlist.add(reviewTemp);
                     //restaurant info
                     map.put(dishRestID, dish.getJSONObject("restaurant").getString("id"));
                     map.put(dishRestName, dish.getJSONObject("restaurant").getString("name"));
@@ -494,12 +512,14 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
 
         ArrayList<HashMap<String, String>> adapterDishJsonlist;
         ArrayList<HashMap<String, String>> adapterRestaurantJsonlist;
+        ArrayList<ArrayList<HashMap<String, String>>> adapterReviewDishJsonlist;
         ArrayList<Pair<String, LatLng>> mapMarkers;
 
-        public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<HashMap<String, String>> jsonlist2, ArrayList<Pair<String, LatLng>> mMarkers) {
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<ArrayList<HashMap<String, String>>> reviewJsonlist, ArrayList<HashMap<String, String>> jsonlist2, ArrayList<Pair<String, LatLng>> mMarkers) {
             super(fm);
             adapterDishJsonlist = jsonlist;
             adapterRestaurantJsonlist = jsonlist2;
+            adapterReviewDishJsonlist = reviewJsonlist;
             mapMarkers = mMarkers;
         }
 
@@ -509,7 +529,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             // Return a PlaceholderFragment (defined as a static inner class below).
             if(position == 1) {
                 DishesListFragment tf = new DishesListFragment();        //choose what to display for which tag
-                tf.setArrayList(adapterDishJsonlist);
+                tf.setArrayList(adapterDishJsonlist, adapterReviewDishJsonlist);   //pass the data to list
                 tf.setAuthenticationToken(AuthenticationToken);
                 return tf;
             } else if(position == 0) {

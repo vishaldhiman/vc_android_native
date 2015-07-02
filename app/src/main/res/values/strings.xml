@@ -34,4 +34,6 @@
     <color name="NiceButtonDisabledEndColor">#736F6E</color>
     <color name="NiceButtonBorderColor">#ff488142</color>
 
+    <color name="backgroundColor">#ff5cb85c</color>
+    <color name="backgroundDarkColor">#ff1a7420</color>
 </resources>

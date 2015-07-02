@@ -1,17 +1,30 @@
 package com.vchoose.Vchoose;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
+import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,11 +36,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class DishInfo extends ActionBarActivity {
+    private static final String TAG = "SamT_";
 
     /* keywords for dish */
     private static final String dishname = "dishName";
@@ -40,6 +56,11 @@ public class DishInfo extends ActionBarActivity {
     private static final String provider = "provider";
     private static final String provider_name = "provider_name";
     private static final String thumbnail = "thumbnail";
+    private static final String reviews = "reviews";
+    private static final String review = "review";
+    private static final String reviewer = "reviewer";
+    private static final String reviewerImage = "image";
+    private static final String reviewRating = "rating";
     //new value to pass to DishInfo
     private static final String dishInfo = "DishInfo";
     private static final String dishTagList = "tagList";
@@ -79,6 +100,9 @@ public class DishInfo extends ActionBarActivity {
         setContentView(R.layout.activity_dish_info);
         Bundle extras = getIntent().getExtras();
         ArrayList<String> stringList = extras.getStringArrayList(dishInfo);
+        ArrayList reviews = extras.getParcelableArrayList(DishInfo.reviews);
+        //HashMap<String, String> s = (HashMap)arrayList.get(0);
+        //ArrayList<HashMap<String, String>> reviews = (ArrayList<HashMap<String, String>>)extras.getParcelableArrayList(DishInfo.reviews);
         Authentication = extras.getString("Authentication");
         restaurant_id = extras.getString(dishRestID);
         restaurant_name = extras.getString(dishRestName);
@@ -94,8 +118,10 @@ public class DishInfo extends ActionBarActivity {
         TextView textview = (TextView)findViewById(R.id.DishName);
         TextView textview2=(TextView)findViewById(R.id.DishPhone);
         Button restaurantName = (Button)findViewById(R.id.go_to_restaurant);
+        Button navigator = (Button)findViewById(R.id.restaurant_direction);
         TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
         TextView customizedTag = (TextView)findViewById(R.id.customizeTag);
+        ListView reviewList = (ListView)findViewById(R.id.reviews);
         tag1 = (TextView)findViewById(R.id.tag_info1);
         tag2 = (TextView)findViewById(R.id.tag_info2);
         tag3 = (TextView)findViewById(R.id.tag_info3);
@@ -105,11 +131,37 @@ public class DishInfo extends ActionBarActivity {
             customizedTag.setText("Customized dish by " + provider_name);
             RelativeLayout background = (RelativeLayout)findViewById(R.id.dishInfo_background);
             background.setBackgroundColor(Color.rgb(149, 223, 191));
+        } else {
+            customizedTag.setHeight(0);
         }
+
+        reviewList.setAdapter(new reviewArrayAdapter(reviews));
+        HashMap<String,String> dishReview = (HashMap) reviews.get(0);
+        HashMap<String,String> dishReview2 = (HashMap) reviews.get(1);
+        Log.v(TAG + "review", dishReview.get(review));
+        Log.v(TAG + "review2", dishReview2.get(review));
 
         textview.setText(stringList.get(0));
         //textview2.setText(stringList.get(2));
         restaurantName.setText(stringList.get(2));
+        navigator.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                //start navigation directly
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=34.021156,-118.299918");//latitude,longitude
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+                */
+
+                //pin the point first
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=34.021156,-118.299918(JuanJuan+home)");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+            }
+        });
         textview3.setText(unescape(stringList.get(1)));
         textview3.setMovementMethod(new ScrollingMovementMethod());
 
@@ -240,6 +292,57 @@ public class DishInfo extends ActionBarActivity {
             HttpResponse response = client.execute(httpPost);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    class reviewArrayAdapter extends ArrayAdapter {
+        ArrayList jsonlist;
+        reviewArrayAdapter(ArrayList list) {
+            super(DishInfo.this, R.layout.dish_list_componet, list);
+            jsonlist = list;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row;
+            LayoutInflater inflater=DishInfo.this.getLayoutInflater();
+            row=inflater.inflate(R.layout.dish_review_component, parent, false);
+
+            TextView review_text = (TextView)row.findViewById(R.id.review_words);
+            TextView review_writer = (TextView)row.findViewById(R.id.review_writer);
+            RatingBar review_rating = (RatingBar)row.findViewById(R.id.review_rating);
+
+            HashMap<String,String> dishReview = (HashMap) jsonlist.get(position);
+            review_writer.setText(dishReview.get(reviewer));
+            review_text.setText(dishReview.get(review));
+            review_rating.setRating(Float.valueOf(dishReview.get(reviewRating)));
+            new DownloadImageTask((ImageView)row.findViewById(R.id.review_image)).execute(dishReview.get(reviewerImage));
+            return row;
+        }
+    }
+
+    class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }

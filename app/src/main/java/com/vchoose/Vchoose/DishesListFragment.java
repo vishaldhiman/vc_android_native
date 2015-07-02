@@ -40,6 +40,7 @@ import java.util.HashMap;
  */
 public class DishesListFragment extends Fragment {
     ArrayList<HashMap<String, String>> jsonlist = new ArrayList<>();
+    ArrayList<ArrayList<HashMap<String, String>>> reviewJsonlist = new ArrayList<>();
     ListView myList;
 
     /* keywords for dish */
@@ -56,6 +57,7 @@ public class DishesListFragment extends Fragment {
     //new value to pass to DishInfo
     private static final String dishInfo = "DishInfo";
     private static final String dishTagList = "tagList";
+    private static final String reviews = "reviews";
 
     /* keywords for restaurant information from dish */
     private static final String dishRestID = "restaurant_id";
@@ -67,8 +69,9 @@ public class DishesListFragment extends Fragment {
 
     public static String AuthenticationToken;
 
-    public void setArrayList(ArrayList<HashMap<String, String>> jsonlist ) {
+    public void setArrayList(ArrayList<HashMap<String, String>> jsonlist, ArrayList<ArrayList<HashMap<String, String>>> reviewJsonlist) {
         this.jsonlist = jsonlist;
+        this.reviewJsonlist = reviewJsonlist;
     }
 
     @Nullable
@@ -94,6 +97,7 @@ public class DishesListFragment extends Fragment {
             Intent intent = new Intent(getActivity(), DishInfo.class);
 
             HashMap<String, String> dishes = jsonlist.get(position);
+            ArrayList<HashMap<String, String>> reviews = reviewJsonlist.get(position);
 
             String name_text = dishes.get(dishname);
             String description_text = dishes.get(description);
@@ -110,6 +114,7 @@ public class DishesListFragment extends Fragment {
             if(provider.equals("user_added")) {
                 intent.putExtra(DishesListFragment.provider_name, dishes.get(DishesListFragment.provider_name));
             }
+            intent.putExtra(DishesListFragment.reviews, reviews);
             intent.putExtra(dishInfo, stringList);
             intent.putExtra(dishID, dish_id);
             intent.putExtra("Authentication", AuthenticationToken);
@@ -146,6 +151,7 @@ public class DishesListFragment extends Fragment {
             TextView dishName;
             TextView dishLocation;
             TextView descriptionText;
+            TextView dishPrice;
             ImageView dishImage;
 
             TextView tag1;
@@ -171,6 +177,9 @@ public class DishesListFragment extends Fragment {
                 imageView.getLayoutParams().width = 200;
                 TextView textView = (TextView)row.findViewById(R.id.creatorName);
                 textView.setText("by " + cur_dish.get(DishesListFragment.provider_name));
+            } else {
+                TextView textView = (TextView)row.findViewById(R.id.creatorName);
+                textView.setHeight(0);  //to hide this blank row
             }
 
             rate=(RatingBar)row.findViewById(R.id.ratingBar);
@@ -178,13 +187,14 @@ public class DishesListFragment extends Fragment {
             dishLocation = (TextView)row.findViewById(R.id.location);
             descriptionText = (TextView)row.findViewById(R.id.restaurantDescription);
             dishImage = (ImageView)row.findViewById(R.id.icon);
-
+            dishPrice = (TextView)row.findViewById(R.id.dishPrice);
 
             ratingFloat = Float.parseFloat(cur_dish.get(rating));
             dishName.setText(cur_dish.get(dishname));
             dishLocation.setText(cur_dish.get(location));
             rate.setRating(ratingFloat);
             descriptionText.setText(unescape(cur_dish.get(description)));
+            dishPrice.setText(cur_dish.get(price));
 
             //tag setter
             {
