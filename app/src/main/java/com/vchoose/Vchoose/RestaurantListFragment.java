@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -130,7 +132,18 @@ public class RestaurantListFragment extends Fragment {
             name.setText(cur_dish.get(restaurantName));
             location.setText(cur_dish.get(restaurantLocation));
             distence.setText(cur_dish.get(restaurantDistance));
-            phoneText.setText(cur_dish.get("phone"));
+            if(!cur_dish.get("phone").equals("null")) {
+                phoneText.setText(cur_dish.get("phone"));
+                phoneText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_DIAL , Uri.parse("tel:" + cur_dish.get("phone")));
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                phoneText.setHeight(0);
+            }
 
             String thumbnail_url = cur_dish.get(getRestaurantRatingImageUrl);
             if ((thumbnail_url != null) && (!thumbnail_url.equalsIgnoreCase("null"))) {
@@ -149,7 +162,11 @@ public class RestaurantListFragment extends Fragment {
                     //clear out the Yelp Logo since we do not have Yelp information for this restaurant
                 ImageView yelp_logo = (ImageView) row.findViewById(R.id.sign);
                 yelp_logo.invalidate();
-                yelp_logo.setImageBitmap(null);
+                rating.invalidate();
+                LinearLayout ratingHolder = (LinearLayout)row.findViewById(R.id.ratingHolder);
+                ratingHolder.removeAllViews();
+                //ratingHolder.setLayoutParams(new FrameLayout.LayoutParams(0,0));
+                //yelp_logo.setImageBitmap(null);
             }
             return(row);
         }

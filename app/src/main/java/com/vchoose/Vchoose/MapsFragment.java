@@ -67,7 +67,7 @@ public class MapsFragment extends Fragment {
 
                 if ((mapMarkers != null) && (mapMarkers.size() > 0)) {
                     Log.v("MapsFragment","# of mapMarkers: "+mapMarkers.size());
-                    for (int i = 0; i < mapMarkers.size(); i++) {
+                    for (int i = 0; i < mapMarkers.size() - 1 ; i++) {
                         Pair<String, LatLng> pair = mapMarkers.get(i);
 
                         Marker marker = map.addMarker(new MarkerOptions().position(pair.second).title(pair.first));
@@ -100,7 +100,7 @@ public class MapsFragment extends Fragment {
 
             if ((mapMarkers != null) && (mapMarkers.size() > 0)) {
                 Log.v("MapsFragment","# of mapMarkers: "+mapMarkers.size());
-                for (int i = 0; i < mapMarkers.size(); i++) {
+                for (int i = 0; i < mapMarkers.size() - 1; i++) {
                     Pair<String, LatLng> pair = mapMarkers.get(i);
 
                     Marker marker = map.addMarker(new MarkerOptions().position(pair.second).title(pair.first));

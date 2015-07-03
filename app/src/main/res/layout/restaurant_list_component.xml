@@ -14,11 +14,21 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textColor="#ff000000"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:paddingTop="6dip"
             android:paddingBottom="2dip"
             android:text="Mobile: " />
+
+        <TextView
+            android:id="@+id/restaurantPhoneNumber"
+            android:textColor="#ff3072d5"
+            android:textSize="18sp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="2dip"
+            android:text="">
+        </TextView>
 
         <TextView
             android:id="@+id/restaurantLocation"
@@ -38,27 +48,20 @@
             android:text="Description: ">
         </TextView>
 
-        <TextView
-            android:id="@+id/restaurantPhoneNumber"
-            android:textColor="#ff000000"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="2dip"
-            android:text="Ph: ">
-        </TextView>
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/ratingHolder">
             <ImageView
                 android:id="@+id/ratingPic"
-                android:layout_width="120dp"
-                android:layout_height="80dp"/>
+                android:layout_width="100dp"
+                android:layout_height="28dp"
+                android:src="@drawable/stars_3"/>
             <ImageView
                 android:id="@+id/sign"
                 android:layout_width="wrap_content"
-                android:layout_height="80dp"
+                android:layout_height="30dp"
                 android:src="@drawable/yelp_logo" />
         </LinearLayout>
     </LinearLayout>

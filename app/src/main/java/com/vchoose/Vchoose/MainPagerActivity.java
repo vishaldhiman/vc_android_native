@@ -85,6 +85,8 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     private static final String dishRestName = "restaurant_name";
     private static final String dishRestPhone = "restaurant_phone";
     private static final String dishRestLocation = "restaurant_location";
+    private static final String dishRestLatitude = "latitude";
+    private static final String dishRestLongitude = "longitude";
 
     /* keywords for restaurant info */
     private static final String restaurantID = "id";
@@ -324,7 +326,6 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                 for (int i = 0; i < dishes.length(); i++) {
                     HashMap<String, String> map = new HashMap<>();
 
-
                     JSONObject dish = dishes.getJSONObject(i);
 
                     //dish name
@@ -391,6 +392,8 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
                     map.put(dishRestName, dish.getJSONObject("restaurant").getString("name"));
                     map.put(dishRestPhone, dish.getJSONObject("restaurant").getString("phone"));
                     map.put(dishRestLocation, dish.getJSONObject("restaurant").getJSONObject("location").getString("full_address"));
+                    map.put(dishRestLatitude, dish.getJSONObject("restaurant").getJSONObject("location").getString("latitude"));
+                    map.put(dishRestLongitude, dish.getJSONObject("restaurant").getJSONObject("location").getString("longitude"));
 
                     dishJsonlist.add(map);
                 }
@@ -559,11 +562,11 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Restaurants("+adapterRestaurantJsonlist.size()+")";//.toUpperCase(l);
+                    return "Restaurants(" + adapterRestaurantJsonlist.size() + ")";//.toUpperCase(l);
                 case 1:
-                    return "Dishes("+adapterDishJsonlist.size()+")";//.toUpperCase(l);
+                    return "Dishes(" + adapterDishJsonlist.size() + ")";//.toUpperCase(l);
                 case 2:
-                    return "Map("+mapMarkers.size()+")";//.toUpperCase(l);
+                    return "Map(" + (mapMarkers.size() - 1) + ")";//.toUpperCase(l);
             }
             return null;
         }

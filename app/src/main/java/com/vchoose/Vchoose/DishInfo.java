@@ -4,9 +4,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -70,6 +73,8 @@ public class DishInfo extends ActionBarActivity {
     private static final String dishRestName = "restaurant_name";
     private static final String dishRestPhone = "restaurant_phone";
     private static final String dishRestLocation = "restaurant_location";
+    private static final String dishRestLatitude = "latitude";
+    private static final String dishRestLongitude = "longitude";
 
     /* keywords for adding a tag */
     private static final String tag_name = "tag_name";
@@ -99,7 +104,7 @@ public class DishInfo extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_info);
         Bundle extras = getIntent().getExtras();
-        ArrayList<String> stringList = extras.getStringArrayList(dishInfo);
+        final ArrayList<String> stringList = extras.getStringArrayList(dishInfo);
         ArrayList reviews = extras.getParcelableArrayList(DishInfo.reviews);
         //HashMap<String, String> s = (HashMap)arrayList.get(0);
         //ArrayList<HashMap<String, String>> reviews = (ArrayList<HashMap<String, String>>)extras.getParcelableArrayList(DishInfo.reviews);
@@ -117,6 +122,7 @@ public class DishInfo extends ActionBarActivity {
 
         TextView textview = (TextView)findViewById(R.id.DishName);
         TextView textview2=(TextView)findViewById(R.id.DishPhone);
+        TextView dishLocation = (TextView)findViewById(R.id.dishLocation);
         Button restaurantName = (Button)findViewById(R.id.go_to_restaurant);
         Button navigator = (Button)findViewById(R.id.restaurant_direction);
         TextView textview3=(TextView)findViewById(R.id.DishDiscribe);
@@ -136,14 +142,23 @@ public class DishInfo extends ActionBarActivity {
         }
 
         reviewList.setAdapter(new reviewArrayAdapter(reviews));
+        /*
         HashMap<String,String> dishReview = (HashMap) reviews.get(0);
         HashMap<String,String> dishReview2 = (HashMap) reviews.get(1);
         Log.v(TAG + "review", dishReview.get(review));
         Log.v(TAG + "review2", dishReview2.get(review));
+        */
 
         textview.setText(stringList.get(0));
         //textview2.setText(stringList.get(2));
-        restaurantName.setText(stringList.get(2));
+        final String restName = stringList.get(2);
+        restaurantName.setText(restName);
+        dishLocation.setText(restaurant_location);
+
+        /* Navigation */
+        final String latitude = extras.getString(dishRestLatitude);
+        final String longitude = extras.getString(dishRestLongitude);
+
         navigator.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,7 +171,8 @@ public class DishInfo extends ActionBarActivity {
                 */
 
                 //pin the point first
-                Uri gmmIntentUri = Uri.parse("geo:0,0?q=34.021156,-118.299918(JuanJuan+home)");
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + latitude + "," + longitude + "(" + restName + ")");
+                Log.v(TAG + "gmmIntentUri", "geo:0,0?q=" + latitude + "," + longitude + "(" + restName + ")");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
@@ -300,6 +316,10 @@ public class DishInfo extends ActionBarActivity {
         reviewArrayAdapter(ArrayList list) {
             super(DishInfo.this, R.layout.dish_list_componet, list);
             jsonlist = list;
+            if(jsonlist.size() == 0) {
+                ListView listView = (ListView)findViewById(R.id.reviews);
+                listView.setBackground(null);
+            }
         }
 
         @Override
@@ -316,7 +336,22 @@ public class DishInfo extends ActionBarActivity {
             review_writer.setText(dishReview.get(reviewer));
             review_text.setText(dishReview.get(review));
             review_rating.setRating(Float.valueOf(dishReview.get(reviewRating)));
-            new DownloadImageTask((ImageView)row.findViewById(R.id.review_image)).execute(dishReview.get(reviewerImage));
+
+            ImageView imageView = (ImageView)row.findViewById(R.id.review_image);
+            imageView.setImageResource(R.drawable.blank_user);
+
+            Log.v(TAG + "reviewerImage", dishReview.get(reviewerImage));
+
+            if(!dishReview.get(reviewerImage).equals("null")) {
+                new DownloadImageTask(imageView).execute(dishReview.get(reviewerImage));
+            }
+            /*Bitmap icon = BitmapFactory.decodeResource(DishInfo.this.getResources(),
+                    R.drawable.blank_user);
+            ImageView imageView = (ImageView)row.findViewById(R.id.review_image);
+            imageView.setImageBitmap(icon);
+            */
+
+            //Log.v(TAG + "ImageWidth", String.valueOf(imageView.getWidth()));
             return row;
         }
     }
@@ -338,6 +373,10 @@ public class DishInfo extends ActionBarActivity {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
+            /*
+            Log.v(TAG + "ImageWidth", String.valueOf(mIcon11.getWidth()));
+            Log.v(TAG + "ImageHeight", String.valueOf(mIcon11.getHeight()));
+            */
             return mIcon11;
         }
 

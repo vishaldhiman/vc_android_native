@@ -64,6 +64,8 @@ public class DishesListFragment extends Fragment {
     private static final String dishRestName = "restaurant_name";
     private static final String dishRestPhone = "restaurant_phone";
     private static final String dishRestLocation = "restaurant_location";
+    private static final String dishRestLatitude = "latitude";
+    private static final String dishRestLongitude = "longitude";
 
     protected static View v;
 
@@ -122,6 +124,8 @@ public class DishesListFragment extends Fragment {
             intent.putExtra(dishRestName, dishes.get(dishRestName));
             intent.putExtra(dishRestPhone, dishes.get(dishRestPhone));
             intent.putExtra(dishRestLocation, dishes.get(dishRestLocation));
+            intent.putExtra(dishRestLatitude, dishes.get(dishRestLatitude));
+            intent.putExtra(dishRestLongitude, dishes.get(dishRestLongitude));
             ArrayList<String> tagList = new ArrayList<>();
             for(int j = 0;  j < 3 ; j++) {
                 String s = dishes.get(dishTag + j);

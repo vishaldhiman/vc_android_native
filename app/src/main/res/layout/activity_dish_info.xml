@@ -8,155 +8,162 @@
     tools:context="com.vchoose.Vchoose.DishInfo"
     android:background="#ff5cb85c">
 
-        <TextView
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="3"
+        android:textSize="30dp"
+        android:textColor="#ff000000"
+        android:text="Name"
+        android:id="@+id/DishName"
+        android:layout_alignParentTop="true"/>
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/restruant_holder"
+        android:layout_below="@+id/DishName"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal">
+        <!--TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_columnSpan="3"
-            android:textSize="30dp"
+            android:text="Phone"
+            android:maxWidth="200dp"
+            android:id="@+id/DishPhone"
+            android:textSize="24dp"
             android:textColor="#ff000000"
-            android:text="Name"
-            android:id="@+id/DishName"
-            android:layout_alignParentTop="true"/>
-        <RelativeLayout
-            android:layout_height="wrap_content"
+             /-->
+        <Button
             android:layout_width="wrap_content"
-            android:id="@+id/restruant_holder"
-            android:layout_below="@+id/DishName"
+            android:layout_height="wrap_content"
+            android:maxWidth="300dp"
             android:layout_alignParentStart="true"
-            android:orientation="horizontal">
-            <!--TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Phone"
-                android:maxWidth="200dp"
-                android:id="@+id/DishPhone"
-                android:textSize="24dp"
-                android:textColor="#ff000000"
-                 /-->
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="300dp"
-                android:layout_alignParentStart="true"
-                android:id="@+id/go_to_restaurant"
-                android:textSize="20dp"
-                android:text="GO IN"/>
+            android:id="@+id/go_to_restaurant"
+            android:textSize="20dp"
+            android:text="GO IN"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:id="@+id/restaurant_direction"
-                android:textSize="20dp"
-                android:text="GO"/>
-
-        </RelativeLayout>
-
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/restruant_holder"
-            android:id="@+id/customizeTag"/>
+            android:layout_alignParentEnd="true"
+            android:id="@+id/restaurant_direction"
+            android:textSize="20dp"
+            android:text="GO"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/restruant_holder"
+        android:id="@+id/dishLocation"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dishLocation"
+        android:id="@+id/customizeTag"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxHeight="400dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium  sfdsasdfsdddddddddddddddddddddddddddd"
+        android:id="@+id/DishDiscribe"
+        android:layout_below="@id/customizeTag"
+        android:textSize="16dp"
+        android:maxLines = "20"
+        android:scrollbars = "vertical"
+        android:textColor="#ff000000" />
+
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/DishDiscribe"
+        android:layout_above="@+id/LinearTag"
+        android:background="@drawable/list_border"
+        android:id="@+id/reviews"
+        />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/LinearTag"
+        android:gravity="right"
+        android:paddingRight="5dp"
+        android:layout_above="@+id/buttons"
+        android:orientation="horizontal">
         <TextView
+            android:id="@+id/tag_info1"
+            android:textColor="#ff000000"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxHeight="400dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium  sfdsasdfsdddddddddddddddddddddddddddd"
-            android:id="@+id/DishDiscribe"
-            android:layout_below="@id/customizeTag"
-            android:textSize="16dp"
-            android:maxLines = "20"
-            android:scrollbars = "vertical"
-            android:textColor="#ff000000" />
-
-        <ListView
-            android:layout_width="fill_parent"
+            android:paddingBottom="2dip"
+            android:gravity="center"
+            android:background="@drawable/tag"
+            android:text="Description: ">
+        </TextView>
+        <TextView
+            android:id="@+id/tag_info2"
+            android:textColor="#ff000000"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:paddingBottom="2dip"
+            android:gravity="center"
+            android:background="@drawable/tag"
+            android:text="Description: ">
+        </TextView>
+        <TextView
+            android:id="@+id/tag_info3"
+            android:textColor="#ff000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/tag"
+            android:paddingBottom="2dip"
+            android:text="Description: ">
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:orientation="horizontal"
+        android:id="@+id/buttons"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="1dp">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.35"
+            android:layout_marginRight="6dp"
+            android:text="Customize"
+            android:id="@+id/customize"
+            android:onClick="customize"
+            style="@style/myButton"/>
+
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
             android:layout_marginTop="10dp"
-            android:layout_below="@id/DishDiscribe"
-            android:layout_above="@+id/LinearTag"
-            android:background="@drawable/list_border"
-            android:id="@+id/reviews"
-            />
+            android:background="@drawable/facebook_like"
+            android:id="@+id/like"/>
 
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/LinearTag"
-            android:gravity="right"
-            android:paddingRight="5dp"
-            android:layout_above="@+id/buttons"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/tag_info1"
-                android:textColor="#ff000000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="2dip"
-                android:gravity="center"
-                android:background="@drawable/tag"
-                android:text="Description: ">
-            </TextView>
-            <TextView
-                android:id="@+id/tag_info2"
-                android:textColor="#ff000000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="2dip"
-                android:gravity="center"
-                android:background="@drawable/tag"
-                android:text="Description: ">
-            </TextView>
-            <TextView
-                android:id="@+id/tag_info3"
-                android:textColor="#ff000000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="@drawable/tag"
-                android:paddingBottom="2dip"
-                android:text="Description: ">
-            </TextView>
+            android:layout_weight="0.35"
+            android:layout_marginLeft="6dp"
+            android:text="Add A Tag"
+            android:id="@+id/addtag"
+            android:onClick="addTag"
+            style="@style/myButton"/>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="1"
-            android:orientation="horizontal"
-            android:id="@+id/buttons"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="1dp">
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.35"
-                android:layout_marginRight="6dp"
-                android:text="Customize"
-                android:id="@+id/customize"
-                android:onClick="customize"
-                style="@style/myButton"/>
-
-
-            <ImageButton
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/facebook_like"
-                android:id="@+id/like"/>
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.35"
-                android:layout_marginLeft="6dp"
-                android:text="Add A Tag"
-                android:id="@+id/addtag"
-                android:onClick="addTag"
-                style="@style/myButton"/>
-            </LinearLayout>
 </RelativeLayout>
