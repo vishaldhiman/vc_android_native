@@ -3,7 +3,15 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:logo">@drawable/ic_launcher</item>
     </style>
+
+    <style name="MyActionBarLogo" parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="background">@color/material_blue_grey_900</item>
+        <item name="logo">@drawable/ic_launcher</item>
+        <item name="displayOptions">useLogo|showHome</item>
+    </style>
+
 
     <style name="foodRatingBar" parent="@android:style/Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/food_ratingbar_full</item>

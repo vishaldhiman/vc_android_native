@@ -14,7 +14,7 @@
         <LinearLayout
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/mydrawable"
+            android:background="@drawable/border"
             android:layout_width="250dp"
             android:layout_height="45dp"
             android:layout_row="0"
@@ -35,7 +35,7 @@
         <LinearLayout
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/mydrawable"
+            android:background="@drawable/border"
             android:layout_width="250dp"
             android:layout_height="45dp"
             android:layout_row="1"

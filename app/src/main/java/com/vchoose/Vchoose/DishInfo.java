@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -30,6 +31,10 @@ import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -102,7 +107,11 @@ public class DishInfo extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_dish_info);
+        //ActionBar actionBar = getSupportActionBar();
+       // actionBar.setDisplayHomeAsUpEnabled(true);
+
         Bundle extras = getIntent().getExtras();
         final ArrayList<String> stringList = extras.getStringArrayList(dishInfo);
         ArrayList reviews = extras.getParcelableArrayList(DishInfo.reviews);
@@ -199,6 +208,12 @@ public class DishInfo extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse("https://developers.facebook.com"))
+                .build();
+        ShareButton shareButton = (ShareButton)findViewById(R.id.fb_share_button);
+        shareButton.setShareContent(content);
     }
 
     private String unescape(String description) {
@@ -285,11 +300,15 @@ public class DishInfo extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch (id) {
+            case R.id.home:
+                finish();
+                break;
+            case R.id.action_settings:
+                return true;
+            default:
 
+        }
         return super.onOptionsItemSelected(item);
     }
 

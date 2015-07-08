@@ -12,8 +12,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,19 +79,43 @@ public class VcJsonReader {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         try{
-            HttpPost httpPost = new HttpPost(url_login);
+            String url = url_login + "email=" + email_text + "&password=" + password_text;
+            Log.v(TAG + "url", url_login);
+            HttpPost httpPost = new HttpPost("http://vchoose.us/users/sign_in.json?email=867136922@qq.com&password=ty113113");
 
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                /*hard coded for testing*/
+                List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("email", "867136922@qq.com"));    //hard coded for testing
                 nameValuePairs.add(new BasicNameValuePair("password", "ty113113"));
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
+/**/
+
+            Log.v(TAG + "getRequestLine", httpPost.getRequestLine().toString());
+
+            //Log.v(TAG + "getRequestLine", );
+//                HttpEntity httpEntity = httpPost.getEntity();
+//                InputStream httpcontent = httpEntity.getContent();
+//                BufferedReader httpreader = new BufferedReader(new InputStreamReader(httpcontent));
+//                String httpline;
+//                while ((httpline = httpreader.readLine()) != null) {
+//                    builder.append(httpline);
+//                }
+//                Log.v(TAG + "httpEntity",builder.toString());
+
+             /*
+            JSONObject obj = new JSONObject();
+            obj.put("email", "867136922@qq.com");
+            obj.put("password", "ty113113");
+            httpPost.setEntity(new StringEntity(obj.toString(), "UTF-8"));
+            */
+            //httpPost = new HttpPost("http://vchoose.us/users/sign_in.json?email=867136922@qq.com&password=ty113113");
 
             HttpResponse response = client.execute(httpPost);
 
-
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
+            //Log.v(TAG + "httpPost",httpPost.getEntity().toString());
+            Log.v(TAG + "statusCode",String.valueOf(statusCode));
             if (statusCode == 200) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
@@ -98,14 +125,24 @@ public class VcJsonReader {
                     builder.append(line);
                 }
             } else {
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
                 Log.e("Error....", "Failed to download file");
             }
         }catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } /*catch (JSONException e) {
+            e.printStackTrace();
+        }*/
         String resp = builder.toString();
+        Log.v(TAG + "resp", resp);
         return resp;
     }
 

@@ -147,14 +147,15 @@
             android:onClick="customize"
             style="@style/myButton"/>
 
-
-        <ImageButton
+        <com.facebook.share.widget.ShareButton
+            android:id="@+id/fb_share_button"
+            android:layout_marginTop="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/facebook_like"
-            android:id="@+id/like"/>
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/like_view">
+        </com.facebook.share.widget.ShareButton>
 
         <Button
             android:layout_width="0dp"

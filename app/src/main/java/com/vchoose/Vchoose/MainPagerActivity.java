@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -51,7 +52,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainPagerActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainPagerActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -124,6 +125,9 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_launcher);
+
         mViewPager = (ViewPager) findViewById(R.id.pager);
         keyWord = (AutoCompleteTextView)findViewById(R.id.keyword);
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
@@ -190,7 +194,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_pager, menu);
         return true;
     }
 
@@ -201,11 +205,6 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         if(id == R.id.login) {
             Intent intent = new Intent(this,Login.class);
@@ -472,6 +471,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
         }
     }
 
+    /*
     // result for login
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -481,6 +481,7 @@ public class MainPagerActivity extends FragmentActivity implements GoogleApiClie
             Log.v("AuthenticationToken", AuthenticationToken);
         }
     }
+    */
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(context)

@@ -1,17 +1,10 @@
 package com.vchoose.Vchoose;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,25 +14,22 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.vchoose.Vchoose.R;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.LikeView;
+import com.facebook.share.widget.ShareButton;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import static android.content.pm.PackageManager.NameNotFoundException;
 
 public class Login extends ActionBarActivity {
 
@@ -50,8 +40,11 @@ public class Login extends ActionBarActivity {
 
     String auth_token;
 
-    LoginButton loginButton;
+    LoginButton fbLoginButton;
     CallbackManager callbackManager;
+    AccessTokenTracker accessTokenTracker;
+
+    Button loginButton;
 
     final String TAG = "XiaoGuoTest_";
 
@@ -60,23 +53,22 @@ public class Login extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-
-
         setContentView(R.layout.activity_login);
 
+        fbLoginButton = (LoginButton) this.findViewById(R.id.facebook_login);
+        fbLoginButton.setReadPermissions("user_friends");
 
-        loginButton = (LoginButton) this.findViewById(R.id.facebook_login);
-        loginButton.setReadPermissions("user_friends");
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
 
-        AccessToken a = AccessToken.getCurrentAccessToken();
-        if(a == null){
-            Log.v(TAG+"myToken", "null");
-        } else {
-            Log.v(TAG+"myToken", a.toString());
-        }
+            }
+        };
+
+        accessTokenTracker.startTracking();
 
         callbackManager = CallbackManager.Factory.create();
-        loginButton.registerCallback(callbackManager,
+        fbLoginButton.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
@@ -85,6 +77,7 @@ public class Login extends ActionBarActivity {
                         Profile p = Profile.getCurrentProfile();
                         Log.v(TAG + "token", a.getUserId().toString());
                         Log.v(TAG + "name", p.getName().toString());
+                        Log.v(TAG + "", p.getProfilePictureUri(50,50).toString());
                     }
 
                     @Override
@@ -97,6 +90,15 @@ public class Login extends ActionBarActivity {
                         // App code
                     }
                 });
+
+        loginButton = (Button)findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLogin(v);
+            }
+        });
+
     }
 
 
@@ -131,7 +133,8 @@ public class Login extends ActionBarActivity {
         //Log.v("password",password_text);
         Thread t = new Thread(new Runnable() {
             public void run() {
-                post(email_text,password_text);
+                //post(email_text,password_text);
+                post("867136922@qq.com","ty113113");
             }
         });
         t.start();
@@ -139,29 +142,49 @@ public class Login extends ActionBarActivity {
         try {
             t.join();
         } catch (InterruptedException e){}
+
+        /*
         Intent resultIntent = new Intent();
         resultIntent.putExtra("AuthenticationToken", auth_token);
         setResult(Activity.RESULT_OK, resultIntent);
+        */
 
-        Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
-        toast.show();
         finish();
     }
 
     public void post(String email, String password) {
+
         VcJsonReader jParser = new VcJsonReader();
         String response = jParser.login(email,password);
         JSONTokener tokener = new JSONTokener(response);
+        Log.v(TAG + "Login1", response);
         try {
             JSONObject responseObject = (JSONObject) tokener.nextValue();
-            auth_token = responseObject.getString("auth_token");
-            Log.v("Login success", auth_token);
-        } catch(JSONException e) {}
+            String result = responseObject.getString("success");
+            if(result.equals("true")) {
+                auth_token = responseObject.getString("auth_token");
+                Log.v(TAG + "Login", auth_token);
+                Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                Log.v(TAG + "Login", "failed");
+            }
+
+        } catch(JSONException e) {
+
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        accessTokenTracker.stopTracking();
     }
 }
