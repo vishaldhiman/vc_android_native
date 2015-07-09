@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,6 +40,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONArray;
@@ -69,6 +71,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     private static final String dishname = "dishName";
     private static final String dishID = "ID";
     private static final String location = "location";
+    private static final String dishUrl = "url";
     private static final String price = "price";
     private static final String rating = "rating";
     private static final String description = "description";
@@ -101,10 +104,9 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     private static final String getRestaurantRatingImageUrl = "ratingImage";
     private static final String yelpLink = "yelp_mobile_url";
 
-    public static String AuthenticationToken;// = "hG4T5oT96uwzDYbxpnST";//hard coded for testing
-
     SectionsPagerAdapter mSectionsPagerAdapter;
     private Context context;
+    private Menu menu;
 
     AutoCompleteTextView keyWord;
     EditText locationEdit;
@@ -195,6 +197,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_pager, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -207,7 +210,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         int id = item.getItemId();
 
         if(id == R.id.login) {
-            Intent intent = new Intent(this,Login.class);
+            Intent intent = new Intent(this, Login.class);
             startActivityForResult(intent, 1);
         }
 
@@ -359,6 +362,8 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                     }
                     //dish ID
                     map.put(dishID, dish.getString("id"));
+                    //dish URL
+                    map.put(dishUrl, dish.getString("url"));
                     //rating
                     double avg_rating = dish.getJSONObject("rating").getDouble("avg");
                     map.put(rating,""+avg_rating);
@@ -471,17 +476,24 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         }
     }
 
-    /*
+
     // result for login
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            AuthenticationToken = data.getStringExtra("AuthenticationToken");
-            Log.v("AuthenticationToken", AuthenticationToken);
+            Log.v(TAG + "onActivityResult", "get the result back");
+            menu.getItem(0).setIcon(User.getUser_photo());
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Log.v(TAG + "onActivityResult", "Logout");
+            menu.getItem(0).setIcon(android.R.drawable.ic_menu_info_details);
         }
     }
-    */
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(context)
@@ -534,7 +546,6 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             if(position == 1) {
                 DishesListFragment tf = new DishesListFragment();        //choose what to display for which tag
                 tf.setArrayList(adapterDishJsonlist, adapterReviewDishJsonlist);   //pass the data to list
-                tf.setAuthenticationToken(AuthenticationToken);
                 return tf;
             } else if(position == 0) {
                 RestaurantListFragment tf = new RestaurantListFragment();

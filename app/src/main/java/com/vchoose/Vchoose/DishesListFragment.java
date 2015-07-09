@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vchoose.Vchoose.util.SubmitRatings;
+import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONException;
@@ -47,6 +48,7 @@ public class DishesListFragment extends Fragment {
     private static final String dishname = "dishName";
     private static final String dishID = "ID";
     private static final String location = "location";
+    private static final String dishUrl = "url";
     private static final String price = "price";
     private static final String rating = "rating";
     private static final String description = "description";
@@ -68,8 +70,6 @@ public class DishesListFragment extends Fragment {
     private static final String dishRestLongitude = "longitude";
 
     protected static View v;
-
-    public static String AuthenticationToken;
 
     public void setArrayList(ArrayList<HashMap<String, String>> jsonlist, ArrayList<ArrayList<HashMap<String, String>>> reviewJsonlist) {
         this.jsonlist = jsonlist;
@@ -119,7 +119,7 @@ public class DishesListFragment extends Fragment {
             intent.putExtra(DishesListFragment.reviews, reviews);
             intent.putExtra(dishInfo, stringList);
             intent.putExtra(dishID, dish_id);
-            intent.putExtra("Authentication", AuthenticationToken);
+            intent.putExtra(dishUrl,dishes.get(dishUrl));
             intent.putExtra(dishRestID, dishes.get(dishRestID));
             intent.putExtra(dishRestName, dishes.get(dishRestName));
             intent.putExtra(dishRestPhone, dishes.get(dishRestPhone));
@@ -244,11 +244,11 @@ public class DishesListFragment extends Fragment {
                             //jParser.submitRatingForDish(menu_item_id,(new Float(rating)).intValue());
 
                             //new ProgressTask(MainActivity.this).execute(locationEdit.getText().toString(), keyword, radius);
-                            if(AuthenticationToken == null) {
-                                loginBlock();
+                            if(!User.login_status) {
+                                loginSuggestionBlock();
                                 rate.setRating(ratingFloat);
                             } else {
-                                ratingBlock(cur_dish, rating, AuthenticationToken);
+                                ratingBlock(cur_dish, rating, User.getAuth_token());
                                 //new SubmitRatings(getActivity()).execute(cur_dish.get("ID"), String.valueOf(rating), AuthenticationToken);
                             }
                             //the Rating is stored here
@@ -295,10 +295,6 @@ public class DishesListFragment extends Fragment {
         }
     }
 
-    public void setAuthenticationToken(String authenticationToken) {
-        AuthenticationToken = authenticationToken;
-    }
-
     private void ratingBlock(HashMap<String, String> dish_data, float rate, String AuthenticationToken) {
         final HashMap<String, String> dish = dish_data;
         final String auth = AuthenticationToken;
@@ -306,10 +302,18 @@ public class DishesListFragment extends Fragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Rating a dish");
-        builder.setMessage("Rate dish " + dish.get(dishname) + " for " + rate + " points?");
+        builder.setMessage("Rate dish " + dish.get(dishname) + " for " + rate + " points.");
+
+        // Set an EditText view to get user input
+        final EditText comment = new EditText(getActivity());
+        comment.setHint("Write your review here.");
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(comment);
+        builder.setView(layout);
 
         // Set up the buttons
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 new SubmitRatings(getActivity()).execute(dish.get("ID"), String.valueOf(rating), auth);
@@ -327,66 +331,24 @@ public class DishesListFragment extends Fragment {
         builder.show();
     }
 
-    private void loginBlock() {
-        final String POPUP_LOGIN_TITLE="Sign In";
-        final String POPUP_LOGIN_TEXT="Please fill in your credentials";
-        final String EMAIL_HINT="--Email--";
-        final String PASSWORD_HINT="--Password--";
-
+    private  void loginSuggestionBlock() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-
-        alert.setTitle(POPUP_LOGIN_TITLE);
-        alert.setMessage(POPUP_LOGIN_TEXT);
-
-        // Set an EditText view to get user input
-        final EditText email = new EditText(getActivity());
-        email.setHint(EMAIL_HINT);
-        final EditText password = new EditText(getActivity());
-        password.setHint(PASSWORD_HINT);
-        LinearLayout layout = new LinearLayout(getActivity());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.addView(email);
-        layout.addView(password);
-        alert.setView(layout);
-
+        alert.setTitle("Login Needed");
+        alert.setMessage("Please go to the login page.");
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                Thread t = new Thread(new Runnable() {
-                    public void run() {
-                    post(email.getText().toString(), password.getText().toString());
-                    }
-                });
-                t.start();
-                try {
-                    t.join();
-                } catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                Toast toast = Toast.makeText(getActivity(), "Log in success", Toast.LENGTH_SHORT);
-                toast.show();
+                Intent intent = new Intent(getActivity(),Login.class);
+                startActivity(intent);
             }
         });
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // Canceled.
+                dialog.cancel();
             }
         });
 
         alert.show();
-    }
-
-    public void post(String email, String password) {
-        VcJsonReader jParser = new VcJsonReader();
-        String response = jParser.login(email,password);
-        JSONTokener tokener = new JSONTokener(response);
-        try {
-            JSONObject responseObject = (JSONObject) tokener.nextValue();
-            AuthenticationToken = responseObject.getString("auth_token");
-            Log.v("Login success", AuthenticationToken);
-            MainPagerActivity.AuthenticationToken = AuthenticationToken;
-        } catch(JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

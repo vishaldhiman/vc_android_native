@@ -1,16 +1,24 @@
 package com.vchoose.Vchoose;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -22,14 +30,14 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.LikeView;
-import com.facebook.share.widget.ShareButton;
+import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import java.io.InputStream;
 
 public class Login extends ActionBarActivity {
 
@@ -37,14 +45,14 @@ public class Login extends ActionBarActivity {
     EditText password;
     String email_text;
     String password_text;
-
-    String auth_token;
+    boolean loginResult;
 
     LoginButton fbLoginButton;
     CallbackManager callbackManager;
     AccessTokenTracker accessTokenTracker;
 
     Button loginButton;
+    Button registerButton;
 
     final String TAG = "XiaoGuoTest_";
 
@@ -52,55 +60,173 @@ public class Login extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        setContentView(R.layout.activity_login);
+        if(!User.login_status) {
+            //initialize facebook and content
+            FacebookSdk.sdkInitialize(getApplicationContext());
+            setContentView(R.layout.activity_login);
+            //initialize statues
+            loginResult = false;
 
-        fbLoginButton = (LoginButton) this.findViewById(R.id.facebook_login);
-        fbLoginButton.setReadPermissions("user_friends");
+            // enter the email hint(from last time of login)
+            email = (EditText)findViewById(R.id.email);
+            if(User.getUser_name()!=null)
+                email.setText(User.getUser_name());
+            password = (EditText)findViewById(R.id.password);
+            email.setText("867136922@qq.com");
+            password.setText("ty113113");
 
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+            //login dialog
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_login);
+            dialog.setTitle("Login Success");
+            final ImageView imageViewPhoto = (ImageView) dialog.findViewById(R.id.user_photo);
+            final TextView textViewWelcome = (TextView) dialog.findViewById(R.id.user_welcome);
 
-            }
-        };
+            //facebook login
+            fbLoginButton = (LoginButton) this.findViewById(R.id.facebook_login);
+            fbLoginButton.setReadPermissions("user_friends");
 
-        accessTokenTracker.startTracking();
-
-        callbackManager = CallbackManager.Factory.create();
-        fbLoginButton.registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        // App code
-                        AccessToken a = loginResult.getAccessToken();
-                        Profile p = Profile.getCurrentProfile();
-                        Log.v(TAG + "token", a.getUserId().toString());
-                        Log.v(TAG + "name", p.getName().toString());
-                        Log.v(TAG + "", p.getProfilePictureUri(50,50).toString());
+            accessTokenTracker = new AccessTokenTracker() {
+                @Override
+                protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+                    if (newAccessToken == null) {
+                        Log.v(TAG + "TokenC", "Log off");
+                        User.login_status = false;
+                        User.setUser_name(null);
+                        User.setUser_photo(null);
+                        Intent resultIntent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, resultIntent);
+                        finish();
                     }
+                }
+            };
+            accessTokenTracker.startTracking();
 
-                    @Override
-                    public void onCancel() {
-                        // App code
-                    }
+            callbackManager = CallbackManager.Factory.create();
+            fbLoginButton.registerCallback(callbackManager,
+                    new FacebookCallback<LoginResult>() {
+                        @Override
+                        public void onSuccess(LoginResult loginResult) {
+                            // App code
+                            AccessToken a = loginResult.getAccessToken();
+                            Profile p = Profile.getCurrentProfile();
+                            User.login_status = true;
+                            User.setFacebookLogin(true);
+                            User.setAuth_token(a.getToken());
+                            Log.v(TAG + "token", a.getToken());
+                            Log.v(TAG + "name", p.getName());
+                            Log.v(TAG + "", p.getProfilePictureUri(50, 50).toString());
+                            try {
+                                //image downloaded and stored
+                                new DownloadImageTask(imageViewPhoto).execute(p.getProfilePictureUri(400, 400).toString()).get();
+                                //name stored
+                                User.setUser_name(p.getName());
+                                textViewWelcome.setText("Welcome " + p.getName());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
+                            //show the dialog and automatically quit
+                            new CountDownTimer(2000, 400) {
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    // TODO Auto-generated method stub
+                                    dialog.show();
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    // TODO Auto-generated method stub
+                                    dialog.dismiss();
+
+                                    Intent resultIntent = new Intent();
+                                    setResult(Activity.RESULT_OK, resultIntent);
+                                    finish();
+                                }
+                            }.start();
+
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            // App code
+
+                        }
+
+                        @Override
+                        public void onError(FacebookException exception) {
+                            // App code
+                            Toast toast = Toast.makeText(getApplicationContext(), "Log in failed", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+
+            //vchoose login
+            loginButton = (Button) findViewById(R.id.loginButton);
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getLogin(v);
+                }
+            });
+
+            //register
+            registerButton = (Button) findViewById(R.id.register);
+            registerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        } else { //for logging out
+            setContentView(R.layout.activity_login_account);
+            TextView hello = (TextView)findViewById(R.id.hello_text);
+            Button logoutButton = (Button)findViewById(R.id.logout);
+            fbLoginButton = (LoginButton) this.findViewById(R.id.facebook_login);
+            hello.setText(User.getUser_name());
+
+            if(!User.isFacebookLogin()) {//normal logout
+                //delete the facebook login button
+                ViewGroup layout = (ViewGroup) fbLoginButton.getParent();
+                if(null!=layout)
+                    layout.removeView(fbLoginButton);
+
+                logoutButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onError(FacebookException exception) {
-                        // App code
+                    public void onClick(View v) {
+                        User.setUser_photo(null);
+                        User.setAuth_token(null);
+                        User.login_status = false;
+                        Intent resultIntent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, resultIntent);
+                        finish();
                     }
                 });
+            } else {//facebook logout
+                //delete the normal login button
+                ViewGroup layout = (ViewGroup) logoutButton.getParent();
+                if(null!=layout)
+                    layout.removeView(logoutButton);
 
-        loginButton = (Button)findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getLogin(v);
+                accessTokenTracker = new AccessTokenTracker() {
+                    @Override
+                    protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+                        if (newAccessToken == null) {
+                            Log.v(TAG + "TokenC", "Log off");
+                            User.login_status = false;
+                            User.setUser_name(null);
+                            User.setUser_photo(null);
+                            User.setAuth_token(null);
+                            Intent resultIntent = new Intent();
+                            setResult(Activity.RESULT_CANCELED, resultIntent);
+                            finish();
+                        }
+                    }
+                };
+                accessTokenTracker.startTracking();
             }
-        });
-
+        }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,7 +260,7 @@ public class Login extends ActionBarActivity {
         Thread t = new Thread(new Runnable() {
             public void run() {
                 //post(email_text,password_text);
-                post("867136922@qq.com","ty113113");
+                post(email_text,password_text);
             }
         });
         t.start();
@@ -143,13 +269,17 @@ public class Login extends ActionBarActivity {
             t.join();
         } catch (InterruptedException e){}
 
-        /*
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("AuthenticationToken", auth_token);
-        setResult(Activity.RESULT_OK, resultIntent);
-        */
+        if(loginResult == true) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
+            toast.show();
 
-        finish();
+            Intent resultIntent = new Intent();
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), "Log in failed", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     public void post(String email, String password) {
@@ -162,16 +292,19 @@ public class Login extends ActionBarActivity {
             JSONObject responseObject = (JSONObject) tokener.nextValue();
             String result = responseObject.getString("success");
             if(result.equals("true")) {
-                auth_token = responseObject.getString("auth_token");
-                Log.v(TAG + "Login", auth_token);
-                Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
-                toast.show();
+                User.setAuth_token(responseObject.getString("auth_token"));
+                Log.v(TAG + "Login Token", responseObject.getString("auth_token"));
+                loginResult = true;
+                User.login_status = true;
+                User.setFacebookLogin(false);
+                User.setUser_name(responseObject.getString("email"));
+                User.setUser_photo(getResources().getDrawable(R.drawable.blank_user));
             } else {
                 Log.v(TAG + "Login", "failed");
+                loginResult = false;
             }
 
         } catch(JSONException e) {
-
             e.printStackTrace();
         }
     }
@@ -185,6 +318,38 @@ public class Login extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        accessTokenTracker.stopTracking();
+        if(accessTokenTracker!=null)
+            accessTokenTracker.stopTracking();
+    }
+
+    class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            /*
+            Log.v(TAG + "ImageWidth", String.valueOf(mIcon11.getWidth()));
+            Log.v(TAG + "ImageHeight", String.valueOf(mIcon11.getHeight()));
+            */
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+            User.setUser_photo(new BitmapDrawable(getResources(), result));
+            //store the user photo
+        }
     }
 }

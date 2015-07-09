@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
+import com.vchoose.Vchoose.util.User;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -58,6 +59,7 @@ public class DishInfo extends ActionBarActivity {
     private static final String dishID = "ID";
     private static final String location = "location";
     private static final String price = "price";
+    private static final String dishUrl = "url";
     private static final String rating = "rating";
     private static final String description = "description";
     private static final String dishTag = "Tag";
@@ -86,9 +88,8 @@ public class DishInfo extends ActionBarActivity {
     private static final String taggableType = "taggable_type";
     private static final String taggableId =  "taggable_id";
 
-
-    private String Authentication;
     private String dish_id;
+    private String dish_url;
     private String restaurant_id;
     private String restaurant_name;
     private String restaurant_phone;
@@ -117,7 +118,7 @@ public class DishInfo extends ActionBarActivity {
         ArrayList reviews = extras.getParcelableArrayList(DishInfo.reviews);
         //HashMap<String, String> s = (HashMap)arrayList.get(0);
         //ArrayList<HashMap<String, String>> reviews = (ArrayList<HashMap<String, String>>)extras.getParcelableArrayList(DishInfo.reviews);
-        Authentication = extras.getString("Authentication");
+        dish_url = extras.getString(dishUrl);
         restaurant_id = extras.getString(dishRestID);
         restaurant_name = extras.getString(dishRestName);
         restaurant_phone = extras.getString(dishRestPhone);
@@ -210,7 +211,7 @@ public class DishInfo extends ActionBarActivity {
         });
 
         ShareLinkContent content = new ShareLinkContent.Builder()
-                .setContentUrl(Uri.parse("https://developers.facebook.com"))
+                .setContentUrl(Uri.parse(dish_url))
                 .build();
         ShareButton shareButton = (ShareButton)findViewById(R.id.fb_share_button);
         shareButton.setShareContent(content);
@@ -244,7 +245,7 @@ public class DishInfo extends ActionBarActivity {
     }
 
     public void addTag(View view) {
-        if(Authentication != null) {
+        if(User.login_status) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Enter Your tag");
 
@@ -323,7 +324,7 @@ public class DishInfo extends ActionBarActivity {
             nameValuePairs.add(new BasicNameValuePair(taggableId, id));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            httpPost.addHeader("authentication_token",Authentication);
+            httpPost.addHeader("authentication_token",User.getAuth_token());
             HttpResponse response = client.execute(httpPost);
         } catch (Exception e) {
             e.printStackTrace();
