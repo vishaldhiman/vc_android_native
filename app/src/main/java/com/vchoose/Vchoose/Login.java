@@ -7,9 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,8 +72,8 @@ public class Login extends ActionBarActivity {
             if(User.getUser_name()!=null)
                 email.setText(User.getUser_name());
             password = (EditText)findViewById(R.id.password);
-            email.setText("867136922@qq.com");
-            password.setText("ty113113");
+            email.setText("a@a.com");
+            password.setText("abcd1234");
 
             //login dialog
             final Dialog dialog = new Dialog(this);
@@ -287,7 +287,7 @@ public class Login extends ActionBarActivity {
         VcJsonReader jParser = new VcJsonReader();
         String response = jParser.login(email,password);
         JSONTokener tokener = new JSONTokener(response);
-        Log.v(TAG + "Login1", response);
+        Log.v(TAG + "Response", response);
         try {
             JSONObject responseObject = (JSONObject) tokener.nextValue();
             String result = responseObject.getString("success");
@@ -299,6 +299,10 @@ public class Login extends ActionBarActivity {
                 User.setFacebookLogin(false);
                 User.setUser_name(responseObject.getString("email"));
                 User.setUser_photo(getResources().getDrawable(R.drawable.blank_user));
+                String auth_token = responseObject.getString("auth_token");
+                Log.v(TAG + "Login", auth_token);
+                //Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
+                //toast.show();
             } else {
                 Log.v(TAG + "Login", "failed");
                 loginResult = false;

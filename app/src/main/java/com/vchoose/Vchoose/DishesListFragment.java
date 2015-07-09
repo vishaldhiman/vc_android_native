@@ -26,11 +26,6 @@ import android.widget.Toast;
 
 import com.vchoose.Vchoose.util.SubmitRatings;
 import com.vchoose.Vchoose.util.User;
-import com.vchoose.Vchoose.util.VcJsonReader;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -70,6 +65,8 @@ public class DishesListFragment extends Fragment {
     private static final String dishRestLongitude = "longitude";
 
     protected static View v;
+
+    private String AuthenticationToken;
 
     public void setArrayList(ArrayList<HashMap<String, String>> jsonlist, ArrayList<ArrayList<HashMap<String, String>>> reviewJsonlist) {
         this.jsonlist = jsonlist;
@@ -238,6 +235,10 @@ public class DishesListFragment extends Fragment {
                             Log.v("Rating Bar changed", String.valueOf(rating));
                             Log.v("The dish of Rating bar", String.valueOf(position));
                             Log.v("ID", cur_dish.get(dishID));
+                            if (AuthenticationToken == null)
+                                Log.v("AuthenticationToken", "AuthenticationToken is null");
+                            else
+                                Log.v("AuthenticationToken", AuthenticationToken);
 
                             //int menu_item_id = Integer.parseInt(cur_dish.get("ID"));
 

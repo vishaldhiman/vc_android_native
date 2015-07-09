@@ -11,7 +11,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -20,6 +19,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,7 +33,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.util.Pair;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -137,9 +136,21 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         searchButton = (Button)findViewById(R.id.searchButton);
 
         context = this;
-
+        
         /* auto complete */
         keyWord.addTextChangedListener(new InputValidator());
+        
+        /*
+        linkTextview = (TextView) findViewById(R.id.txtLink);
+        linkTextview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createDialog();
+            }
+        });
+        */
+        
+        //mEdit.addTextChangedListener(new InputValidator());
 
         /* distance spinner */
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
