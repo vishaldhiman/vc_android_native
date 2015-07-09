@@ -12,11 +12,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,8 +34,7 @@ public class VcJsonReader {
 
     private static final String TAG = "SamTest_";
 
-    private String URL_HOST = "http://vchoose.us/";
-    private String URL_HOSTS = "https://vchoose.us/";
+    private String URL_HOST = "https://vchoose.us/";
     private String API_VER = "api/v1/public/";
 
     static String json = "";
@@ -58,7 +54,7 @@ public class VcJsonReader {
     private String count = "count=";
 
     //private String url_rating = URL_HOST+API_VER+"menu_items/2972/rate/5?format=json";
-    private String url_rating = URL_HOSTS+API_VER+"menu_items/";
+    private String url_rating = URL_HOST+API_VER+"menu_items/";
     private String url_rating_rate = "/rate/";
     private String url_rating_format = "?format=json";
 
@@ -80,14 +76,16 @@ public class VcJsonReader {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         try{
-            Log.v(TAG + "url", "https://vchoose.us/users/sign_in.json?");
-            HttpPost httpPost = new HttpPost("https://vchoose.us/users/sign_in.json?");
+            //String url = url_login + "email=" + email_text + "&password=" + password_text;
+            //Log.v(TAG + "url", url_login);
+            HttpPost httpPost = new HttpPost(URL_HOST+"users/sign_in.json");
 
                 List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("email", email_text));    //hard coded for testing
-                nameValuePairs.add(new BasicNameValuePair("password", password_text));
+                nameValuePairs.add(new BasicNameValuePair("email", "a@a.com"));    //hard coded for testing
+                nameValuePairs.add(new BasicNameValuePair("password", "abcd1234"));
 
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
+/**/
 
             Log.v(TAG + "getRequestLine", httpPost.getRequestLine().toString());
 
@@ -124,7 +122,14 @@ public class VcJsonReader {
                     builder.append(line);
                 }
             } else {
-                Log.e("Error....", "Failed to download file");
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+                Log.e("Error....", "Something went wrong");
             }
         }catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -145,18 +150,17 @@ public class VcJsonReader {
 
         try{
             String url = Uri.encode(url_rating+menu_item_id+url_rating_rate+rating+url_rating_format,ALLOWED_URI_CHARS);
-            String url2 = Uri.encode(url_rating+menu_item_id+url_rating_rate+rating+ "?" ,ALLOWED_URI_CHARS);
 
-            HttpPost httpPost = new HttpPost(url2);
-            Log.v(TAG + "URL",url2);
-            Log.v(TAG + "Auth",authentication_token);
+            HttpPost httpPost = new HttpPost(url);
+            //HttpGet httpGet = new HttpGet(url);
+            Log.v("URL",url);
+
+            Log.v("authentication_token",authentication_token);
+
             httpPost.setHeader("authentication_token", authentication_token);
-            //httpPost.addHeader("Cookie","remember_user_token="+"BAhbB1sGaRtJIiIkMmEkMTAkSkQ4M0N0U0ZqZzMvQjlNS1RJamQ3dQY6BkVU--cfa85f5c07b8345e5d0573c3abe1aeee06684b0b");
-            List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(3);
-            nameValuePair.add(new BasicNameValuePair("format", "json"));
+            List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));
-            nameValuePair.add(new BasicNameValuePair("rating[review]", "adafdsfd"));
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair, "utf-8"));
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
 
             //HttpResponse response = client.execute(httpGet);
             HttpResponse response = client.execute(httpPost);
@@ -165,7 +169,7 @@ public class VcJsonReader {
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
             Log.v("statusCode",String.valueOf(statusCode));
-            if ((statusCode == 200)|| (statusCode == 201)) {
+            //if ((statusCode == 200)|| (statusCode == 201)) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
@@ -173,20 +177,14 @@ public class VcJsonReader {
                 while ((line = reader.readLine()) != null) {
                     builder.append(line);
                 }
-                Log.v(TAG + "dishRating", builder.toString());
                 result = true;
-            } else {
-                HttpEntity entity = response.getEntity();
-                InputStream content = entity.getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
-                Log.v(TAG + "dishRating", builder.toString());
-                result = true;
-                Log.e("Error....", "Failed to download file");
-            }
+                if (line == null)
+                    Log.v("SubmitRating","response is null");
+                else
+                    Log.v("SubmitRating",line);
+            //} else {
+             //   Log.e("Error....", "Failed to download file");
+            //}
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
