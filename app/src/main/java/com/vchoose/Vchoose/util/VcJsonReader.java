@@ -150,8 +150,8 @@ public class VcJsonReader {
             HttpPost httpPost = new HttpPost(url2);
             Log.v(TAG + "URL",url2);
             Log.v(TAG + "Auth",authentication_token);
-            //httpPost.setHeader("authentication_token", authentication_token);
-            httpPost.addHeader("Cookie","remember_user_token="+"BAhbB1sGaRtJIiIkMmEkMTAkSkQ4M0N0U0ZqZzMvQjlNS1RJamQ3dQY6BkVU--cfa85f5c07b8345e5d0573c3abe1aeee06684b0b");
+            httpPost.setHeader("authentication_token", authentication_token);
+            //httpPost.addHeader("Cookie","remember_user_token="+"BAhbB1sGaRtJIiIkMmEkMTAkSkQ4M0N0U0ZqZzMvQjlNS1RJamQ3dQY6BkVU--cfa85f5c07b8345e5d0573c3abe1aeee06684b0b");
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(3);
             nameValuePair.add(new BasicNameValuePair("format", "json"));
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));
