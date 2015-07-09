@@ -32,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -113,6 +114,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
     Button searchButton;
+    ImageButton myLocation;
     ViewPager mViewPager;
 
     ArrayList<String> hint = new ArrayList<>();
@@ -134,6 +136,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         locationEdit = (EditText)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
         searchButton = (Button)findViewById(R.id.searchButton);
+        myLocation = (ImageButton) findViewById(R.id.myLocation);
 
         context = this;
         
@@ -163,6 +166,14 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             @Override
             public void onClick(View v) {
                 doSearch();
+            }
+        });
+
+        /* Near Me button */
+        myLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                locationEdit.setText("Near Me");
             }
         });
 

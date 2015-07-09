@@ -153,13 +153,14 @@ public class VcJsonReader {
 
             HttpPost httpPost = new HttpPost(url);
             //HttpGet httpGet = new HttpGet(url);
-            Log.v("URL",url);
+            Log.v(TAG + "URL",url);
 
-            Log.v("authentication_token",authentication_token);
+            Log.v(TAG + "auth_token",authentication_token);
 
             httpPost.setHeader("authentication_token", authentication_token);
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));
+            nameValuePair.add(new BasicNameValuePair("rating[review]", "adafdsfd"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
 
             //HttpResponse response = client.execute(httpGet);
@@ -168,7 +169,7 @@ public class VcJsonReader {
 
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
-            Log.v("statusCode",String.valueOf(statusCode));
+            Log.v(TAG + "statusCode",String.valueOf(statusCode));
             //if ((statusCode == 200)|| (statusCode == 201)) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
@@ -182,6 +183,7 @@ public class VcJsonReader {
                     Log.v("SubmitRating","response is null");
                 else
                     Log.v("SubmitRating",line);
+                Log.v(TAG + "response", builder.toString());
             //} else {
              //   Log.e("Error....", "Failed to download file");
             //}
