@@ -210,9 +210,22 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         /* Google location api */
         buildGoogleApiClient();
         mGoogleApiClient.connect();
-
+        //for testing
         keyWord.setText("pizza");
-        //doSearch();//for testing
+        Button testButton = (Button)findViewById(R.id.testButton);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), RestaurantInfo.class);
+
+                intent.putExtra(dishRestID, "9280");//9280 with pic; 17000
+                intent.putExtra(dishRestName, "Test");
+                intent.putExtra(dishRestPhone, "Test");
+                intent.putExtra(dishRestLocation, "Test");
+                startActivity(intent);
+            }
+        });
+        //doSearch();
     }
 
     @Override

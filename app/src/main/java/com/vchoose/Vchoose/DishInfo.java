@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
+import com.vchoose.Vchoose.util.DownloadImageTask;
 import com.vchoose.Vchoose.util.User;
 
 import org.apache.http.HttpResponse;
@@ -334,7 +335,7 @@ public class DishInfo extends ActionBarActivity {
     class reviewArrayAdapter extends ArrayAdapter {
         ArrayList jsonlist;
         reviewArrayAdapter(ArrayList list) {
-            super(DishInfo.this, R.layout.dish_list_componet, list);
+            super(getApplicationContext(), R.layout.dish_review_component, list);
             jsonlist = list;
             if(jsonlist.size() == 0) {
                 ListView listView = (ListView)findViewById(R.id.reviews);
@@ -373,35 +374,6 @@ public class DishInfo extends ActionBarActivity {
 
             //Log.v(TAG + "ImageWidth", String.valueOf(imageView.getWidth()));
             return row;
-        }
-    }
-
-    class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            /*
-            Log.v(TAG + "ImageWidth", String.valueOf(mIcon11.getWidth()));
-            Log.v(TAG + "ImageHeight", String.valueOf(mIcon11.getHeight()));
-            */
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
         }
     }
 }

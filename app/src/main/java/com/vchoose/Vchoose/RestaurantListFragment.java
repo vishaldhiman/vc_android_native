@@ -62,6 +62,7 @@ public class RestaurantListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), RestaurantInfo.class);
+
                 intent.putExtra(dishRestID, jsonlist.get(position).get(restaurantID));
                 intent.putExtra(dishRestName, jsonlist.get(position).get(restaurantName));
                 intent.putExtra(dishRestPhone, jsonlist.get(position).get(restaurantPhone));

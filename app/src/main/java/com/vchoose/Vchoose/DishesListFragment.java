@@ -249,7 +249,7 @@ public class DishesListFragment extends Fragment {
                                 loginSuggestionBlock();
                                 rate.setRating(ratingFloat);
                             } else {
-                                ratingBlock(cur_dish, rating, User.getAuth_token());
+                                ratingBlock(cur_dish, rating,User.getAuth_token());//"UMo64CeRtA7nvYc29dGF");//
                                 //new SubmitRatings(getActivity()).execute(cur_dish.get("ID"), String.valueOf(rating), AuthenticationToken);
                             }
                             //the Rating is stored here
@@ -261,7 +261,7 @@ public class DishesListFragment extends Fragment {
             //image downloader
             String thumbnail_url = cur_dish.get(thumbnail);
             if ((thumbnail_url != null) && (!thumbnail_url.equalsIgnoreCase("null"))) {
-                new DownloadImageTask(dishImage).execute("http://vchoose.us"+thumbnail_url);
+                new DownloadImageTask(dishImage).execute("https://vchoose.us"+thumbnail_url);
             }
             return(row);
         }
