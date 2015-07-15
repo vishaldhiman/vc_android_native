@@ -35,6 +35,7 @@ public class VcJsonReader {
     private static final String TAG = "SamTest_";
 
     private String URL_HOST = "https://vchoose.us/";
+    //private String URL_HOST = "http://192.168.1.57:3002/";
     private String API_VER = "api/v1/public/";
 
     static String json = "";
@@ -158,6 +159,7 @@ public class VcJsonReader {
             Log.v(TAG + "auth_token",authentication_token);
 
             httpPost.setHeader("authentication_token", authentication_token);
+            httpPost.setHeader("authentication-token", authentication_token);
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));
             nameValuePair.add(new BasicNameValuePair("rating[review]", "adafdsfd"));
