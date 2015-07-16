@@ -59,10 +59,11 @@ public class Login extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if(!User.login_status) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if((!User.login_status)&&(accessToken == null) ) {
             //initialize facebook and content
-            FacebookSdk.sdkInitialize(getApplicationContext());
+
             setContentView(R.layout.activity_login);
             //initialize statues
             loginResult = false;
@@ -185,7 +186,7 @@ public class Login extends ActionBarActivity {
             fbLoginButton = (LoginButton) this.findViewById(R.id.facebook_login);
             hello.setText(User.getUser_name());
 
-            if(!User.isFacebookLogin()) {//normal logout
+            if( accessToken == null ) {//normal logout
                 //delete the facebook login button
                 ViewGroup layout = (ViewGroup) fbLoginButton.getParent();
                 if(null!=layout)

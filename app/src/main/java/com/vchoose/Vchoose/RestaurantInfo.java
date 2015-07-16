@@ -80,7 +80,9 @@ public class RestaurantInfo extends Activity {
 
         textview.setText(restaurantID);
         textview.setText(extras.getString(dishRestName));
-        textview2.setText(extras.getString(dishRestPhone));
+        if(!extras.getString(dishRestPhone).equals("null")) {
+            textview2.setText(extras.getString(dishRestPhone));
+        }
         textview3.setText(extras.getString(dishRestLocation));
 
         new ProgressTask(this).execute(restaurantID);
@@ -181,7 +183,7 @@ public class RestaurantInfo extends Activity {
                                 if((lastSelectedDishPosition != -1)&& (lastSelectedDishPosition != position_dish)) {
                                     int num_of_visible_view=parent.getLastVisiblePosition() -
                                             parent.getFirstVisiblePosition();
-                                    for (int i = 0; i < num_of_visible_view; i++) {
+                                    for (int i = 0; i < num_of_visible_view + 1; i++) {
                                         // do your code here
                                         parent.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.backgroundColor));
                                     }

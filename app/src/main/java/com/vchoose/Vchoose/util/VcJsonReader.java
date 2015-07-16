@@ -158,7 +158,7 @@ public class VcJsonReader {
 
             Log.v(TAG + "auth_token",authentication_token);
 
-            httpPost.setHeader("authentication_token", authentication_token);
+            //httpPost.setHeader("authentication_token", authentication_token);
             httpPost.setHeader("authentication-token", authentication_token);
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));

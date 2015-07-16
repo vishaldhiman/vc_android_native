@@ -10,85 +10,82 @@
     tools:context=".MainActivity"
     android:background="#ff5cb85c">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Creation Name"
-                android:id="@+id/CreationName"
-                android:layout_column="0"
-                android:textColor="#ff000000"
-                android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Creation Name"
+        android:id="@+id/CreationName"
+        android:layout_column="0"
+        android:textColor="#ff000000"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/NameBlank"
+        android:selectAllOnFocus="true"
+        android:gravity="center"
+        android:text="Custom Dish Name"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Price"
+        android:id="@+id/Price"
+        android:layout_column="0"
+        android:textColor="#ff000000"
+        android:textStyle="bold"/>
 
 
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/NameBlank"
-                android:selectAllOnFocus="true"
-                android:gravity="center"
-                android:text="Custom Dish Name" />
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:selectAllOnFocus="true"
+        android:id="@+id/CustomPrice"
+        android:gravity="center"
+        android:text="Name Your Price"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Price"
-                android:id="@+id/Price"
-                android:layout_column="0"
-                android:textColor="#ff000000"
-                android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Comment"
+        android:id="@+id/CustomComment"
+        android:layout_column="0"
+        android:textColor="#ff000000"
+        android:textStyle="bold"/>
 
-
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:selectAllOnFocus="true"
-                android:id="@+id/CustomPrice"
-                android:gravity="center"
-                android:text="Name Your Price" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Comment"
-                android:id="@+id/CustomComment"
-                android:layout_column="0"
-                android:textColor="#ff000000"
-                android:textStyle="bold" />
-
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:selectAllOnFocus="true"
-                android:id="@+id/CostomComment"
-                android:gravity="center"
-                android:text=" Comment here" />
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:selectAllOnFocus="true"
+        android:id="@+id/CostomComment"
+        android:gravity="center"
+        android:text=" Comment here"/>
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Description"
-                android:id="@+id/Description"
-                android:layout_column="0"
-                android:textColor="#ff000000"
-                android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:id="@+id/Description"
+        android:layout_column="0"
+        android:textColor="#ff000000"
+        android:textStyle="bold"/>
 
 
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/CustomDes"
-                android:layout_weight="1"
-                 />
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/CustomDes"
+        android:layout_weight="1"/>
 
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Create"
-                android:id="@+id/Create"
-                android:onClick="create"/>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        android:id="@+id/Create"
+        android:onClick="create"/>
     </LinearLayout>

@@ -39,7 +39,10 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.vchoose.Vchoose.util.PlaceAutocompleteAdapter;
 import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
@@ -109,7 +112,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     private Menu menu;
 
     AutoCompleteTextView keyWord;
-    EditText locationEdit;
+    AutoCompleteTextView locationEdit;
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
@@ -133,7 +136,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         keyWord = (AutoCompleteTextView)findViewById(R.id.keyword);
-        locationEdit = (EditText)findViewById(R.id.editTextLocation);
+        locationEdit = (AutoCompleteTextView)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
         searchButton = (Button)findViewById(R.id.searchButton);
         myLocation = (ImageButton) findViewById(R.id.myLocation);
@@ -174,6 +177,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             @Override
             public void onClick(View v) {
                 locationEdit.setText("Near Me");
+                locationEdit.dismissDropDown();
             }
         });
 
@@ -210,12 +214,20 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         /* Google location api */
         buildGoogleApiClient();
         mGoogleApiClient.connect();
+
+         /* Location autocomplete */
+        PlaceAutocompleteAdapter mAdapter;
+        mAdapter = new PlaceAutocompleteAdapter(this, android.R.layout.simple_list_item_1,
+                mGoogleApiClient, null);
+        locationEdit.setAdapter(mAdapter);
+
         //for testing
         keyWord.setText("pizza");
         Button testButton = (Button)findViewById(R.id.testButton);
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(getApplicationContext(), RestaurantInfo.class);
 
                 intent.putExtra(dishRestID, "9280");//9280 with pic; 17000
@@ -535,6 +547,8 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
+                .enableAutoManage(this, 0 /* clientId */, this)
+                .addApi(Places.GEO_DATA_API)
                 .build();
     }
 
@@ -653,6 +667,51 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
 
     /* For auto completion */
     private class InputValidator implements TextWatcher {
+        private String keyword_new;
+        private Timer timer=new Timer();
+        private final long DELAY = 500; // in ms
+        VcJsonReader reader = new VcJsonReader();
+
+        public void afterTextChanged(Editable s) {
+            Log.v("The text is changed", "changed");
+            keyword_new = keyWord.getText().toString();
+
+            timer.cancel();
+            timer = new Timer();
+
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Log.v(TAG + "keyword_new", keyword_new);
+                    hint = reader.getAutoComplete(keyword_new);
+                    runOnUiThread(new Thread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ArrayAdapter adapter = new ArrayAdapter
+                                            (context,android.R.layout.simple_list_item_1, hint);
+                                    keyWord.setAdapter(adapter);
+                                    Log.v(TAG + "Runnable", "set the autocomplete");
+                                }
+                            }
+                    ));
+                }
+
+            }, DELAY);
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                                      int after) {
+
+        }
+        public void onTextChanged(CharSequence s, int start, int before,
+                                  int count) {
+
+        }
+    }
+
+    /* For location auto completion */
+    private class LocationInputValidator implements TextWatcher {
         private String keyword_new;
         private Timer timer=new Timer();
         private final long DELAY = 500; // in ms

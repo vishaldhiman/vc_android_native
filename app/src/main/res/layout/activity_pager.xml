@@ -51,7 +51,7 @@
             android:layout_column="0"
             android:weightSum="1"
             >
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/editTextLocation"
                 android:singleLine="true"
                 android:layout_weight="0.83"
