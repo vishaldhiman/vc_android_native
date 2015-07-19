@@ -29,6 +29,7 @@
             android:id="@+id/review_rating"
             android:layout_marginStart="10dp"
             style="?android:attr/ratingBarStyleSmall"
+            android:isIndicator="true"
             android:stepSize="1.0"/>
     </LinearLayout>
     <LinearLayout

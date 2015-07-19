@@ -199,6 +199,7 @@ public class RestaurantInfo extends Activity {
 
                                 try {
                                     dishInfoLinearLayout.setVisibility(View.VISIBLE);
+                                    Log.v(TAG + "dishID", menu_sections.getJSONObject(position).getJSONArray("menu_items").getJSONObject(position_dish).getString("id"));
                                     String dishName = menu_sections.getJSONObject(position).getJSONArray("menu_items").getJSONObject(position_dish).getString("name");
                                     String dishImage = menu_sections.getJSONObject(position).getJSONArray("menu_items").getJSONObject(position_dish).getString("thumbnail");
                                     String dishPrice = menu_sections.getJSONObject(position).getJSONArray("menu_items").getJSONObject(position_dish).getJSONObject("price").getString("dollars");

@@ -49,8 +49,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Login"
-        android:id="@+id/loginButton"
+        android:text="Register"
+        android:id="@+id/registerButton"
         android:layout_below="@+id/repassword"
         android:layout_centerHorizontal="true"/>
 

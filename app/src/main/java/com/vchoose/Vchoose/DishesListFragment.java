@@ -317,7 +317,7 @@ public class DishesListFragment extends Fragment {
         builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                new SubmitRatings(getActivity()).execute(dish.get("ID"), String.valueOf(rating), auth);
+                new SubmitRatings(getActivity()).execute(dish.get("ID"), String.valueOf(rating), comment.getText().toString(),auth);
                 Toast toast = Toast.makeText(getActivity(), "Rating Submitted", Toast.LENGTH_SHORT);
                 toast.show();
             }

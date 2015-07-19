@@ -176,7 +176,8 @@ public class Login extends ActionBarActivity {
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(Login.this, Register.class);
+                    startActivity(intent);
                 }
             });
         } else { //for logging out

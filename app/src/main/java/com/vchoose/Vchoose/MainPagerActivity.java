@@ -42,6 +42,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.vchoose.Vchoose.util.MyCustomProgressDialog;
 import com.vchoose.Vchoose.util.PlaceAutocompleteAdapter;
 import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
@@ -301,6 +302,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 if (locationEdit.getText().toString().trim().equalsIgnoreCase("near me")) {
                     double lat = mLastLocation.getLatitude();
                     double lon = mLastLocation.getLongitude();
+                    Log.v(TAG + "Location Now", String.valueOf(lat)+ "," + String.valueOf(lon));
                     new ProgressTask(this).execute(lat + "," + lon, keyword, radius);
                 } else {
                     new ProgressTask(this).execute(locationEdit.getText().toString(), keyword, radius);
@@ -316,17 +318,16 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
 
     private class ProgressTask extends AsyncTask<String, Void, Boolean> {
         private ProgressDialog dialog;
+        private Context context;
 
         public ProgressTask(Activity activity) {
             Log.i(TAG + "MainPagerActivity", "ProgressTask Calling");
             context = activity;
-            dialog = new ProgressDialog(context);
+            dialog = MyCustomProgressDialog.ctor(context);
         }
 
-        private Context context;
-
         protected void onPreExecute() {
-            this.dialog.setMessage("Progress start");
+            //this.dialog.setMessage("Searching");
             this.dialog.show();
         }
 

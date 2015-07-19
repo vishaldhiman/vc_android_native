@@ -144,7 +144,7 @@ public class VcJsonReader {
         return resp;
     }
 
-    public boolean submitRatingForDish(int menu_item_id, int rating, String authentication_token) {
+    public boolean submitRatingForDish(int menu_item_id, int rating, String comment, String authentication_token) {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         boolean result = false;
@@ -162,7 +162,7 @@ public class VcJsonReader {
             httpPost.setHeader("authentication-token", authentication_token);
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
             nameValuePair.add(new BasicNameValuePair("rating[rateable_type]", "MenuItem"));
-            nameValuePair.add(new BasicNameValuePair("rating[review]", "adafdsfd"));
+            nameValuePair.add(new BasicNameValuePair("rating[review]", comment));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
 
             //HttpResponse response = client.execute(httpGet);

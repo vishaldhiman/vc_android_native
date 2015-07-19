@@ -38,4 +38,5 @@
 
     <color name="backgroundColor">#ff5cb85c</color>
     <color name="backgroundDarkColor">#ff1a7420</color>
+    <string name="title_activity_register">Register</string>
 </resources>
