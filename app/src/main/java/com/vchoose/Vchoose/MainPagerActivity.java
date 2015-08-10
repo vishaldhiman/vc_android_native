@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,7 +30,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -41,7 +39,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.vchoose.Vchoose.util.MyCustomProgressDialog;
 import com.vchoose.Vchoose.util.PlaceAutocompleteAdapter;
 import com.vchoose.Vchoose.util.User;
@@ -223,6 +220,8 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         locationEdit.setAdapter(mAdapter);
 
         //for testing
+
+        /*
         keyWord.setText("pizza");
         Button testButton = (Button)findViewById(R.id.testButton);
         testButton.setOnClickListener(new View.OnClickListener() {
@@ -238,6 +237,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 startActivity(intent);
             }
         });
+        */
         //doSearch();
     }
 
