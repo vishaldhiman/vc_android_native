@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -117,7 +118,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
-    Button searchButton;
+    ButtonRectangle searchButton;
     ImageButton myLocation;
     ViewPager mViewPager;
 
@@ -152,7 +153,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         keyWord = (AutoCompleteTextView)findViewById(R.id.keyword);
         locationEdit = (AutoCompleteTextView)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
-        searchButton = (Button)findViewById(R.id.searchButton);
+        searchButton = (ButtonRectangle)findViewById(R.id.searchButton);
         myLocation = (ImageButton) findViewById(R.id.myLocation);
 
         context = this;
@@ -357,6 +358,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             // Bind the tabs to the ViewPager
             PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
             tabs.setViewPager(mViewPager);
+            mViewPager.setCurrentItem(1);
 
             /*
             if(mSectionsPagerAdapter == null) {
@@ -649,12 +651,13 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 case 0:
                     return "Restaurants(" + adapterRestaurantJsonlist.size() + ")";//.toUpperCase(l);
                 case 1:
-                    return "Dishes(" + adapterDishJsonlist.size() + ")";//.toUpperCase(l);
+                    return "Dishes(" + adapterDishJsonlist.size() + ")     ";//.toUpperCase(l);
                 case 2:
-                    return "Map(" + (mapMarkers.size() - 1) + ")";//.toUpperCase(l);
+                    return "Map(" + (mapMarkers.size() - 1) + ")       ";//.toUpperCase(l);
             }
             return null;
         }
+
     }
 
     /**

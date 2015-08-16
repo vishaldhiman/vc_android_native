@@ -67,11 +67,12 @@
                 android:src="@android:drawable/ic_menu_mylocation"/>
         </LinearLayout>
 
-        <Button
+        <com.gc.materialdesign.views.ButtonRectangle
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:text="Search"
             android:id="@+id/searchButton"
+            android:background="@color/greenDark"
             android:layout_row="1"
             android:layout_column="2" />
 
