@@ -1,9 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:logo">@drawable/ic_launcher</item>
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimaryDark">@color/greenDark</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="MyActionBarLogo" parent="@style/Widget.AppCompat.Light.ActionBar">

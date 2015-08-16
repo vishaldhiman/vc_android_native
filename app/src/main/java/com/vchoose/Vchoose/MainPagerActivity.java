@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,12 +34,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.vchoose.Vchoose.util.MyCustomProgressDialog;
 import com.vchoose.Vchoose.util.PlaceAutocompleteAdapter;
 import com.vchoose.Vchoose.util.User;
@@ -53,7 +57,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-
 
 public class MainPagerActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -129,10 +132,23 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+/*
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_launcher);
+*/        getSupportActionBar().hide();
+
+        //toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        SystemBarTintManager mTintManager = new SystemBarTintManager(this);
+        mTintManager.setStatusBarTintEnabled(true);
+        mTintManager.setTintColor(getResources().getColor(R.color.greenDark));
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
+
+
+
         keyWord = (AutoCompleteTextView)findViewById(R.id.keyword);
         locationEdit = (AutoCompleteTextView)findViewById(R.id.editTextLocation);
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -153,7 +169,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             }
         });
         */
-        
+
         //mEdit.addTextChangedListener(new InputValidator());
 
         /* distance spinner */
@@ -337,6 +353,12 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 dialog.dismiss();
             }
 
+            mViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, dishReviewJsonlist, restaurantJsonlist, mapMarkers));
+            // Bind the tabs to the ViewPager
+            PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+            tabs.setViewPager(mViewPager);
+
+            /*
             if(mSectionsPagerAdapter == null) {
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), dishJsonlist, dishReviewJsonlist, restaurantJsonlist, mapMarkers);
                 Log.v(TAG + "MainPagerActivity","restaurantJsonlist"+String.valueOf(restaurantJsonlist.size()));
@@ -345,6 +367,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             } else {
                 mSectionsPagerAdapter.notifyDataSetChanged();
             }
+            */
         }
 
         protected Boolean doInBackground(final String... args) {
@@ -566,7 +589,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     public void onConnected(Bundle connectionHint) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        Log.v("MainActivityTest","onConnected - Found LastLocation.\n"+mLastLocation);
+        Log.v("MainActivityTest", "onConnected - Found LastLocation.\n" + mLastLocation);
     }
 
     /* Pager adapter */
