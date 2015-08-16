@@ -11,10 +11,13 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,10 +31,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
@@ -121,6 +127,8 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     ButtonRectangle searchButton;
     ImageButton myLocation;
     ViewPager mViewPager;
+    DrawerLayout mDrawerLayout;
+    ListView mDrawerList;
 
     ArrayList<String> hint = new ArrayList<>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<>();
@@ -133,14 +141,14 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
 
+        /* tool bar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);
 /*
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_launcher);
-*/        getSupportActionBar().hide();
-
-        //toolbar = (Toolbar) findViewById(R.id.toolbar);
+*/
+        getSupportActionBar().hide();
         setSupportActionBar(toolbar);
         SystemBarTintManager mTintManager = new SystemBarTintManager(this);
         mTintManager.setStatusBarTintEnabled(true);
@@ -148,6 +156,31 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
+
+        /* drawer */
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        String[] drawer_array_unlogin = getResources().getStringArray(R.array.drawer_array_unlogin);
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        // set up the drawer's list view with items and click listener
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, drawer_array_unlogin));
+        View mHeader = getLayoutInflater().inflate(R.layout.navigation_list_header, mDrawerList, false);
+        TextView userName = (TextView) mHeader.findViewById(R.id.userName);
+        TextView userEmail = (TextView) mHeader.findViewById(R.id.userEmail);
+        ImageView userPhoto = (ImageView) mHeader.findViewById(R.id.userPhoto);
+        ImageView userBackground = (ImageView) mHeader.findViewById(R.id.userBackground);
+        mDrawerList.addHeaderView(mHeader);
+        userPhoto.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.abc_btn_radio_material,  /* nav drawer image to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        );
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 
         keyWord = (AutoCompleteTextView)findViewById(R.id.keyword);
@@ -716,7 +749,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                                 @Override
                                 public void run() {
                                     ArrayAdapter adapter = new ArrayAdapter
-                                            (context,android.R.layout.simple_list_item_1, hint);
+                                            (context, android.R.layout.simple_list_item_1, hint);
                                     keyWord.setAdapter(adapter);
                                     Log.v(TAG + "Runnable", "set the autocomplete");
                                 }
@@ -779,6 +812,21 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
 
+        }
+    }
+    /* Drawer listener */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if(position == 1) {
+                Intent intent = new Intent(getApplicationContext(), Login.class);
+                startActivityForResult(intent, 1);
+            }
+            if(position == 2) {
+                Intent intent = new Intent(getApplicationContext(), Register.class);
+                startActivity(intent);
+            }
+            mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
 }

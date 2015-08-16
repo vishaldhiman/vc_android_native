@@ -39,4 +39,12 @@
     <color name="backgroundColor">#ff5cb85c</color>
     <color name="backgroundDarkColor">#ff1a7420</color>
     <string name="title_activity_register">Register</string>
+
+
+    <string-array name="drawer_array_unlogin">
+        <item>Login</item>
+        <item>Register</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>

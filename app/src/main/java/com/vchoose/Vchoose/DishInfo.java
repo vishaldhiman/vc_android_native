@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.vchoose.Vchoose.util.DownloadImageTask;
 import com.vchoose.Vchoose.util.User;
 
