@@ -3,6 +3,7 @@ package com.vchoose.Vchoose;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -30,6 +31,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.vchoose.Vchoose.util.InternalSorage;
 import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
 
@@ -114,6 +116,7 @@ public class Login extends ActionBarActivity {
                             User.login_status = true;
                             User.setFacebookLogin(true);
                             User.setAuth_token(a.getToken());
+
                             Log.v(TAG + "token", a.getToken());
                             Log.v(TAG + "name", p.getName());
                             Log.v(TAG + "", p.getProfilePictureUri(50, 50).toString());
@@ -126,6 +129,14 @@ public class Login extends ActionBarActivity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
+                            SharedPreferences sp=getSharedPreferences("Login", 0);
+                            SharedPreferences.Editor Ed=sp.edit();
+                            Ed.putString("login_status", "true");
+                            Ed.putString("facebookLogin", "true");
+                            Ed.putString("Auth_token", a.getToken());
+                            Ed.putString("Photo_Dir", InternalSorage.save(User.getUser_photo(), Login.this));
+                            Ed.commit();
 
                             //show the dialog and automatically quit
                             new CountDownTimer(2000, 400) {
@@ -219,6 +230,15 @@ public class Login extends ActionBarActivity {
                             User.setUser_name(null);
                             User.setUser_photo(null);
                             User.setAuth_token(null);
+
+                            SharedPreferences sp=getSharedPreferences("Login", 0);
+                            SharedPreferences.Editor Ed=sp.edit();
+                            Ed.putString("login_status", "false");
+                            Ed.putString("facebookLogin", "true");
+                            Ed.putString("Auth_token", "null");
+                            Ed.putString("Photo_Dir", "null");
+                            Ed.commit();
+
                             Intent resultIntent = new Intent();
                             setResult(Activity.RESULT_CANCELED, resultIntent);
                             finish();
@@ -300,7 +320,7 @@ public class Login extends ActionBarActivity {
                 User.login_status = true;
                 User.setFacebookLogin(false);
                 User.setUser_name(responseObject.getString("email"));
-                User.setUser_photo(getResources().getDrawable(R.drawable.blank_user));
+                User.setUser_photo(BitmapFactory.decodeResource(getApplication().getResources(),R.drawable.blank_user));
                 String auth_token = responseObject.getString("auth_token");
                 Log.v(TAG + "Login", auth_token);
                 //Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
@@ -354,7 +374,8 @@ public class Login extends ActionBarActivity {
 
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
-            User.setUser_photo(new BitmapDrawable(getResources(), result));
+            User.setUser_photo(result);
+            InternalSorage.save(result, Login.this);
             //store the user photo
         }
     }

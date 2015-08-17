@@ -7,7 +7,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +28,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -41,6 +49,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.gc.materialdesign.views.ButtonRectangle;
@@ -50,6 +59,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.vchoose.Vchoose.util.InternalSorage;
 import com.vchoose.Vchoose.util.MyCustomProgressDialog;
 import com.vchoose.Vchoose.util.PlaceAutocompleteAdapter;
 import com.vchoose.Vchoose.util.User;
@@ -60,6 +70,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
@@ -129,6 +141,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     ViewPager mViewPager;
     DrawerLayout mDrawerLayout;
     ListView mDrawerList;
+    ImageView userPhoto;
 
     ArrayList<String> hint = new ArrayList<>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<>();
@@ -140,6 +153,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
+
 
         /* tool bar */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
@@ -169,7 +183,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         View mHeader = getLayoutInflater().inflate(R.layout.navigation_list_header, mDrawerList, false);
         TextView userName = (TextView) mHeader.findViewById(R.id.userName);
         TextView userEmail = (TextView) mHeader.findViewById(R.id.userEmail);
-        ImageView userPhoto = (ImageView) mHeader.findViewById(R.id.userPhoto);
+        userPhoto = (ImageView) mHeader.findViewById(R.id.userPhoto);
         ImageView userBackground = (ImageView) mHeader.findViewById(R.id.userBackground);
         mDrawerList.addHeaderView(mHeader);
         userPhoto.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
@@ -589,16 +603,41 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             Log.v(TAG + "onActivityResult", "get the result back");
-            menu.getItem(0).setIcon(User.getUser_photo());
+            //menu.getItem(0).setIcon(new BitmapDrawable(getResources(), User.getUser_photo()));
+            userPhoto.setImageBitmap(User.getUser_photo());
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.v(TAG + "onActivityResult", "Logout");
-            menu.getItem(0).setIcon(android.R.drawable.ic_menu_info_details);
+            //menu.getItem(0).setIcon(android.R.drawable.ic_menu_info_details);
+            userPhoto.setImageResource(R.drawable.blank_user);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sp1=this.getSharedPreferences("Login",0);
+
+        if(sp1 != null) {
+            String login_status = sp1.getString("login_status", null);
+            String facebookLogin = sp1.getString("facebookLogin", null);
+            String Auth_token = sp1.getString("Auth_token", null);
+            String Photo_Dir = sp1.getString("Photo_Dir", null);
+
+            if(login_status!=null) {
+                if (login_status.equals("true")) {
+                    Log.v(TAG+"loginSta",login_status);
+                    Log.v(TAG+"Photo_Dir",Photo_Dir);
+                    Bitmap b = InternalSorage.get(Photo_Dir);
+                    if (b!=null) {
+                        userPhoto.setImageBitmap(b);
+                    } else {
+                        Log.v(TAG+"Photo_Dir","null");
+                    }
+                } else {
+                    userPhoto.setImageResource(R.drawable.blank_user);
+                }
+            }
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {

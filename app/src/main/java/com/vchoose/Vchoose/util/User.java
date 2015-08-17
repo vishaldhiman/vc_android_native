@@ -1,5 +1,6 @@
 package com.vchoose.Vchoose.util;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -12,7 +13,7 @@ public class User {
     static public String auth_token;
     static public String user_name;
     static public String user_image;
-    static public Drawable user_photo;
+    static public Bitmap user_photo;
 
     public static String getUser_name() {
         return user_name;
@@ -38,11 +39,11 @@ public class User {
         User.auth_token = auth_token;
     }
 
-    public static Drawable getUser_photo() {
+    public static Bitmap getUser_photo() {
         return user_photo;
     }
 
-    public static void setUser_photo(Drawable user_photo) {
+    public static void setUser_photo(Bitmap user_photo) {
         User.user_photo = user_photo;
     }
 
