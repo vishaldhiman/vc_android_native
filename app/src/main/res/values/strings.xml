@@ -44,6 +44,7 @@
     <string-array name="drawer_array_unlogin">
         <item>Login</item>
         <item>Register</item>
+        <item>Home Page</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/userName_layout_marginLeft"
             android:layout_marginLeft="@dimen/userName_layout_marginLeft"
-            android:textColor="#FFFFFF"
+            android:textColor="#000000"
             android:textSize="@dimen/userName_textSize" />
 
         <TextView

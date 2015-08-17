@@ -31,6 +31,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.vchoose.Vchoose.util.InternalSorage;
 import com.vchoose.Vchoose.util.User;
 import com.vchoose.Vchoose.util.VcJsonReader;
@@ -53,8 +54,8 @@ public class Login extends ActionBarActivity {
     CallbackManager callbackManager;
     AccessTokenTracker accessTokenTracker;
 
-    Button loginButton;
-    Button registerButton;
+    ButtonRectangle loginButton;
+    ButtonRectangle registerButton;
 
     final String TAG = "XiaoGuoTest_";
 
@@ -63,7 +64,21 @@ public class Login extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if((!User.login_status)&&(accessToken == null) ) {
+
+        SharedPreferences sp1=this.getSharedPreferences("Login", 0);
+        String login_status;
+        String facebookLogin = "false";
+        boolean loggedin = false;
+        if(sp1 != null) {
+            login_status = sp1.getString("login_status", null);
+            facebookLogin = sp1.getString("facebookLogin", null);
+            if(login_status != null){
+                if(login_status.equals("true")){
+                    loggedin = true;
+                }
+            }
+        }
+        if(sp1==null|| !loggedin) {
             //initialize facebook and content
 
             setContentView(R.layout.activity_login);
@@ -116,6 +131,7 @@ public class Login extends ActionBarActivity {
                             User.login_status = true;
                             User.setFacebookLogin(true);
                             User.setAuth_token(a.getToken());
+                            User.setUser_name(p.getName());
 
                             Log.v(TAG + "token", a.getToken());
                             Log.v(TAG + "name", p.getName());
@@ -133,6 +149,7 @@ public class Login extends ActionBarActivity {
                             SharedPreferences sp=getSharedPreferences("Login", 0);
                             SharedPreferences.Editor Ed=sp.edit();
                             Ed.putString("login_status", "true");
+                            Ed.putString("User_name", p.getName());
                             Ed.putString("facebookLogin", "true");
                             Ed.putString("Auth_token", a.getToken());
                             Ed.putString("Photo_Dir", InternalSorage.save(User.getUser_photo(), Login.this));
@@ -174,7 +191,7 @@ public class Login extends ActionBarActivity {
                     });
 
             //vchoose login
-            loginButton = (Button) findViewById(R.id.loginButton);
+            loginButton = (ButtonRectangle) findViewById(R.id.loginButton);
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -183,7 +200,7 @@ public class Login extends ActionBarActivity {
             });
 
             //register
-            registerButton = (Button) findViewById(R.id.register);
+            registerButton = (ButtonRectangle) findViewById(R.id.register);
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -198,7 +215,7 @@ public class Login extends ActionBarActivity {
             fbLoginButton = (LoginButton) this.findViewById(R.id.facebook_login);
             hello.setText(User.getUser_name());
 
-            if( accessToken == null ) {//normal logout
+            if( facebookLogin.equals("false") ) {//normal logout
                 //delete the facebook login button
                 ViewGroup layout = (ViewGroup) fbLoginButton.getParent();
                 if(null!=layout)
@@ -210,6 +227,16 @@ public class Login extends ActionBarActivity {
                         User.setUser_photo(null);
                         User.setAuth_token(null);
                         User.login_status = false;
+
+                        SharedPreferences sp=getSharedPreferences("Login", 0);
+                        SharedPreferences.Editor Ed=sp.edit();
+                        Ed.putString("login_status", "false");
+                        Ed.putString("facebookLogin", "false");
+                        Ed.putString("Auth_token", "null");
+                        Ed.putString("Photo_Dir", "null");
+                        Ed.putString("User_name", " ");
+                        Ed.commit();
+
                         Intent resultIntent = new Intent();
                         setResult(Activity.RESULT_CANCELED, resultIntent);
                         finish();
@@ -237,6 +264,7 @@ public class Login extends ActionBarActivity {
                             Ed.putString("facebookLogin", "true");
                             Ed.putString("Auth_token", "null");
                             Ed.putString("Photo_Dir", "null");
+                            Ed.putString("User_name", " ");
                             Ed.commit();
 
                             Intent resultIntent = new Intent();
@@ -295,6 +323,15 @@ public class Login extends ActionBarActivity {
             Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
             toast.show();
 
+            SharedPreferences sp=getSharedPreferences("Login", 0);
+            SharedPreferences.Editor Ed=sp.edit();
+            Ed.putString("login_status", "true");
+            Ed.putString("User_name", email_text);
+            Ed.putString("facebookLogin", "false");
+            Ed.putString("Auth_token", User.getAuth_token());
+            Ed.putString("Photo_Dir", InternalSorage.save(BitmapFactory.decodeResource(getApplication().getResources(),R.drawable.com_facebook_profile_picture_blank_square), Login.this));
+            Ed.commit();
+
             Intent resultIntent = new Intent();
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
@@ -322,6 +359,7 @@ public class Login extends ActionBarActivity {
                 User.setUser_name(responseObject.getString("email"));
                 User.setUser_photo(BitmapFactory.decodeResource(getApplication().getResources(),R.drawable.blank_user));
                 String auth_token = responseObject.getString("auth_token");
+                User.setAuth_token(auth_token);
                 Log.v(TAG + "Login", auth_token);
                 //Toast toast = Toast.makeText(getApplicationContext(), "Log in success", Toast.LENGTH_SHORT);
                 //toast.show();

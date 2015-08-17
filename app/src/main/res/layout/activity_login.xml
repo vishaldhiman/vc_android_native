@@ -33,13 +33,14 @@
         android:layout_centerInParent="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <com.gc.materialdesign.views.ButtonRectangle
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Login"
         android:id="@+id/loginButton"
         android:layout_below="@+id/password"
+        android:background="@color/greenButton"
         android:layout_centerHorizontal="true"/>
 
     <com.facebook.login.widget.LoginButton
@@ -52,10 +53,11 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp" />
 
-    <Button
+    <com.gc.materialdesign.views.ButtonRectangle
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
+        android:background="@color/greenButton"
         android:id="@+id/register"
         android:layout_below="@+id/facebook_login"
         android:layout_centerHorizontal="true"/>

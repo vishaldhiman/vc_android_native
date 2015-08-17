@@ -144,11 +144,11 @@
             android:text="Customize"
             android:id="@+id/customize"
             android:onClick="customize"
-            android:background="@color/greenDark"/>
+            android:background="@color/greenButton"/>
 
         <com.facebook.share.widget.ShareButton
             android:id="@+id/fb_share_button"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
@@ -164,6 +164,6 @@
             android:text="Add A Tag"
             android:id="@+id/addtag"
             android:onClick="addTag"
-            android:background="@color/greenDark"/>
+            android:background="@color/greenButton"/>
         </LinearLayout>
 </RelativeLayout>

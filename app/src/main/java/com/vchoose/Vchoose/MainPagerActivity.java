@@ -142,6 +142,8 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     DrawerLayout mDrawerLayout;
     ListView mDrawerList;
     ImageView userPhoto;
+    TextView userName;
+    WelcomePagerAdapter welcomePagerAdapter;
 
     ArrayList<String> hint = new ArrayList<>();
     ArrayList<HashMap<String, String>> dishJsonlist = new ArrayList<>();
@@ -181,7 +183,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, drawer_array_unlogin));
         View mHeader = getLayoutInflater().inflate(R.layout.navigation_list_header, mDrawerList, false);
-        TextView userName = (TextView) mHeader.findViewById(R.id.userName);
+        userName = (TextView) mHeader.findViewById(R.id.userName);
         TextView userEmail = (TextView) mHeader.findViewById(R.id.userEmail);
         userPhoto = (ImageView) mHeader.findViewById(R.id.userPhoto);
         ImageView userBackground = (ImageView) mHeader.findViewById(R.id.userBackground);
@@ -283,11 +285,18 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 mGoogleApiClient, null);
         locationEdit.setAdapter(mAdapter);
 
+        /* Welcome hints */
+        welcomePagerAdapter = new WelcomePagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(welcomePagerAdapter);
+        // Bind the tabs to the ViewPager
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(mViewPager);
+
         //for testing
 
-        /*
+
         keyWord.setText("pizza");
-        Button testButton = (Button)findViewById(R.id.testButton);
+        /*Button testButton = (Button)findViewById(R.id.testButton);
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -609,6 +618,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             Log.v(TAG + "onActivityResult", "Logout");
             //menu.getItem(0).setIcon(android.R.drawable.ic_menu_info_details);
             userPhoto.setImageResource(R.drawable.blank_user);
+            userName.setText("");
         }
     }
 
@@ -626,8 +636,9 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             if(login_status!=null) {
                 if (login_status.equals("true")) {
                     Log.v(TAG+"loginSta",login_status);
-                    Log.v(TAG+"Photo_Dir",Photo_Dir);
+                    Log.v(TAG + "Photo_Dir", Photo_Dir);
                     Bitmap b = InternalSorage.get(Photo_Dir);
+                    userName.setText(sp1.getString("User_name", null));
                     if (b!=null) {
                         userPhoto.setImageBitmap(b);
                     } else {
@@ -680,6 +691,9 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
 
         public SectionsPagerAdapter(FragmentManager fm, ArrayList<HashMap<String, String>> jsonlist, ArrayList<ArrayList<HashMap<String, String>>> reviewJsonlist, ArrayList<HashMap<String, String>> jsonlist2, ArrayList<Pair<String, LatLng>> mMarkers) {
             super(fm);
+            if (fm.getFragments() != null) {
+                fm.getFragments().clear();
+            }
             adapterDishJsonlist = jsonlist;
             adapterRestaurantJsonlist = jsonlist2;
             adapterReviewDishJsonlist = reviewJsonlist;
@@ -730,6 +744,25 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
             return null;
         }
 
+    }
+
+    public class WelcomePagerAdapter extends FragmentPagerAdapter {
+        public WelcomePagerAdapter(FragmentManager fm) {
+            super(fm);
+            if (fm.getFragments() != null) {
+                fm.getFragments().clear();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return new WelcomeFragment();
+        }
     }
 
     /**
@@ -857,13 +890,23 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(position == 1) {
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivityForResult(intent, 1);
-            }
-            if(position == 2) {
-                Intent intent = new Intent(getApplicationContext(), Register.class);
-                startActivity(intent);
+            Intent intent;
+            switch (position){
+                case 1:
+                    intent = new Intent(getApplicationContext(), Login.class);
+                    startActivityForResult(intent, 1);
+                    break;
+                case 2:
+                    intent = new Intent(getApplicationContext(), Register.class);
+                    startActivity(intent);
+                    break;
+                case 3:
+                    welcomePagerAdapter = new WelcomePagerAdapter(getSupportFragmentManager());
+                    mViewPager.setAdapter(welcomePagerAdapter);
+                    // Bind the tabs to the ViewPager
+                    PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+                    tabs.setViewPager(mViewPager);
+                    break;
             }
             mDrawerLayout.closeDrawer(mDrawerList);
         }
