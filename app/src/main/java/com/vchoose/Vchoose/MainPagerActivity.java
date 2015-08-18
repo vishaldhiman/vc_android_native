@@ -137,6 +137,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     GoogleApiClient mGoogleApiClient;
     Spinner spinner;
     ButtonRectangle searchButton;
+    Button virtualSearchButton;
     ImageButton myLocation;
     ViewPager mViewPager;
     DrawerLayout mDrawerLayout;
@@ -235,6 +236,13 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                 doSearch();
             }
         });
+        virtualSearchButton = new Button(context);
+        virtualSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doSearch();
+            }
+        });
 
         /* Near Me button */
         myLocation.setOnClickListener(new View.OnClickListener() {
@@ -286,7 +294,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
         locationEdit.setAdapter(mAdapter);
 
         /* Welcome hints */
-        welcomePagerAdapter = new WelcomePagerAdapter(getSupportFragmentManager());
+        welcomePagerAdapter = new WelcomePagerAdapter(getSupportFragmentManager(), searchButton, keyWord, virtualSearchButton);
         mViewPager.setAdapter(welcomePagerAdapter);
         // Bind the tabs to the ViewPager
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -644,8 +652,14 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                     } else {
                         Log.v(TAG+"Photo_Dir","null");
                     }
+                    String[] drawer_array_unlogin = getResources().getStringArray(R.array.drawer_array_login);
+                    mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                            R.layout.drawer_list_item, drawer_array_unlogin));
                 } else {
                     userPhoto.setImageResource(R.drawable.blank_user);
+                    String[] drawer_array_unlogin = getResources().getStringArray(R.array.drawer_array_unlogin);
+                    mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                            R.layout.drawer_list_item, drawer_array_unlogin));
                 }
             }
         }
@@ -747,11 +761,18 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
     }
 
     public class WelcomePagerAdapter extends FragmentPagerAdapter {
-        public WelcomePagerAdapter(FragmentManager fm) {
+        ButtonRectangle buttonRectangle;
+        AutoCompleteTextView textView;
+        Button button;
+
+        public WelcomePagerAdapter(FragmentManager fm, ButtonRectangle buttonRectangle, AutoCompleteTextView textView, Button button) {
             super(fm);
             if (fm.getFragments() != null) {
                 fm.getFragments().clear();
             }
+            this.buttonRectangle = buttonRectangle;
+            this.textView = textView;
+            this.button = button;
         }
 
         @Override
@@ -761,7 +782,11 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
 
         @Override
         public Fragment getItem(int position) {
-            return new WelcomeFragment();
+            WelcomeFragment welcomeFragment = new WelcomeFragment();
+            welcomeFragment.setButtonRectangle(buttonRectangle);
+            welcomeFragment.setTextView(textView);
+            welcomeFragment.setButton(button);
+            return welcomeFragment;
         }
     }
 
@@ -901,7 +926,7 @@ public class MainPagerActivity extends ActionBarActivity implements GoogleApiCli
                     startActivity(intent);
                     break;
                 case 3:
-                    welcomePagerAdapter = new WelcomePagerAdapter(getSupportFragmentManager());
+                    welcomePagerAdapter = new WelcomePagerAdapter(getSupportFragmentManager(), searchButton, keyWord, virtualSearchButton);
                     mViewPager.setAdapter(welcomePagerAdapter);
                     // Bind the tabs to the ViewPager
                     PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
